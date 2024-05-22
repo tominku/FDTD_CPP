@@ -5,10 +5,10 @@
 
 int main()
 {
+    omp_set_num_threads(4);
 	int nthreads, tid;
-
 	// Begin of parallel region
-	#pragma omp parallel private(nthreads, tid)
+	#pragma omp parallel
 	{
 		// Getting thread number
 		tid = omp_get_thread_num();
