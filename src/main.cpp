@@ -7,26 +7,20 @@
 #include <chrono>
 using namespace std::chrono;
 
-#define ROWS 500
-#define COLS 500
-#define R_FI 0 // row first index
-#define R_LI (ROWS-1)  // row last index
-#define C_FI 0 // col first index
-#define C_LI (COLS-1)  // col last index
 #define NUM_THREADS 2
 #define PRINT 0
 
-double Ez[ROWS][COLS] = {0, };
-double Hx[ROWS][COLS] = {0, };
-double Hy[ROWS][COLS] = {0, };
-
-void step_em_fields()
+void step_em_fields(int Nx, int Ny, double **Hx, double **Hy, double **Ez)
 {
+    const int x_fi = 0;
+    const int x_li = Nx - 1;
+    const int y_fi = 0;
+    const int y_li = Ny - 1;
     // Magnetic Field Update
     #pragma omp parallel for num_threads(NUM_THREADS) collapse(2)
-    for (int i=R_FI; i<R_LI; i++)
+    for (int i=x_fi; i<x_li; i++)
     {
-        for (int j=C_FI; j<C_LI; j++)
+        for (int j=y_fi; j<y_li; j++)
         {
             int udx = 1;
             Hx[i][j] -= udx * (Ez[i][j] - Ez[i][j+1]); 
@@ -37,9 +31,9 @@ void step_em_fields()
     }
     // Electric Field Update
     #pragma omp parallel for num_threads(NUM_THREADS) collapse(2)
-    for (int i=(R_FI+1); i<R_LI; i++)
+    for (int i=(x_fi+1); i<x_li; i++)
     {
-        for (int j=(C_FI+1); j<C_LI; j++)
+        for (int j=(y_fi+1); j<y_li; j++)
         {
             Ez[i][j] += (Hy[i-1][j] - Hy[i][j]) + (Hx[i][j-1] - Hx[i][j]);
             if (PRINT)
@@ -52,22 +46,22 @@ int main()
 {
     // Define Simulation Based off Source and Wavelength
     int f0 = 1e6; // Frequency of Source  [Hertz]
-    int Lf = 10;  // Divisions per Wavelength   [unitless]
-    double Lx = 8; //  # wave lengths in x-dir [unitless]
-    double Ly = 8; //  # wave lengths in y-dir 
-    int nt = 1000; // Number of time steps  [unitless]
+    int devisions_per_wave = 10;  // Divisions per Wavelength   [unitless]
+    double num_waves_x = 8; //  # wave lengths in x-dir [unitless]
+    double num_waves_y = 8; //  # wave lengths in y-dir 
+    int nt = 100; // Number of time steps  [unitless]
 
     // Spatial and Temporal System
     double e0 = 8.854 * 1e-12;  // Permittivity of vacuum [farad/meter]
     double u0 = 4*M_PI* 1e-7;  // Permeability of vacuum [henry/meter]
     double c0 = 1/pow((e0*u0), 0.5);  // Speed of light  [meter/second]
-    double L0 = c0/f0;  // Freespace Wavelength  [meter]
+    double lam = c0/f0;  // Freespace Wavelength  [meter]
     double t0  = 1/f0;  // Source Period  [second]
 
-    int Nx = Lx*Lf +1;
-    int Ny = Ly*Lf + 1;
-    double dx = Lx * L0 / (Nx-1);
-    double dy = Ly * L0 / (Ny-1);
+    int Nx = num_waves_x*devisions_per_wave + 1;
+    int Ny = num_waves_y*devisions_per_wave + 1;
+    double dx = num_waves_x * lam / (Nx-1);
+    double dy = num_waves_y * lam / (Ny-1);
     double dt = pow(pow(dx,-2) + pow(dy,-2), -0.5)/c0*.99;
     /*
     [Nx,Ny] = deal(Lx*Lf,Ly*Lf);    % Points in x,y           [unitless]
@@ -77,18 +71,21 @@ int main()
     dt = (dx^-2+dy^-2)^-.5/c0*.99;  % Time step CFL condition [second]
     */
 
-    printf("R_LI %d \n", R_LI);
-    printf("L0: %f, dx: %f, dt: %.9f \n", L0, dx, dt);
+    //printf("R_LI %d \n", x_li);
+    printf("L0: %f, dx: %f, dt: %.9f \n", lam, dx, dt);
 
     auto start = high_resolution_clock::now();
 
-    for (int step=0; step<100; step++)
-    {
+    double Ez[Nx][Ny] = {0, };
+    double Hx[Nx][Ny] = {0, };
+    double Hy[Nx][Ny] = {0, };
+
+    for (int step=0; step<nt; step++)
+    {        
         //Point Source
         //Ez[round(ROWS/2),round(COLS/2)] += sin(2*pi*f0*dt*t).*exp(-.5*((step-20)/8)^2);
-        Ez[(int)round(ROWS/2)][(int)round(COLS/2)] += sin(2*M_PI*f0*(dt*step)) * exp(-0.5*pow((step-20)/8, 2));
-        
-        step_em_fields();
+        Ez[(int)round(Nx/2)][(int)round(Ny/2)] += sin(2*M_PI*f0*(dt*step)) * exp(-0.5*pow((step-20)/8, 2));
+        step_em_fields(Nx, Ny, Hx, Hy, Ez);
     }
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>(stop - start);
