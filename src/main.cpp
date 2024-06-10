@@ -16,7 +16,8 @@ using namespace std::chrono;
 #define Nx (num_waves_x*devisions_per_wave + 1)
 #define Ny (num_waves_y*devisions_per_wave + 1)
 
-void step_em_fields(double Hx[][Ny], double Hy[][Ny], double Ez[][Ny])
+void step_em_fields(double Hx[][Ny], double Hy[][Ny], double Ez[][Ny],
+    double coef_eps_dx, double coef_eps_dy, double coef_mu_dx, double coef_mu_dy)
 {
     const int x_fi = 0;
     const int x_li = Nx - 1;
@@ -32,8 +33,8 @@ void step_em_fields(double Hx[][Ny], double Hy[][Ny], double Ez[][Ny])
         for (int j=y_fi; j<y_li; j++)
         {
             int udx = 1;
-            Hx[i][j] -= udx * (Ez[i][j] - Ez[i][j+1]); 
-            Hy[i][j] += udx * (Ez[i][j] - Ez[i+1][j]);
+            Hx[i][j] -= coef_mu_dy * (Ez[i][j] - Ez[i][j+1]); 
+            Hy[i][j] += coef_mu_dx * (Ez[i][j] - Ez[i+1][j]);
             if (PRINT)
                 printf("M-Field i = %d, j= %d, threadId = %d \n", i, j, omp_get_thread_num());
         }
@@ -44,7 +45,7 @@ void step_em_fields(double Hx[][Ny], double Hy[][Ny], double Ez[][Ny])
     {
         for (int j=(y_fi+1); j<y_li; j++)
         {
-            Ez[i][j] += (Hy[i-1][j] - Hy[i][j]) + (Hx[i][j-1] - Hx[i][j]);
+            Ez[i][j] += coef_eps_dx*(Hy[i-1][j] - Hy[i][j]) - coef_eps_dy*(Hx[i][j-1] - Hx[i][j]);
             if (PRINT)
                 printf("E-Field i = %d, j= %d, threadId = %d \n", i, j, omp_get_thread_num());
         }
@@ -58,15 +59,20 @@ int main()
     int nt = 100; // Number of time steps  [unitless]
 
     // Spatial and Temporal System
-    double e0 = 8.854 * 1e-12;  // Permittivity of vacuum [farad/meter]
-    double u0 = 4*M_PI* 1e-7;  // Permeability of vacuum [henry/meter]
-    double c0 = 1/pow((e0*u0), 0.5);  // Speed of light  [meter/second]
+    double eps0 = 8.854 * 1e-12;  // Permittivity of vacuum [farad/meter]
+    double mu0 = 4*M_PI* 1e-7;  // Permeability of vacuum [henry/meter]
+    double c0 = 1/pow((eps0*mu0), 0.5);  // Speed of light  [meter/second]
     double lam = c0/f0;  // Freespace Wavelength  [meter]
     double t0  = 1/f0;  // Source Period  [second]
 
     double dx = num_waves_x * lam / (Nx-1);
     double dy = num_waves_y * lam / (Ny-1);
     double dt = pow(pow(dx,-2) + pow(dy,-2), -0.5)/c0*.99;
+
+    double coef_eps_dx = dt/(eps0*dx);
+    double coef_eps_dy = dt/(eps0*dy);
+    double coef_mu_dx = dt/(mu0*dx);
+    double coef_mu_dy = dt/(mu0*dy);
     /*
     [Nx,Ny] = deal(Lx*Lf,Ly*Lf);    % Points in x,y           [unitless]
     x  = linspace(0,Lx,Nx+1)*L0;    % x vector                [meter]
@@ -89,7 +95,7 @@ int main()
         //Point Source
         //Ez[round(ROWS/2),round(COLS/2)] += sin(2*pi*f0*dt*t).*exp(-.5*((step-20)/8)^2);
         Ez[(int)round(Nx/2)][(int)round(Ny/2)] += sin(2*M_PI*f0*(dt*step)) * exp(-0.5*pow((step-20)/8, 2));
-        step_em_fields(Hx, Hy, Ez);
+        step_em_fields(Hx, Hy, Ez, coef_eps_dx, coef_eps_dy, coef_mu_dx, coef_mu_dy);
     }
 
     auto stop = high_resolution_clock::now();
