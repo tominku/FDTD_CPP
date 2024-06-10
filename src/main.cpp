@@ -10,12 +10,21 @@ using namespace std::chrono;
 #define NUM_THREADS 2
 #define PRINT 0
 
-void step_em_fields(int Nx, int Ny, double **Hx, double **Hy, double **Ez)
+#define devisions_per_wave 10  // Divisions per Wavelength   [unitless]
+#define num_waves_x 20 //  # wave lengths in x-dir [unitless]
+#define num_waves_y 20 //  # wave lengths in y-dir 
+#define Nx (num_waves_x*devisions_per_wave + 1)
+#define Ny (num_waves_y*devisions_per_wave + 1)
+
+void step_em_fields(double Hx[][Ny], double Hy[][Ny], double Ez[][Ny])
 {
     const int x_fi = 0;
     const int x_li = Nx - 1;
     const int y_fi = 0;
     const int y_li = Ny - 1;
+    
+    //printf("x_li: %d, y_li: %d \n", x_li, y_li);
+
     // Magnetic Field Update
     #pragma omp parallel for num_threads(NUM_THREADS) collapse(2)
     for (int i=x_fi; i<x_li; i++)
@@ -46,9 +55,6 @@ int main()
 {
     // Define Simulation Based off Source and Wavelength
     int f0 = 1e6; // Frequency of Source  [Hertz]
-    int devisions_per_wave = 10;  // Divisions per Wavelength   [unitless]
-    double num_waves_x = 8; //  # wave lengths in x-dir [unitless]
-    double num_waves_y = 8; //  # wave lengths in y-dir 
     int nt = 100; // Number of time steps  [unitless]
 
     // Spatial and Temporal System
@@ -58,8 +64,6 @@ int main()
     double lam = c0/f0;  // Freespace Wavelength  [meter]
     double t0  = 1/f0;  // Source Period  [second]
 
-    int Nx = num_waves_x*devisions_per_wave + 1;
-    int Ny = num_waves_y*devisions_per_wave + 1;
     double dx = num_waves_x * lam / (Nx-1);
     double dy = num_waves_y * lam / (Ny-1);
     double dt = pow(pow(dx,-2) + pow(dy,-2), -0.5)/c0*.99;
@@ -72,7 +76,7 @@ int main()
     */
 
     //printf("R_LI %d \n", x_li);
-    printf("L0: %f, dx: %f, dt: %.9f \n", lam, dx, dt);
+    printf("Nx: %d, Ny:%d, L0: %f, dx: %f, dt: %.9f \n", Nx, Ny, lam, dx, dt);
 
     auto start = high_resolution_clock::now();
 
@@ -85,8 +89,9 @@ int main()
         //Point Source
         //Ez[round(ROWS/2),round(COLS/2)] += sin(2*pi*f0*dt*t).*exp(-.5*((step-20)/8)^2);
         Ez[(int)round(Nx/2)][(int)round(Ny/2)] += sin(2*M_PI*f0*(dt*step)) * exp(-0.5*pow((step-20)/8, 2));
-        step_em_fields(Nx, Ny, Hx, Hy, Ez);
+        step_em_fields(Hx, Hy, Ez);
     }
+
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>(stop - start);
     
