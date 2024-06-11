@@ -75,7 +75,7 @@ int main()
     //main_disp.wait();
     // Define Simulation Based off Source and Wavelength
     int f0 = 1e6; // Frequency of Source  [Hertz]
-    int nt = 100; // Number of time steps  [unitless]
+    int nt = 1000; // Number of time steps  [unitless]
 
     // Spatial and Temporal System
     double eps0 = 8.854 * 1e-12;  // Permittivity of vacuum [farad/meter]
@@ -109,7 +109,7 @@ int main()
     double Hx[Nx][Ny] = {0, };
     double Hy[Nx][Ny] = {0, };
 
-    output_file << Nx << "," << Ny << "," << nt << "/n";
+    output_file << Nx << "," << Ny << "," << nt << "\n";
     for (int step=0; step<nt; step++)
     {        
         //Point Source
@@ -121,11 +121,15 @@ int main()
         {
             for (int j=y_fi; j<=y_li; j++)
             {
-                output_file << Ez[i][j] << ",";
+                output_file << Ez[i][j]; 
+                if (j < y_li)
+                    output_file << ",";
             }
-            output_file << "/n";
+            if (i < x_li)
+                output_file << "\n";
         }
-        output_file << "*/n";
+        if (step < (nt - 1))
+            output_file << "\n*\n";
     }
 
     auto stop = high_resolution_clock::now();
