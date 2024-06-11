@@ -8,6 +8,9 @@
 #include "CImg.h" 
 #include <iostream>
 #include <fstream>
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
 
 using namespace std;
 using namespace std::chrono;
@@ -60,7 +63,13 @@ void step_em_fields(double Hx[][Ny], double Hy[][Ny], double Ez[][Ny],
 
 int main()
 {
-    output_file.open("output.txt");
+    struct passwd *pw = getpwuid(getuid());
+    const char *c_homedir = pw->pw_dir;
+    const string homedir = c_homedir;
+    const string data_dir = homedir + "/.data";
+    cout << "data_dir: " << data_dir << "\n";
+    const string output_file_path = data_dir +"/output.txt";
+    output_file.open(output_file_path);
     //CImg<unsigned char> image("/home/minku/Downloads/lena.png");
     //CImgDisplay main_disp(image,"Click a point");
     //main_disp.wait();
