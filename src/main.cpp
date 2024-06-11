@@ -100,6 +100,7 @@ int main()
     double Hx[Nx][Ny] = {0, };
     double Hy[Nx][Ny] = {0, };
 
+    output_file << Nx << "," << Ny << "," << nt << "/n";
     for (int step=0; step<nt; step++)
     {        
         //Point Source
@@ -115,6 +116,7 @@ int main()
             }
             output_file << "/n";
         }
+        output_file << "*/n";
     }
 
     auto stop = high_resolution_clock::now();
