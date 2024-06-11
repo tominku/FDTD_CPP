@@ -5,27 +5,33 @@
 #include <iostream>
 #include <cmath>
 #include <chrono>
+#include "CImg.h" 
+#include <iostream>
+#include <fstream>
+
+using namespace std;
 using namespace std::chrono;
+using namespace cimg_library; 
 
 #define NUM_THREADS 2
 #define PRINT 0
 
 #define devisions_per_wave 10  // Divisions per Wavelength   [unitless]
-#define num_waves_x 20 //  # wave lengths in x-dir [unitless]
-#define num_waves_y 20 //  # wave lengths in y-dir 
+#define num_waves_x 5 //  # wave lengths in x-dir [unitless]
+#define num_waves_y 5 //  # wave lengths in y-dir 
 #define Nx (num_waves_x*devisions_per_wave + 1)
 #define Ny (num_waves_y*devisions_per_wave + 1)
 
+const int x_fi = 0;
+const int x_li = Nx - 1;
+const int y_fi = 0;
+const int y_li = Ny - 1;
+
+ofstream output_file;
+
 void step_em_fields(double Hx[][Ny], double Hy[][Ny], double Ez[][Ny],
     double coef_eps_dx, double coef_eps_dy, double coef_mu_dx, double coef_mu_dy)
-{
-    const int x_fi = 0;
-    const int x_li = Nx - 1;
-    const int y_fi = 0;
-    const int y_li = Ny - 1;
-    
-    //printf("x_li: %d, y_li: %d \n", x_li, y_li);
-
+{   
     // Magnetic Field Update
     #pragma omp parallel for num_threads(NUM_THREADS) collapse(2)
     for (int i=x_fi; i<x_li; i++)
@@ -54,6 +60,10 @@ void step_em_fields(double Hx[][Ny], double Hy[][Ny], double Ez[][Ny],
 
 int main()
 {
+    output_file.open("output.txt");
+    //CImg<unsigned char> image("/home/minku/Downloads/lena.png");
+    //CImgDisplay main_disp(image,"Click a point");
+    //main_disp.wait();
     // Define Simulation Based off Source and Wavelength
     int f0 = 1e6; // Frequency of Source  [Hertz]
     int nt = 100; // Number of time steps  [unitless]
@@ -96,6 +106,15 @@ int main()
         //Ez[round(ROWS/2),round(COLS/2)] += sin(2*pi*f0*dt*t).*exp(-.5*((step-20)/8)^2);
         Ez[(int)round(Nx/2)][(int)round(Ny/2)] += sin(2*M_PI*f0*(dt*step)) * exp(-0.5*pow((step-20)/8, 2));
         step_em_fields(Hx, Hy, Ez, coef_eps_dx, coef_eps_dy, coef_mu_dx, coef_mu_dy);
+        
+        for (int i=x_fi; i<=x_li; i++)
+        {
+            for (int j=y_fi; j<=y_li; j++)
+            {
+                output_file << Ez[i][j] << ",";
+            }
+            output_file << "/n";
+        }
     }
 
     auto stop = high_resolution_clock::now();
