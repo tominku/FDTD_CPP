@@ -98,7 +98,7 @@ int main()
     //printf("R_LI %d \n", x_li);
     printf("Nx: %d, Ny:%d, L0: %f, dx: %f, dt: %.9f \n", Nx, Ny, lam, dx, dt);
 
-    auto start = high_resolution_clock::now();
+    int computation_time = 0; 
 
     double Ez[Nx][Ny] = {0, };
     double Hx[Nx][Ny] = {0, };
@@ -110,8 +110,16 @@ int main()
         //Point Source
         //Ez[round(ROWS/2),round(COLS/2)] += sin(2*pi*f0*dt*t).*exp(-.5*((step-20)/8)^2);
         Ez[(int)round(Nx/3)][(int)round(Ny/3)] += sin(2*M_PI*f0*(dt*step)) * exp(-0.5*pow((step-20)/8, 2));
-        step_em_fields(Hx, Hy, Ez, coef_eps_dx, coef_eps_dy, coef_mu_dx, coef_mu_dy);
         
+        auto t1 = steady_clock::now();
+        
+        step_em_fields(Hx, Hy, Ez, coef_eps_dx, coef_eps_dy, coef_mu_dx, coef_mu_dy);        
+        
+        auto t2 = steady_clock::now();
+
+        auto duration = duration_cast<microseconds>(t2 - t1);
+        computation_time += duration.count();
+
         for (int i=x_fi; i<=x_li; i++)
         {
             for (int j=y_fi; j<=y_li; j++)
@@ -126,13 +134,10 @@ int main()
         if (step < (nt - 1))
             output_file << "\n*\n";
     }
-
-    auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<milliseconds>(stop - start);
     
     // To get the value of duration use the count()
     // member function on the duration object
-    std::cout << "duration: " << duration.count() << " ms" << std::endl;
+    std::cout << "computation_time: " << computation_time / 1000 << " ms" << std::endl;
 
     /*
     int arr[4] = {9, };
