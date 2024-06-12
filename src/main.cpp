@@ -4,8 +4,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <cmath>
-#include <chrono>
-#include "CImg.h" 
+#include <chrono> 
 #include <iostream>
 #include <fstream>
 #include <unistd.h>
@@ -14,14 +13,13 @@
 
 using namespace std;
 using namespace std::chrono;
-using namespace cimg_library; 
 
 #define NUM_THREADS 2
 #define PRINT 0
 
 #define devisions_per_wave 10  // Divisions per Wavelength   [unitless]
-#define num_waves_x 5 //  # wave lengths in x-dir [unitless]
-#define num_waves_y 5 //  # wave lengths in y-dir 
+#define num_waves_x 8 //  # wave lengths in x-dir [unitless]
+#define num_waves_y 8 //  # wave lengths in y-dir 
 #define Nx (num_waves_x*devisions_per_wave + 1)
 #define Ny (num_waves_y*devisions_per_wave + 1)
 
@@ -67,13 +65,9 @@ int main()
     const char *c_homedir = pw->pw_dir;
     const string homedir = c_homedir;
     const string data_dir = homedir + "/.data";
-    cout << "data_dir: " << data
-    _dir << "\n";
+    cout << "data_dir: " << data_dir << "\n";
     const string output_file_path = data_dir +"/output.txt";
     output_file.open(output_file_path);
-    //CImg<unsigned char> image("/home/minku/Downloads/lena.png");
-    //CImgDisplay main_disp(image,"Click a point");
-    //main_disp.wait();
     // Define Simulation Based off Source and Wavelength
     int f0 = 1e6; // Frequency of Source  [Hertz]
     int nt = 1000; // Number of time steps  [unitless]
@@ -115,7 +109,7 @@ int main()
     {        
         //Point Source
         //Ez[round(ROWS/2),round(COLS/2)] += sin(2*pi*f0*dt*t).*exp(-.5*((step-20)/8)^2);
-        Ez[(int)round(Nx/2)][(int)round(Ny/2)] += sin(2*M_PI*f0*(dt*step)) * exp(-0.5*pow((step-20)/8, 2));
+        Ez[(int)round(Nx/3)][(int)round(Ny/3)] += sin(2*M_PI*f0*(dt*step)) * exp(-0.5*pow((step-20)/8, 2));
         step_em_fields(Hx, Hy, Ez, coef_eps_dx, coef_eps_dy, coef_mu_dx, coef_mu_dy);
         
         for (int i=x_fi; i<=x_li; i++)

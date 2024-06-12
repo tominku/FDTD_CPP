@@ -3,7 +3,8 @@
     "*.tpp": "cpp",
     "chrono": "cpp",
     "iosfwd": "cpp",
-    "ostream": "cpp"
+    "ostream": "cpp",
+    "cmath": "cpp"
 },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",
