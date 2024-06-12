@@ -67,7 +67,8 @@ int main()
     const char *c_homedir = pw->pw_dir;
     const string homedir = c_homedir;
     const string data_dir = homedir + "/.data";
-    cout << "data_dir: " << data_dir << "\n";
+    cout << "data_dir: " << data
+    _dir << "\n";
     const string output_file_path = data_dir +"/output.txt";
     output_file.open(output_file_path);
     //CImg<unsigned char> image("/home/minku/Downloads/lena.png");
