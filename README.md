@@ -1,3 +1,3 @@
 # FDTD_CPP
 
-A simple food 2d implementation with OpenMP parallelization.
+A simple FDTD 2D implementation with OpenMP parallelization.
