@@ -14,7 +14,7 @@
 using namespace std;
 using namespace std::chrono;
 
-#define NUM_THREADS 4
+#define NUM_THREADS 2
 #define PRINT 0
 
 #define devisions_per_wave 10  // Divisions per Wavelength   [unitless]
@@ -28,13 +28,9 @@ const int x_li = Nx - 1;
 const int y_fi = 0;
 const int y_li = Ny - 1;
 
-const int n_PML_X = 10;
-const int n_PML_Y = 10;
-
-
 ofstream output_file;
 
-void step_em_pml(double Hx[][Ny], double Hy[][Ny], double Ez[][Ny],
+void step_em_fields(double Hx[][Ny], double Hy[][Ny], double Ez[][Ny],
     double coef_eps_dx, double coef_eps_dy, double coef_mu_dx, double coef_mu_dy)
 {   
     // Magnetic Field Update
@@ -63,7 +59,7 @@ void step_em_pml(double Hx[][Ny], double Hy[][Ny], double Ez[][Ny],
     }
 }
 
-int main()
+int main__()
 {
     struct passwd *pw = getpwuid(getuid());
     const char *c_homedir = pw->pw_dir;
@@ -104,8 +100,6 @@ int main()
 
     int computation_time = 0; 
 
-    double *
-
     double Ez[Nx][Ny] = {0, };
     double Hx[Nx][Ny] = {0, };
     double Hy[Nx][Ny] = {0, };
@@ -119,7 +113,7 @@ int main()
         
         auto t1 = steady_clock::now();
         
-        step_em_pml(Hx, Hy, Ez, coef_eps_dx, coef_eps_dy, coef_mu_dx, coef_mu_dy);        
+        step_em_fields(Hx, Hy, Ez, coef_eps_dx, coef_eps_dy, coef_mu_dx, coef_mu_dy);        
         
         auto t2 = steady_clock::now();
 
