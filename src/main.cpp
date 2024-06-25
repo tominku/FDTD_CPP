@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>
+#include "PML.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -28,11 +29,24 @@ const int x_li = Nx - 1;
 const int y_fi = 0;
 const int y_li = Ny - 1;
 
-const int n_PML_X = 10;
-const int n_PML_Y = 10;
+// const int n_PML_x = 10;
+// const int n_PML_y = 10;
 
-int aa = 0;
-int bb = 0;
+// class PML_Positions
+// {
+
+// private:
+//     double *part1;
+//     double *part2;
+//     int n_PML;
+double order = 3;
+//         part1 = new double[n_PML];
+//         part2 = new double[n_PML];
+//     }
+// };
+
+// PML_Positions pml_positions_x(n_PML_x);
+// PML_Positions pml_positions_y(n_PML_y);
 
 
 ofstream output_file;
@@ -68,6 +82,9 @@ void step_em_pml(double Hx[][Ny], double Hy[][Ny], double Ez[][Ny],
 
 int main()
 {
+    int n_PML = 10;
+    PML pml(n_PML);
+
     struct passwd *pw = getpwuid(getuid());
     const char *c_homedir = pw->pw_dir;
     const string homedir = c_homedir;
