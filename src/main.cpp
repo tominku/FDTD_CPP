@@ -62,7 +62,7 @@ void step_em_pml(double Hx[][Ny], double Hy[][Ny], double Ez[][Ny],
     }
 }
 
-int main()
+int main_()
 {
     struct passwd *pw = getpwuid(getuid());
     const char *c_homedir = pw->pw_dir;

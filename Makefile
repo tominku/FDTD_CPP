@@ -1,5 +1,6 @@
-CXX		  := g++
-CXX_FLAGS := -Wall -Wextra -std=c++17 -ggdb -fopenmp
+CXX		  := nvcc
+#CXX_FLAGS := -Wall -Wextra -std=c++17 -ggdb -fopenmp
+CXX_FLAGS := -std=c++17
 
 BIN		:= bin
 SRC		:= src
@@ -16,8 +17,8 @@ run: clean all
 	#clear
 	./$(BIN)/$(EXECUTABLE)
 
-$(BIN)/$(EXECUTABLE): $(SRC)/main.cpp
-	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) -L$(LIB) $^ -o $@ $(LIBRARIES) -lm -lpthread
+$(BIN)/$(EXECUTABLE): $(SRC)/main.cu
+	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) -L$(LIB) $^ -o $@ $(LIBRARIES) -lm
 
 clean:
 	-rm $(BIN)/*

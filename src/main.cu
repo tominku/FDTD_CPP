@@ -1,0 +1,23 @@
+#include <stdio.h>
+
+__global__
+void helloCUDA()
+{
+    printf("Hello, CUDA!\n");
+}
+
+class Test
+{
+public:
+    Test()
+    {
+
+    }
+};
+
+int main()
+{
+    helloCUDA<<<1, 1>>>();
+    cudaDeviceSynchronize();    
+    return 0;
+}
