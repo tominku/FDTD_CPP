@@ -1,6 +1,7 @@
 CXX		  := nvcc
 #CXX_FLAGS := -Wall -Wextra -std=c++17 -ggdb -fopenmp
-CXX_FLAGS := -std=c++17
+#CXX_FLAGS := -std=c++17
+CXX_FLAGS := 
 
 BIN		:= bin
 SRC		:= src
