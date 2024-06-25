@@ -8,16 +8,25 @@ void helloCUDA()
 
 class Test
 {
+private:
+    int a;
 public:
     Test()
     {
-
+        a = 3;
     }
+    void Print()
+    {
+        printf("class test %d \n", a);
+    }
+
 };
 
 int main()
 {
     helloCUDA<<<1, 1>>>();
-    cudaDeviceSynchronize();    
+    Test test;
+    test.Print();
+    cudaDeviceSynchronize();        
     return 0;
 }
