@@ -104,8 +104,6 @@ int main()
 
     int computation_time = 0; 
 
-    double *
-
     double Ez[Nx][Ny] = {0, };
     double Hx[Nx][Ny] = {0, };
     double Hy[Nx][Ny] = {0, };
