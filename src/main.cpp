@@ -32,6 +32,7 @@ const int n_PML_X = 10;
 const int n_PML_Y = 10;
 
 int aa = 0;
+int bb = 0;
 
 
 ofstream output_file;
