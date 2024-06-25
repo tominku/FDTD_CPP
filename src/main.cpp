@@ -30,7 +30,7 @@ const int y_li = Ny - 1;
 
 const int n_PML_X = 10;
 const int n_PML_Y = 10;
-
+int test = 0;
 
 ofstream output_file;
 
