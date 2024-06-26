@@ -126,8 +126,13 @@ int main()
     cudaEventCreate(&start);
     cudaEventCreate(&stop);
 
+    cudaEvent_t start_logging, stop_logging;
+    cudaEventCreate(&start_logging);
+    cudaEventCreate(&stop_logging);
+
     float total_computation_time_ms = 0;
-    
+    int frame_capture_period = 10;
+    float total_logging_time_ms = 0;
     // Executing kernel 
     for (int i=0; i<Nt; i++)
     {
@@ -137,18 +142,28 @@ int main()
         cudaEventSynchronize(stop);
         float step_computation_time_ms = 0;
         cudaEventElapsedTime(&step_computation_time_ms, start, stop);
-
         total_computation_time_ms += step_computation_time_ms;
+
+        if (i % frame_capture_period == 0)
+        {
+            cudaEventRecord(start_logging);
+            // Transfer data back to host memory
+            cudaMemcpy(Hx, d_Hx, sizeof(float) * N, cudaMemcpyDeviceToHost);
+            cudaMemcpy(Hy, d_Hy, sizeof(float) * N, cudaMemcpyDeviceToHost);
+            cudaMemcpy(Ez, d_Ez, sizeof(float) * N, cudaMemcpyDeviceToHost);
+            cudaEventRecord(stop_logging);
+            cudaEventSynchronize(stop_logging);
+            float logging_time_ms = 0;
+            cudaEventElapsedTime(&logging_time_ms, start_logging, stop_logging);
+            total_logging_time_ms += logging_time_ms;
+        }
     }
     //vector_add<<<grid_dim, block_dim>>>(d_out, d_a, d_b, N);
     //vector_add_plain<<<1, 1>>>(d_out, d_a, d_b, N);
 
-    // Transfer data back to host memory
-    cudaMemcpy(Hx, d_Hx, sizeof(float) * N, cudaMemcpyDeviceToHost);
-    cudaMemcpy(Hy, d_Hy, sizeof(float) * N, cudaMemcpyDeviceToHost);
-    cudaMemcpy(Ez, d_Ez, sizeof(float) * N, cudaMemcpyDeviceToHost);
     
     printf("Total Computation Time %f ms \n", total_computation_time_ms);    
+    printf("Total Logging Time %f ms \n", total_logging_time_ms);   
     
     //std::cout << "test" << "\n";
     //std::cout <<out[0] << "\n";
