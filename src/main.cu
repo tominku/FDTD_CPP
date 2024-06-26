@@ -1,7 +1,6 @@
 #include <stdio.h>
 
-__global__
-void helloCUDA()
+__global__ void helloCUDA()
 {
     printf("Hello, CUDA!\n");
 }
@@ -30,12 +29,17 @@ struct StructTest
 
 int main()
 {
-    helloCUDA<<<1, 1>>>();
-    Test test;
-    test.Print();
+    //gridDim()
+    dim3 grid_dim(8, 1, 1);
+    dim3 block_dim(512, 1, 1);
+        
+    //helloCUDA<<<grid_dim, block_dim>>>();
+    helloCUDA<<<5, 1>>>();
+    // Test test;
+    // test.Print();
 
-    StructTest st;
-    printf("struct test: %d \n", st.b);
+    // StructTest st;
+    // printf("struct test: %d \n", st.b);
 
     cudaDeviceSynchronize();        
 
