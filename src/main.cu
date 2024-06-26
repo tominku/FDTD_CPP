@@ -6,7 +6,7 @@
 #include <cuda_runtime.h>
 #include <iostream>
 
-#define N 1000000
+#define N 10000000
 #define MAX_ERR 1e-6
 
 class Test
@@ -55,10 +55,12 @@ __global__ void vector_add(float *out, float *a, float *b, int n) {
 int main()
 {
     //gridDim()    
-    dim3 block_dim(512, 1, 1);
-    int num_blocks = ceil(N / (float)block_dim.x);
-    printf("a: %f \n", N / (float)block_dim.x);
-    dim3 grid_dim(num_blocks, 1, 1);
+    int threads_per_block = 512;
+    dim3 block_dim(threads_per_block, 1, 1);
+    //int num_blocks = ceil(N / (float)block_dim.x);
+    int num_blocks = (N+(threads_per_block-1)) / threads_per_block;    
+    printf("num_blocks: %d \n", num_blocks);
+    dim3 grid_dim(num_blocks, 1, 1);    
 
     float *a, *b, *out;
     float *d_a, *d_b, *d_out; 
@@ -83,13 +85,24 @@ int main()
     cudaMemcpy(d_a, a, sizeof(float) * N, cudaMemcpyHostToDevice);
     cudaMemcpy(d_b, b, sizeof(float) * N, cudaMemcpyHostToDevice);
 
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+
+    cudaEventRecord(start);
     // Executing kernel 
     vector_add<<<grid_dim, block_dim>>>(d_out, d_a, d_b, N);
-    
+    //vector_add_plain<<<1, 1>>>(d_out, d_a, d_b, N);
+    cudaEventRecord(stop);
+
     // Transfer data back to host memory
     cudaMemcpy(out, d_out, sizeof(float) * N, cudaMemcpyDeviceToHost);
 
-    printf("Test \n");    
+    cudaEventSynchronize(stop);
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
+
+    printf("Elapsed Time %f ms \n", milliseconds);    
     //std::cout << "test" << "\n";
     std::cout <<out[0] << "\n";
 
