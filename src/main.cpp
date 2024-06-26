@@ -17,8 +17,8 @@ using namespace std::chrono;
 #define PRINT 0
 
 #define devisions_per_wave 10  // Divisions per Wavelength   [unitless]
-#define num_waves_x 8 //  # wave lengths in x-dir [unitless]
-#define num_waves_y 8 //  # wave lengths in y-dir 
+#define num_waves_x 80 //  # wave lengths in x-dir [unitless]
+#define num_waves_y 80 //  # wave lengths in y-dir 
 #define Nx (num_waves_x*devisions_per_wave + 1)
 #define Ny (num_waves_y*devisions_per_wave + 1)
 
@@ -32,11 +32,12 @@ const int n_PML_Y = 10;
 
 ofstream output_file;
 
+
 void step_em_pml(double Hx[][Ny], double Hy[][Ny], double Ez[][Ny],
     double coef_eps_dx, double coef_eps_dy, double coef_mu_dx, double coef_mu_dy)
 {   
     // Magnetic Field Update
-    #pragma omp parallel for num_threads(NUM_THREADS) collapse(2)
+    #pragma omp parallel for num_threads(NUM_THREADS) simd collapse(2)
     for (int i=x_fi; i<x_li; i++)
     {
         for (int j=y_fi; j<y_li; j++)
@@ -49,7 +50,7 @@ void step_em_pml(double Hx[][Ny], double Hy[][Ny], double Ez[][Ny],
         }
     }
     // Electric Field Update
-    #pragma omp parallel for num_threads(NUM_THREADS) collapse(2)
+    #pragma omp parallel for num_threads(NUM_THREADS) simd collapse(2)
     for (int i=(x_fi+1); i<x_li; i++)
     {
         for (int j=(y_fi+1); j<y_li; j++)
