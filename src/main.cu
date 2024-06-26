@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <cuda.h>
 #include <cuda_runtime.h>
+#include <iostream>
 
 #define N 10000000
 #define MAX_ERR 1e-6
@@ -77,14 +78,17 @@ int main()
     // Transfer data back to host memory
     cudaMemcpy(out, d_out, sizeof(float) * N, cudaMemcpyDeviceToHost);
 
+    //printf("Test");
+    std::cout << "test" << "\n";
+    std::cout <<out[0] << "\n";
+
     // Verification
     for(int i = 0; i < N; i++){
         assert(fabs(out[i] - a[i] - b[i]) < MAX_ERR);
     }
-
-    printf("Test");
+    
     printf("out[0] = %f\n", out[0]);
-    printf("PASSED\n");
+    std::cout << "passed" << "\n";
 
     // Deallocate device memory
     cudaFree(d_a);

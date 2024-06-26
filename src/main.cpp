@@ -5,7 +5,6 @@
 #include <iostream>
 #include <cmath>
 #include <chrono> 
-#include <iostream>
 #include <fstream>
 #include <unistd.h>
 #include <sys/types.h>
