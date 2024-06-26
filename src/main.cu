@@ -97,11 +97,10 @@ int main()
 
     // Transfer data back to host memory
     cudaMemcpy(out, d_out, sizeof(float) * N, cudaMemcpyDeviceToHost);
-
+    
     cudaEventSynchronize(stop);
     float milliseconds = 0;
     cudaEventElapsedTime(&milliseconds, start, stop);
-
     printf("Elapsed Time %f ms \n", milliseconds);    
     //std::cout << "test" << "\n";
     std::cout <<out[0] << "\n";
