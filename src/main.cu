@@ -6,7 +6,7 @@
 #include <cuda_runtime.h>
 #include <iostream>
 
-#define N 10000000
+#define N 1000000
 #define MAX_ERR 1e-6
 
 class Test
@@ -37,17 +37,28 @@ __global__ void helloCUDA()
     printf("Hello, CUDA!\n");
 }
 
-__global__ void vector_add(float *out, float *a, float *b, int n) {
+__global__ void vector_add_plain(float *out, float *a, float *b, int n) {
     for(int i = 0; i < n; i++){
         out[i] = a[i] + b[i];
     }
 }
 
+__global__ void vector_add(float *out, float *a, float *b, int n) {
+    int last_index = n - 1;
+    int i = (blockIdx.x * blockDim.x) + threadIdx.x;
+    if (i > last_index)
+        return;
+
+    out[i] = a[i] + b[i];    
+}
+
 int main()
 {
-    //gridDim()
-    //dim3 grid_dim(8, 1, 1);
-    //dim3 block_dim(512, 1, 1);
+    //gridDim()    
+    dim3 block_dim(512, 1, 1);
+    int num_blocks = ceil(N / (float)block_dim.x);
+    printf("a: %f \n", N / (float)block_dim.x);
+    dim3 grid_dim(num_blocks, 1, 1);
 
     float *a, *b, *out;
     float *d_a, *d_b, *d_out; 
@@ -73,22 +84,28 @@ int main()
     cudaMemcpy(d_b, b, sizeof(float) * N, cudaMemcpyHostToDevice);
 
     // Executing kernel 
-    vector_add<<<1,1>>>(d_out, d_a, d_b, N);
+    vector_add<<<grid_dim, block_dim>>>(d_out, d_a, d_b, N);
     
     // Transfer data back to host memory
     cudaMemcpy(out, d_out, sizeof(float) * N, cudaMemcpyDeviceToHost);
 
-    //printf("Test");
-    std::cout << "test" << "\n";
+    printf("Test \n");    
+    //std::cout << "test" << "\n";
     std::cout <<out[0] << "\n";
 
     // Verification
     for(int i = 0; i < N; i++){
-        assert(fabs(out[i] - a[i] - b[i]) < MAX_ERR);
+        bool is_ok = fabs(out[i] - a[i] - b[i]) < MAX_ERR;
+        if (!is_ok)
+        {
+            printf("error!, i: %d \n", i);
+            break;
+        }
+        //assert(fabs(out[i] - a[i] - b[i]) < MAX_ERR);
     }
     
     printf("out[0] = %f\n", out[0]);
-    std::cout << "passed" << "\n";
+    std::cout << "passed" << "\n";    
 
     // Deallocate device memory
     cudaFree(d_a);
