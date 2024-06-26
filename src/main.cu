@@ -16,15 +16,41 @@
 #define N (Nx*Ny)
 #define Nt 1000
 
+// Define Simulation Based off Source and Wavelength
+int f0 = 1e6; // Frequency of Source  [Hertz]
+
+// Spatial and Temporal System
+double eps0 = 8.854 * 1e-12;  // Permittivity of vacuum [farad/meter]
+double mu0 = 4*M_PI* 1e-7;  // Permeability of vacuum [henry/meter]
+double c0 = 1/pow((eps0*mu0), 0.5);  // Speed of light  [meter/second]
+double lam = c0/f0;  // Freespace Wavelength  [meter]
+double t0  = 1/f0;  // Source Period  [second]
+
+double dx = num_waves_x * lam / (Nx-1);
+double dy = num_waves_y * lam / (Ny-1);
+double dt = pow(pow(dx,-2) + pow(dy,-2), -0.5)/c0*.99;
+
+double coef_eps_dx = dt/(eps0*dx);
+double coef_eps_dy = dt/(eps0*dy);
+double coef_mu_dx = dt/(mu0*dx);
+double coef_mu_dy = dt/(mu0*dy);    
+
 const int x_fi = 0;
 const int x_li = Nx - 1;
 const int y_fi = 0;
 const int y_li = Ny - 1;
 
+struct SimInfo
+{
+    int step = 0;
+    float f0 = 0;
+    float dt = 0;
+};
+
 #define ij_to_k(i, j, Nx) ((j)*Nx + (i)) 
 
 __global__ void step_EM(float *Hx, float *Hy, float *Ez,
-    float coef_eps_dx, float coef_eps_dy, float coef_mu_dx, float coef_mu_dy)
+    float coef_eps_dx, float coef_eps_dy, float coef_mu_dx, float coef_mu_dy, SimInfo simInfo)
 {   
     int k = (blockIdx.x * blockDim.x) + threadIdx.x;
     int k_max = N - 1;
@@ -35,6 +61,15 @@ __global__ void step_EM(float *Hx, float *Hy, float *Ez,
     int i = k % Nx;
     int last_j = Ny - 1;
     int last_i = Nx - 1;
+
+    // Source
+    int source_i = Nx/3;
+    int source_j = Ny/3;
+    int source_k = ij_to_k(source_i, source_j, Nx); 
+    if (source_k == k)
+    {
+        Ez[source_k] += sinf(2*M_PI*simInfo.f0*(simInfo.dt*simInfo.step)) * expf(-0.5*powf((simInfo.step-20)/8, 2));
+    }
 
     // Magnetic Field Update
     if (i != last_i && j != last_j)
@@ -93,25 +128,6 @@ int main()
         Ez[i] = 0.0f;
     }
 
-    // Define Simulation Based off Source and Wavelength
-    int f0 = 1e6; // Frequency of Source  [Hertz]
-
-    // Spatial and Temporal System
-    double eps0 = 8.854 * 1e-12;  // Permittivity of vacuum [farad/meter]
-    double mu0 = 4*M_PI* 1e-7;  // Permeability of vacuum [henry/meter]
-    double c0 = 1/pow((eps0*mu0), 0.5);  // Speed of light  [meter/second]
-    double lam = c0/f0;  // Freespace Wavelength  [meter]
-    double t0  = 1/f0;  // Source Period  [second]
-
-    double dx = num_waves_x * lam / (Nx-1);
-    double dy = num_waves_y * lam / (Ny-1);
-    double dt = pow(pow(dx,-2) + pow(dy,-2), -0.5)/c0*.99;
-
-    double coef_eps_dx = dt/(eps0*dx);
-    double coef_eps_dy = dt/(eps0*dy);
-    double coef_mu_dx = dt/(mu0*dx);
-    double coef_mu_dy = dt/(mu0*dy);    
-
     // Allocate device memory
     cudaMalloc((void**)&d_Hx, sizeof(float) * N);
     cudaMalloc((void**)&d_Hy, sizeof(float) * N);
@@ -130,14 +146,19 @@ int main()
     cudaEventCreate(&start_logging);
     cudaEventCreate(&stop_logging);
 
+    SimInfo simInfo;
+    simInfo.dt = dt;
+    simInfo.f0 = f0;
+
     float total_computation_time_ms = 0;
-    int frame_capture_period = 10;
+    int frame_capture_period = 5;
     float total_logging_time_ms = 0;
     // Executing kernel 
     for (int i=0; i<Nt; i++)
     {
+        simInfo.step = i;
         cudaEventRecord(start);
-        step_EM<<<grid_dim, block_dim>>>(d_Hx, d_Hy, d_Ez, coef_eps_dx, coef_eps_dy, coef_mu_dx, coef_mu_dy);
+        step_EM<<<grid_dim, block_dim>>>(d_Hx, d_Hy, d_Ez, coef_eps_dx, coef_eps_dy, coef_mu_dx, coef_mu_dy, simInfo);
         cudaEventRecord(stop);
         cudaEventSynchronize(stop);
         float step_computation_time_ms = 0;
@@ -148,8 +169,8 @@ int main()
         {
             cudaEventRecord(start_logging);
             // Transfer data back to host memory
-            cudaMemcpy(Hx, d_Hx, sizeof(float) * N, cudaMemcpyDeviceToHost);
-            cudaMemcpy(Hy, d_Hy, sizeof(float) * N, cudaMemcpyDeviceToHost);
+            //cudaMemcpy(Hx, d_Hx, sizeof(float) * N, cudaMemcpyDeviceToHost);
+            //cudaMemcpy(Hy, d_Hy, sizeof(float) * N, cudaMemcpyDeviceToHost);
             cudaMemcpy(Ez, d_Ez, sizeof(float) * N, cudaMemcpyDeviceToHost);
             cudaEventRecord(stop_logging);
             cudaEventSynchronize(stop_logging);
