@@ -21,29 +21,8 @@ const int x_li = Nx - 1;
 const int y_fi = 0;
 const int y_li = Ny - 1;
 
-__global__ void helloCUDA()
-{
-    printf("Hello, CUDA!\n");
-}
-
-__global__ void vector_add_plain(float *out, float *a, float *b, int n) {
-    for(int i = 0; i < n; i++){
-        out[i] = a[i] + b[i];
-    }
-}
-
-__global__ void vector_add(float *out, float *a, float *b, int n) {
-    int last_index = n - 1;
-    int i = (blockIdx.x * blockDim.x) + threadIdx.x;
-    if (i > last_index)
-        return;
-
-    out[i] = a[i] + b[i];    
-}
-
 #define ij_to_k(i, j, Nx) ((j)*Nx + (i)) 
 
-//__global__ void step_EM(int Nx, int Ny, int N, double *Hx, double *Hy, double *Ez,
 __global__ void step_EM(float *Hx, float *Hy, float *Ez,
     float coef_eps_dx, float coef_eps_dy, float coef_mu_dx, float coef_mu_dy)
 {   
@@ -147,26 +126,30 @@ int main()
     cudaEventCreate(&start);
     cudaEventCreate(&stop);
 
-    cudaEventRecord(start);
+    float total_computation_time_ms = 0;
+    
     // Executing kernel 
     for (int i=0; i<Nt; i++)
     {
+        cudaEventRecord(start);
         step_EM<<<grid_dim, block_dim>>>(d_Hx, d_Hy, d_Ez, coef_eps_dx, coef_eps_dy, coef_mu_dx, coef_mu_dy);
+        cudaEventRecord(stop);
+        cudaEventSynchronize(stop);
+        float step_computation_time_ms = 0;
+        cudaEventElapsedTime(&step_computation_time_ms, start, stop);
+
+        total_computation_time_ms += step_computation_time_ms;
     }
     //vector_add<<<grid_dim, block_dim>>>(d_out, d_a, d_b, N);
     //vector_add_plain<<<1, 1>>>(d_out, d_a, d_b, N);
-    cudaEventRecord(stop);
-    cudaEventSynchronize(stop);
-    
+
     // Transfer data back to host memory
     cudaMemcpy(Hx, d_Hx, sizeof(float) * N, cudaMemcpyDeviceToHost);
     cudaMemcpy(Hy, d_Hy, sizeof(float) * N, cudaMemcpyDeviceToHost);
     cudaMemcpy(Ez, d_Ez, sizeof(float) * N, cudaMemcpyDeviceToHost);
     
-
-    float milliseconds = 0;
-    cudaEventElapsedTime(&milliseconds, start, stop);
-    printf("Elapsed Time %f ms \n", milliseconds);    
+    printf("Total Computation Time %f ms \n", total_computation_time_ms);    
+    
     //std::cout << "test" << "\n";
     //std::cout <<out[0] << "\n";
 
