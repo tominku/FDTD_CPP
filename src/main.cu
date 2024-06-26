@@ -156,13 +156,14 @@ int main()
     //vector_add<<<grid_dim, block_dim>>>(d_out, d_a, d_b, N);
     //vector_add_plain<<<1, 1>>>(d_out, d_a, d_b, N);
     cudaEventRecord(stop);
-
+    cudaEventSynchronize(stop);
+    
     // Transfer data back to host memory
     cudaMemcpy(Hx, d_Hx, sizeof(float) * N, cudaMemcpyDeviceToHost);
     cudaMemcpy(Hy, d_Hy, sizeof(float) * N, cudaMemcpyDeviceToHost);
     cudaMemcpy(Ez, d_Ez, sizeof(float) * N, cudaMemcpyDeviceToHost);
     
-    cudaEventSynchronize(stop);
+
     float milliseconds = 0;
     cudaEventElapsedTime(&milliseconds, start, stop);
     printf("Elapsed Time %f ms \n", milliseconds);    
