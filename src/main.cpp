@@ -14,12 +14,12 @@
 using namespace std;
 using namespace std::chrono;
 
-#define NUM_THREADS 4
+#define NUM_THREADS 10
 #define PRINT 0
 
 #define devisions_per_wave 10  // Divisions per Wavelength   [unitless]
-#define num_waves_x 8 //  # wave lengths in x-dir [unitless]
-#define num_waves_y 8 //  # wave lengths in y-dir 
+#define num_waves_x 48 //  # wave lengths in x-dir [unitless]
+#define num_waves_y 48 //  # wave lengths in y-dir 
 #define Nx (num_waves_x*devisions_per_wave + 1)
 #define Ny (num_waves_y*devisions_per_wave + 1)
 
@@ -33,13 +33,16 @@ const int n_PML_Y = 10;
 
 ofstream output_file;
 
+bool do_parallel = true;
+
 void step_em_pml(double Hx[][Ny], double Hy[][Ny], double Ez[][Ny],
     double coef_eps_dx, double coef_eps_dy, double coef_mu_dx, double coef_mu_dy)
 {   
     // Magnetic Field Update
-    #pragma omp parallel for num_threads(NUM_THREADS) collapse(2)
+    #pragma omp parallel for num_threads(NUM_THREADS) collapse(2) if(do_parallel)   
+    //#pragma omp simd
     for (int i=x_fi; i<x_li; i++)
-    {
+    {        
         for (int j=y_fi; j<y_li; j++)
         {
             int udx = 1;
@@ -50,7 +53,8 @@ void step_em_pml(double Hx[][Ny], double Hy[][Ny], double Ez[][Ny],
         }
     }
     // Electric Field Update
-    #pragma omp parallel for num_threads(NUM_THREADS) collapse(2)
+    #pragma omp parallel for num_threads(NUM_THREADS) collapse(2) if(do_parallel)
+    //#pragma omp simd
     for (int i=(x_fi+1); i<x_li; i++)
     {
         for (int j=(y_fi+1); j<y_li; j++)
