@@ -9,17 +9,6 @@
 #define N 10000000
 #define MAX_ERR 1e-6
 
-#define devisions_per_wave 10  // Divisions per Wavelength   [unitless]
-#define num_waves_x 80 //  # wave lengths in x-dir [unitless]
-#define num_waves_y 80 //  # wave lengths in y-dir 
-#define Nx (num_waves_x*devisions_per_wave + 1)
-#define Ny (num_waves_y*devisions_per_wave + 1)
-
-const int x_fi = 0;
-const int x_li = Nx - 1;
-const int y_fi = 0;
-const int y_li = Ny - 1;
-
 class Test
 {
 private:
@@ -62,53 +51,6 @@ __global__ void vector_add(float *out, float *a, float *b, int n) {
 
     out[i] = a[i] + b[i];    
 }
-
-#define ij_to_k(i, j, Nx) ((j)*Nx + (i)) 
-
-__global__ void step_EM(int Nx, int Ny, int N, double *Hx, double *Hy, double *Ez,
-    double coef_eps_dx, double coef_eps_dy, double coef_mu_dx, double coef_mu_dy)
-{   
-    int k = (blockIdx.x * blockDim.x) + threadIdx.x;
-    int k_max = N - 1;
-    if (k > k_max)
-        return;
-
-    int j = k / Nx;
-    int i = k % Nx;
-    int last_j = Ny - 1;
-    int last_i = Nx - 1;
-
-    // Magnetic Field Update
-    if (i != last_i && j != last_j)
-    {
-        Hx[k] -= coef_mu_dy * (Ez[k] - Ez[ ij_to_k(i, j+1, Nx) ]); 
-        Hy[k] += coef_mu_dx * (Ez[k] - Ez[ ij_to_k(i+1, j, Nx) ]);
-    }
-
-    // for (int i=x_fi; i<x_li; i++)
-    // {
-    //     for (int j=y_fi; j<y_li; j++)
-    //     {
-    //         Hx[i][j] -= coef_mu_dy * (Ez[i][j] - Ez[i][j+1]); 
-    //         Hy[i][j] += coef_mu_dx * (Ez[i][j] - Ez[i+1][j]);
-    //     }
-    // }
-
-    // Electric Field Update
-    if (i != 0 && j != 0 && i != last_i && j != last_j)   
-    {
-        Ez[k] += coef_eps_dx*(Hy[ ij_to_k(i-1, j, Nx) ] - Hy[k]) - coef_eps_dy*(Hx[ ij_to_k(i, j-1, Nx) ] - Hx[k]);
-    }
-    
-    // for (int i=(x_fi+1); i<x_li; i++)
-    // {
-    //     for (int j=(y_fi+1); j<y_li; j++)
-    //     {
-    //         Ez[i][j] += coef_eps_dx*(Hy[i-1][j] - Hy[i][j]) - coef_eps_dy*(Hx[i][j-1] - Hx[i][j]);
-    //     }
-    // }
-}
-
 
 int main()
 {
