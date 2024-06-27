@@ -15,8 +15,8 @@
 #define MAX_ERR 1e-6
 
 #define devisions_per_wave 10  // Divisions per Wavelength   [unitless]
-#define num_waves_x 24 //  # wave lengths in x-dir [unitless]
-#define num_waves_y 24 //  # wave lengths in y-dir 
+#define num_waves_x 48 //  # wave lengths in x-dir [unitless]
+#define num_waves_y 48 //  # wave lengths in y-dir 
 #define Nx (num_waves_x*devisions_per_wave + 1)
 #define Ny (num_waves_y*devisions_per_wave + 1)
 #define N (Nx*Ny)
@@ -57,6 +57,7 @@ using namespace std;
 using value_t = float;
 
 ofstream output_file;
+bool do_logging = false;
 
 #define ij_to_k(i, j, Nx) (Nx*(j) + (i)) 
 
@@ -214,7 +215,7 @@ int main()
         cudaEventElapsedTime(&step_computation_time_ms, start, stop);
         total_computation_time_ms += step_computation_time_ms;
 
-        if (i % frame_capture_period == 0)
+        if (do_logging && (i % frame_capture_period == 0))
         {
             cudaEventRecord(start_logging);
             // Transfer data back to host memory
@@ -240,7 +241,8 @@ int main()
                 {
                     output_file << ",";
                 }            
-            }                  
+            }
+
         }
     }
     //vector_add<<<grid_dim, block_dim>>>(d_out, d_a, d_b, N);
