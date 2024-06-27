@@ -1,6 +1,8 @@
 import numpy as np
 
-output = open("/home/minku/.data/output_cpu.txt", "r")
+path = "/home/minku/.data/output_cpu.txt"
+#path = "/home/minku/.data/output_matlab.txt"
+output = open(path, "r")
 info_line = output.readline()
 
 info = info_line.split(",")

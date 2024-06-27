@@ -1,10 +1,11 @@
 import numpy as np
 import filecmp
 
-path_cpu = "/home/minku/.data/output_cpu.txt"
-path_gpu = "/home/minku/.data/output_gpu.txt"
-output_cpu = open("/home/minku/.data/output_cpu.txt", "r")
-output_gpu = open("/home/minku/.data/output_gpu.txt", "r")
+path1 = "/home/minku/.data/output_cpu.txt"
+path2 = "/home/minku/.data/output_gpu.txt"
+#path2 = "/home/minku/.data/output_matlab.txt"
+output_cpu = open(path1, "r")
+output_gpu = open(path2, "r")
 
 info_line = output_cpu.readline()
 info_line2 = output_gpu.readline()
@@ -30,8 +31,9 @@ for frame, frame2 in zip(frames, frames2):
         for value, value2, k in zip(frame_values, frame_values2, range(len(frame_values))):
             val = float(value)
             val2 = float(value2)
-
-            print(f'error: {abs(val - val2)}')
+            error = abs(val - val2)
+            if error > 1e-5:                
+                print(f'error: {error}')
 
             #i = int(k % Nx)
             #j = int(k / Nx)            
