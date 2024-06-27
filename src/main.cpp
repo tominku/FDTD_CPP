@@ -14,7 +14,7 @@
 using namespace std;
 using namespace std::chrono;
 
-#define NUM_THREADS 10
+#define NUM_THREADS 6
 #define PRINT 0
 
 #define devisions_per_wave 10  // Divisions per Wavelength   [unitless]
@@ -123,6 +123,14 @@ int main()
     value_t *Ez = new value_t[N];
     value_t *Hx = new value_t[N];
     value_t *Hy = new value_t[N];
+    
+    // Initialize arrays
+    for (int i=0; i<N; i++)
+    {
+        Ez[i] = 0;
+        Hx[i] = 0;
+        Hy[i] = 0;
+    }
 
     output_file << Nx << "," << Ny << "," << nt << "\n";
     for (int step=0; step<nt; step++)
