@@ -10,6 +10,9 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>
+#include <filesystem>
+#include <cassert>
+#include <cstdlib>
 
 using namespace std;
 using namespace std::chrono;
@@ -18,12 +21,12 @@ using namespace std::chrono;
 #define PRINT 0
 
 #define devisions_per_wave 10  // Divisions per Wavelength   [unitless]
-#define num_waves_x 48 //  # wave lengths in x-dir [unitless]
-#define num_waves_y 48 //  # wave lengths in y-dir 
+#define num_waves_x 12 //  # wave lengths in x-dir [unitless]
+#define num_waves_y 12 //  # wave lengths in y-dir 
 #define Nx (num_waves_x*devisions_per_wave + 1)
 #define Ny (num_waves_y*devisions_per_wave + 1)
 
-typedef float value_t;
+using value_t = float;
 
 const int x_fi = 0;
 const int x_li = Nx - 1;
@@ -85,8 +88,10 @@ int main()
     const char *c_homedir = pw->pw_dir;
     const string homedir = c_homedir;
     const string data_dir = homedir + "/.data";
+    
     cout << "data_dir: " << data_dir << "\n";
     const string output_file_path = data_dir +"/output.txt";
+    std::cout << output_file_path << std::endl;
     output_file.open(output_file_path);
     // Define Simulation Based off Source and Wavelength
     int f0 = 1e6; // Frequency of Source  [Hertz]
@@ -149,6 +154,21 @@ int main()
         auto duration = duration_cast<microseconds>(t2 - t1);
         computation_time += duration.count();
 
+        // copy frames to the output file
+        for (int k=0; k<N; k++)
+        {
+            value_t value_Ez = Ez[k];
+            output_file << value_Ez;
+            if (k % N == (N-1)) // a frame ended            
+            {
+                output_file << ";";
+            }
+            else
+            {
+                output_file << ",";
+            }            
+        }
+        /*
         for (int i=x_fi; i<=x_li; i++)
         {
             for (int j=y_fi; j<=y_li; j++)
@@ -163,6 +183,7 @@ int main()
         }
         if (step < (nt - 1))
             output_file << "\n*\n";
+        */            
     }
     
     // To get the value of duration use the count()
