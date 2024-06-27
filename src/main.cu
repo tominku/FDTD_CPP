@@ -57,7 +57,7 @@ using namespace std;
 using value_t = float;
 
 ofstream output_file;
-bool do_logging = false;
+bool do_logging = true;
 
 #define ij_to_k(i, j, Nx) (Nx*(j) + (i)) 
 
