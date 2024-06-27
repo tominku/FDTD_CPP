@@ -5,16 +5,22 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <iostream>
+#include <fstream>
+#include <cassert>
+#include <cstdlib>
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
 
 #define MAX_ERR 1e-6
 
 #define devisions_per_wave 10  // Divisions per Wavelength   [unitless]
-#define num_waves_x 48 //  # wave lengths in x-dir [unitless]
-#define num_waves_y 48 //  # wave lengths in y-dir 
+#define num_waves_x 12 //  # wave lengths in x-dir [unitless]
+#define num_waves_y 12 //  # wave lengths in y-dir 
 #define Nx (num_waves_x*devisions_per_wave + 1)
 #define Ny (num_waves_y*devisions_per_wave + 1)
 #define N (Nx*Ny)
-#define Nt 1000
+#define Nt 500
 
 // Define Simulation Based off Source and Wavelength
 int f0 = 1e6; // Frequency of Source  [Hertz]
@@ -47,7 +53,12 @@ struct SimInfo
     float dt = 0;
 };
 
-#define ij_to_k(i, j, Nx) ((j)*Nx + (i)) 
+using namespace std;
+using value_t = float;
+
+ofstream output_file;
+
+#define ij_to_k(i, j, Nx) (Nx*(j) + (i)) 
 
 __global__ void step_EM(float *Hx, float *Hy, float *Ez,
     float coef_eps_dx, float coef_eps_dy, float coef_mu_dx, float coef_mu_dy, SimInfo simInfo)
@@ -57,18 +68,20 @@ __global__ void step_EM(float *Hx, float *Hy, float *Ez,
     if (k > k_max)
         return;
 
-    int j = k / Nx;
-    int i = k % Nx;
+    int j = (int)(k / Nx);
+    int i = (int)(k % Nx);
     int last_j = Ny - 1;
     int last_i = Nx - 1;
-
+            
     // Source
     int source_i = Nx/3;
     int source_j = Ny/3;
     int source_k = ij_to_k(source_i, source_j, Nx); 
     if (source_k == k)
     {
-        Ez[source_k] += sinf(2*M_PI*simInfo.f0*(simInfo.dt*simInfo.step)) * expf(-0.5*powf((simInfo.step-20)/8, 2));
+        //Ez[source_k] += sinf(2*M_PI*simInfo.f0*(simInfo.dt*simInfo.step)) * expf(-0.5*powf((simInfo.step-20)/8, 2));
+        Ez[source_k] += sin(2*M_PI*simInfo.f0*(simInfo.dt*simInfo.step)) * exp(-0.5*pow((simInfo.step-20)/8, 2));
+        //Ez[source_k] += sin(2*M_PI*simInfo.step*simInfo.dt);
     }
 
     // Magnetic Field Update
@@ -105,6 +118,16 @@ __global__ void step_EM(float *Hx, float *Hy, float *Ez,
 
 int main()
 {
+    // logging
+    struct passwd *pw = getpwuid(getuid());
+    const char *c_homedir = pw->pw_dir;
+    const string homedir = c_homedir;
+    const string data_dir = homedir + "/.data";    
+    cout << "data_dir: " << data_dir << "\n";
+    const string output_file_path = data_dir +"/output_gpu.txt";
+    cout << output_file_path << std::endl;
+    output_file.open(output_file_path);    
+
     //gridDim()    
     int threads_per_block = 512;
     dim3 block_dim(threads_per_block, 1, 1);
@@ -112,6 +135,8 @@ int main()
     int num_blocks = (N+(threads_per_block-1)) / threads_per_block;    
     printf("num_blocks: %d \n", num_blocks);
     dim3 grid_dim(num_blocks, 1, 1);    
+
+    printf("dt: %.10f \n", dt);
 
     float *Hx, *Hy, *Ez;
     float *d_Hx, *d_Hy, *d_Ez; 
@@ -153,6 +178,7 @@ int main()
     float total_computation_time_ms = 0;
     int frame_capture_period = 5;
     float total_logging_time_ms = 0;
+    output_file << Nx << "," << Ny << "," << Nt << "," << frame_capture_period << "\n";
     // Executing kernel 
     for (int i=0; i<Nt; i++)
     {
@@ -177,6 +203,21 @@ int main()
             float logging_time_ms = 0;
             cudaEventElapsedTime(&logging_time_ms, start_logging, stop_logging);
             total_logging_time_ms += logging_time_ms;
+            
+            // copy frames to the output file
+            for (int k=0; k<N; k++)
+            {
+                value_t value_Ez = Ez[k];
+                output_file << value_Ez;
+                if (k % N == (N-1)) // a frame ended            
+                {
+                    output_file << ";";
+                }
+                else
+                {
+                    output_file << ",";
+                }            
+            }                  
         }
     }
     //vector_add<<<grid_dim, block_dim>>>(d_out, d_a, d_b, N);
