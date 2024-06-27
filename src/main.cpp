@@ -90,7 +90,7 @@ int main()
     const string data_dir = homedir + "/.data";
     
     cout << "data_dir: " << data_dir << "\n";
-    const string output_file_path = data_dir +"/output.txt";
+    const string output_file_path = data_dir +"/output_cpu.txt";
     std::cout << output_file_path << std::endl;
     output_file.open(output_file_path);
     // Define Simulation Based off Source and Wavelength
@@ -137,11 +137,11 @@ int main()
         Hy[i] = 0;
     }
 
-    output_file << Nx << "," << Ny << "," << nt << "\n";
+    int logging_period = 5;
+    output_file << Nx << "," << Ny << "," << nt << "," << logging_period << "\n";
     for (int step=0; step<nt; step++)
     {        
-        //Point Source
-        //Ez[round(ROWS/2),round(COLS/2)] += sin(2*pi*f0*dt*t).*exp(-.5*((step-20)/8)^2);
+        //Point Source        
         int source_k = ij_to_k(Nx/3, Ny/3, Nx);
         Ez[source_k] += sin(2*M_PI*f0*(dt*step)) * exp(-0.5*pow((step-20)/8, 2));
         
@@ -154,64 +154,27 @@ int main()
         auto duration = duration_cast<microseconds>(t2 - t1);
         computation_time += duration.count();
 
-        // copy frames to the output file
-        for (int k=0; k<N; k++)
+        // logging
+        if (step % logging_period == 0)
         {
-            value_t value_Ez = Ez[k];
-            output_file << value_Ez;
-            if (k % N == (N-1)) // a frame ended            
+            // copy frames to the output file
+            for (int k=0; k<N; k++)
             {
-                output_file << ";";
-            }
-            else
-            {
-                output_file << ",";
-            }            
-        }
-        /*
-        for (int i=x_fi; i<=x_li; i++)
-        {
-            for (int j=y_fi; j<=y_li; j++)
-            {
-                int k_for_ij = ij_to_k(i, j, Nx);
-                output_file << Ez[k_for_ij]; 
-                if (j < y_li)
+                value_t value_Ez = Ez[k];
+                output_file << value_Ez;
+                if (k % N == (N-1)) // a frame ended            
+                {
+                    output_file << ";";
+                }
+                else
+                {
                     output_file << ",";
-            }
-            if (i < x_li)
-                output_file << "\n";
-        }
-        if (step < (nt - 1))
-            output_file << "\n*\n";
-        */            
+                }            
+            }      
+        }     
     }
     
     // To get the value of duration use the count()
     // member function on the duration object
     std::cout << "computation_time: " << computation_time / 1000 << " ms" << std::endl;
-
-    /*
-    int arr[4] = {9, };
-    omp_set_num_threads(4);
-	int nthreads, tid;
-	// Begin of parallel region
-	#pragma omp parallel private(tid, nthreads)
-	{
-		// Getting thread number
-		tid = omp_get_thread_num();
-		printf("OMP thread = %d\n",
-			tid);
-        arr[tid] = tid;
-		if (tid == 0) {
-			// Only master thread does this
-			nthreads = omp_get_num_threads();
-			printf("Number of threads = %d\n",
-				nthreads);
-		}
-	}
-    for (int i=0; i<4; i++)
-    {
-        printf("element at %d: %d\n", i, arr[i]);
-    }
-    */
 }

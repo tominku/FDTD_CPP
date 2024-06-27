@@ -1,6 +1,6 @@
 import numpy as np
 
-output = open("/home/minku/.data/output.txt", "r")
+output = open("/home/minku/.data/output_cpu.txt", "r")
 info_line = output.readline()
 
 info = info_line.split(",")
@@ -8,8 +8,9 @@ Nx = int(info[0])
 Ny = int(info[1])
 images = []
 steps = int(info[2])
+logging_period = int(info[3])
 N = Nx * Ny
-print(f'Nx: {Nx}, Ny: {Ny}, Nt: {steps}')
+print(f'Nx: {Nx}, Ny: {Ny}, Nt: {steps}, logging_period: {logging_period}')
 min_value = 1e6
 max_value = -1e6
 frames = output.read().split(";")
