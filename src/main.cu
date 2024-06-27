@@ -15,12 +15,12 @@
 #define MAX_ERR 1e-6
 
 #define devisions_per_wave 10  // Divisions per Wavelength   [unitless]
-#define num_waves_x 12 //  # wave lengths in x-dir [unitless]
-#define num_waves_y 12 //  # wave lengths in y-dir 
+#define num_waves_x 24 //  # wave lengths in x-dir [unitless]
+#define num_waves_y 24 //  # wave lengths in y-dir 
 #define Nx (num_waves_x*devisions_per_wave + 1)
 #define Ny (num_waves_y*devisions_per_wave + 1)
 #define N (Nx*Ny)
-#define Nt 500
+#define Nt 1000
 
 // Define Simulation Based off Source and Wavelength
 int f0 = 1e6; // Frequency of Source  [Hertz]
@@ -48,9 +48,9 @@ const int y_li = Ny - 1;
 
 struct SimInfo
 {
-    int step = 0;
-    float f0 = 0;
-    float dt = 0;
+    int step;
+    float f0;
+    float dt;
 };
 
 using namespace std;
@@ -60,8 +60,24 @@ ofstream output_file;
 
 #define ij_to_k(i, j, Nx) (Nx*(j) + (i)) 
 
-__global__ void step_EM(float *Hx, float *Hy, float *Ez,
-    float coef_eps_dx, float coef_eps_dy, float coef_mu_dx, float coef_mu_dy, SimInfo simInfo)
+__global__ void source_E(float *Ez, float dt, int step, int f0)
+{
+    // Source
+    int source_i = Nx/3;
+    int source_j = Ny/3;
+    int source_k = ij_to_k(source_i, source_j, Nx);     
+        
+    //Ez[source_k] += sinf(2*M_PI*simInfo.f0*(simInfo.dt*simInfo.step)) * expf(-0.5*powf((simInfo.step-20)/8, 2));
+    //Ez[source_k] += sin(2*M_PI*simInfo.f0*(simInfo.dt*simInfo.step)) * exp(-0.5*pow((simInfo.step-20)/8, 2));
+    //Ez[source_k] += sin(2*M_PI*simInfo.step*simInfo.dt);
+    //printf("========step: %d, k: %d============= \n", step, source_k);
+    //printf("========step: %d, dt: %.9f, f0: %d============= \n", simInfo.step, simInfo.dt, temp_f0);
+    Ez[source_k] += sin(2*M_PI*f0*(dt*step)) * exp(-0.5*pow((step-20)/8, 2));
+
+}
+
+__global__ void step_H(float *Hx, float *Hy, float *Ez,
+    float coef_eps_dx, float coef_eps_dy, float coef_mu_dx, float coef_mu_dy)
 {   
     int k = (blockIdx.x * blockDim.x) + threadIdx.x;
     int k_max = N - 1;
@@ -71,18 +87,7 @@ __global__ void step_EM(float *Hx, float *Hy, float *Ez,
     int j = (int)(k / Nx);
     int i = (int)(k % Nx);
     int last_j = Ny - 1;
-    int last_i = Nx - 1;
-            
-    // Source
-    int source_i = Nx/3;
-    int source_j = Ny/3;
-    int source_k = ij_to_k(source_i, source_j, Nx); 
-    if (source_k == k)
-    {
-        //Ez[source_k] += sinf(2*M_PI*simInfo.f0*(simInfo.dt*simInfo.step)) * expf(-0.5*powf((simInfo.step-20)/8, 2));
-        Ez[source_k] += sin(2*M_PI*simInfo.f0*(simInfo.dt*simInfo.step)) * exp(-0.5*pow((simInfo.step-20)/8, 2));
-        //Ez[source_k] += sin(2*M_PI*simInfo.step*simInfo.dt);
-    }
+    int last_i = Nx - 1;            
 
     // Magnetic Field Update
     if (i != last_i && j != last_j)
@@ -99,12 +104,26 @@ __global__ void step_EM(float *Hx, float *Hy, float *Ez,
     //         Hy[i][j] += coef_mu_dx * (Ez[i][j] - Ez[i+1][j]);
     //     }
     // }
+}
+
+__global__ void step_E(float *Hx, float *Hy, float *Ez,
+    float coef_eps_dx, float coef_eps_dy, float coef_mu_dx, float coef_mu_dy)
+{
+    int k = (blockIdx.x * blockDim.x) + threadIdx.x;
+    int k_max = N - 1;
+    if (k > k_max)
+        return;
+
+    int j = (int)(k / Nx);
+    int i = (int)(k % Nx);
+    int last_j = Ny - 1;
+    int last_i = Nx - 1;            
 
     // Electric Field Update
     if (i != 0 && j != 0 && i != last_i && j != last_j)   
     {
         Ez[k] += coef_eps_dx*(Hy[ ij_to_k(i-1, j, Nx) ] - Hy[k]) - coef_eps_dy*(Hx[ ij_to_k(i, j-1, Nx) ] - Hx[k]);
-    }
+    }   
 
     // for (int i=(x_fi+1); i<x_li; i++)
     // {
@@ -112,7 +131,7 @@ __global__ void step_EM(float *Hx, float *Hy, float *Ez,
     //     {
     //         Ez[i][j] += coef_eps_dx*(Hy[i-1][j] - Hy[i][j]) - coef_eps_dy*(Hx[i][j-1] - Hx[i][j]);
     //     }
-    // }
+    // }    
 }
 
 
@@ -136,7 +155,7 @@ int main()
     printf("num_blocks: %d \n", num_blocks);
     dim3 grid_dim(num_blocks, 1, 1);    
 
-    printf("dt: %.10f \n", dt);
+    printf("Nx: %d, Ny:%d, L0: %f, dx: %f, dt: %.9f \n", Nx, Ny, lam, dx, dt);
 
     float *Hx, *Hy, *Ez;
     float *d_Hx, *d_Hy, *d_Ez; 
@@ -175,6 +194,8 @@ int main()
     simInfo.dt = dt;
     simInfo.f0 = f0;
 
+    printf("simInfo.f0: %d \n", f0);
+
     float total_computation_time_ms = 0;
     int frame_capture_period = 5;
     float total_logging_time_ms = 0;
@@ -184,7 +205,9 @@ int main()
     {
         simInfo.step = i;
         cudaEventRecord(start);
-        step_EM<<<grid_dim, block_dim>>>(d_Hx, d_Hy, d_Ez, coef_eps_dx, coef_eps_dy, coef_mu_dx, coef_mu_dy, simInfo);
+        source_E<<<1, 1>>>(d_Ez, dt, i, f0);
+        step_H<<<grid_dim, block_dim>>>(d_Hx, d_Hy, d_Ez, coef_eps_dx, coef_eps_dy, coef_mu_dx, coef_mu_dy);
+        step_E<<<grid_dim, block_dim>>>(d_Hx, d_Hy, d_Ez, coef_eps_dx, coef_eps_dy, coef_mu_dx, coef_mu_dy);
         cudaEventRecord(stop);
         cudaEventSynchronize(stop);
         float step_computation_time_ms = 0;

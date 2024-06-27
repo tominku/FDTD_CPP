@@ -14,6 +14,7 @@ print(f'Nx: {Nx}, Ny: {Ny}, Nt: {steps}, logging_period: {logging_period}')
 min_value = 1e6
 max_value = -1e6
 frames = output.read().split(";")
+print(f'frames: {len(frames)}')
 for frame in frames:
     image = np.zeros((Nx, Ny))
     images.append(image)
@@ -57,7 +58,7 @@ anim = animation.FuncAnimation(
                                fig, 
                                animate_func, 
                                interval = 50, # in ms
-                               
+                               frames = len(images)
                                )
 
 #anim.save('test_anim.avi', fps=30)
