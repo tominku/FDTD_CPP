@@ -21,8 +21,8 @@ using namespace std::chrono;
 #define PRINT 0
 
 #define devisions_per_wave 10  // Divisions per Wavelength   [unitless]
-#define num_waves_x 50 //  # wave lengths in x-dir [unitless]
-#define num_waves_y 50 //  # wave lengths in y-dir 
+#define num_waves_x 100 //  # wave lengths in x-dir [unitless]
+#define num_waves_y 100 //  # wave lengths in y-dir 
 #define Nx (num_waves_x*devisions_per_wave + 1)
 #define Ny (num_waves_y*devisions_per_wave + 1)
 
@@ -39,6 +39,7 @@ const int n_PML_Y = 10;
 ofstream output_file;
 
 bool do_parallel = true;
+bool do_logging = false;
 
 #define ij_to_k(i, j, Nx) (Nx*(j) + (i))
 
@@ -155,7 +156,7 @@ int main()
         computation_time += duration.count();
 
         // logging
-        if (step % logging_period == 0)
+        if (do_logging && step % logging_period == 0)
         {
             // copy frames to the output file
             for (int k=0; k<N; k++)
