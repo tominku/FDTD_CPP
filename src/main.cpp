@@ -13,6 +13,7 @@
 #include <filesystem>
 #include <cassert>
 #include <cstdlib>
+#include "Material.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -85,6 +86,10 @@ void step_em_pml(value_t *Hx, value_t *Hy, value_t *Ez,
 
 int main()
 {
+    Material material("car_interior_2D_image_data.dat");
+    //Material material("test.txt");
+    material.openFile();
+
     struct passwd *pw = getpwuid(getuid());
     const char *c_homedir = pw->pw_dir;
     const string homedir = c_homedir;

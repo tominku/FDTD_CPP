@@ -5,7 +5,10 @@
     "iosfwd": "cpp",
     "ostream": "cpp",
     "cmath": "cpp",
-    "new": "cpp"
+    "new": "cpp",
+    "*.tcc": "cpp",
+    "iostream": "cpp",
+    "fstream": "cpp"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",
