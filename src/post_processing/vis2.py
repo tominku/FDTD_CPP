@@ -38,6 +38,14 @@ for frame in frames:
         print(f'no frame: {frame_str_length}');
                 
 
+path = "/home/minku/.data/output_material.txt"
+output = open(path, "r")
+material_values = output.read().split(',')
+#print(material_values)
+material_values_len = len(material_values)
+assert( N == material_values_len )
+print(f'N: {N}, material_values_len: {material_values_len}')
+
 
 print(f'min_value: {min_value}, max_value: {max_value}')
 

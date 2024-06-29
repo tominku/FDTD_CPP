@@ -39,6 +39,7 @@ const int n_PML_X = 10;
 const int n_PML_Y = 10;
 
 ofstream output_file;
+ofstream output_material_file;
 
 bool do_parallel = true;
 bool do_logging = true;
@@ -117,6 +118,11 @@ int main()
     const string output_file_path = data_dir +"/output_cpu.txt";
     std::cout << output_file_path << std::endl;
     output_file.open(output_file_path);
+
+    const string output_material_file_path = data_dir +"/output_material.txt";
+    std::cout << output_material_file_path << std::endl;
+    output_material_file.open(output_material_file_path);
+
     // Define Simulation Based off Source and Wavelength
     int f0 = 1e6; // Frequency of Source  [Hertz]
     int nt = 2000; // Number of time steps  [unitless]
@@ -161,6 +167,18 @@ int main()
         Hy[i] = 0;
     }
 
+
+    // write scaled material data
+    for (int k=0; k<N; k++)
+    {
+        int material_value = material_data.scaled_data[k];
+        output_material_file << material_value;
+        if (k < (N-1))
+        {
+            output_material_file << ",";
+        }
+    }
+    
     int logging_period = 5;
     output_file << Nx << "," << Ny << "," << nt << "," << logging_period << "\n";
     for (int step=0; step<nt; step++)
