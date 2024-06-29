@@ -22,8 +22,8 @@ using namespace std::chrono;
 #define PRINT 0
 
 #define devisions_per_wave 10  // Divisions per Wavelength   [unitless]
-#define num_waves_x 100 //  # wave lengths in x-dir [unitless]
-#define num_waves_y 100 //  # wave lengths in y-dir 
+#define num_waves_x 50 //  # wave lengths in x-dir [unitless]
+#define num_waves_y 50 //  # wave lengths in y-dir 
 #define Nx (num_waves_x*devisions_per_wave + 1)
 #define Ny (num_waves_y*devisions_per_wave + 1)
 
@@ -88,7 +88,7 @@ int main()
 {
     Material material("car_interior_2D_image_data.dat");
     //Material material("test.txt");
-    material.openFile();
+    int *material_data = material.parse();
 
     struct passwd *pw = getpwuid(getuid());
     const char *c_homedir = pw->pw_dir;
