@@ -13,6 +13,7 @@
 #include <filesystem>
 #include <cassert>
 #include <cstdlib>
+#include "macros.h"
 #include "Material.h"
 
 using namespace std;
@@ -41,8 +42,6 @@ ofstream output_file;
 
 bool do_parallel = true;
 bool do_logging = false;
-
-#define ij_to_k(i, j, Nx) (Nx*(j) + (i))
 
 void step_em_pml(value_t *Hx, value_t *Hy, value_t *Ez,
     value_t coef_eps_dx, value_t coef_eps_dy, value_t coef_mu_dx, value_t coef_mu_dy, MaterialData material_data)
@@ -89,7 +88,8 @@ int main()
 {
     Material material("car_interior_2D_image_data.dat");
     //Material material("test.txt");
-    MaterialData material_data = material.parse();
+    material.parse();
+    MaterialData material_data = material.scaleToFit(Nx, Ny);
 
     struct passwd *pw = getpwuid(getuid());
     const char *c_homedir = pw->pw_dir;

@@ -12,13 +12,15 @@
 #include <filesystem>
 #include <cassert>
 #include <cstdlib>
+#include "macros.h"
 
 struct MaterialData
 {
-    int *data;
-    int height;
-    int width;
-    int num_pixels;
+    int *origin_data;
+    int origin_height;
+    int origin_width;
+    int origin_num_pixels;
+    int *scaled_data;
 };
 
 using namespace std;
@@ -35,7 +37,25 @@ public:
     Material(string file_)
     {
         file = file_;
-        material_data.data = NULL;
+        material_data.origin_data = NULL;
+    }
+
+    MaterialData scaleToFit(int Nx, int Ny)
+    {
+        int N = Nx * Ny;
+        int *scaled_data = new int[N];
+
+        #pragma omp parallel for num_threads(6) collapse(2) if(true)   
+        for (int i=0; i<Nx; i++)
+        {        
+            for (int j=0; j<Ny; j++)
+            {
+                int k_for_ij = ij_to_k(i, j, Nx);
+                scaled_data[k_for_ij] = 0;
+            }
+        }
+
+        material_data.scaled_data = scaled_data;
     }
 
     MaterialData parse()
@@ -63,12 +83,12 @@ public:
         int height = stoi(str_height);
         int width = stoi(str_width);
         int num_pixels = height * width;
-        material_data.height = height;
-        material_data.width = width;
-        material_data.num_pixels = num_pixels;
-        material_data.data =  new int[num_pixels];
+        material_data.origin_height = height;
+        material_data.origin_width = width;
+        material_data.origin_num_pixels = num_pixels;
+        material_data.origin_data =  new int[num_pixels];
         cout << "material height: " << height << ", material width: " << width <<endl;
-        //assert (num_pixels == data_string);
+
         pos = str_data_info.size() + 1;
         int char_count = 0;
         while(true)
@@ -79,17 +99,19 @@ public:
             if (current_char != ',') 
             {   
                 int current_data = current_char - '0';
-                material_data.data[char_count] = current_data;
+                material_data.origin_data[char_count] = current_data;
                 //cout << material_data.data[char_count];
                 char_count += 1;
             }
             pos += 1;
         }
-
-        for (int i=0; i<num_pixels; ++i)
-        {
-            //cout << material_data[i];
-        }
+        
+        assert (num_pixels == char_count);
+        
+        // for (int i=0; i<num_pixels; ++i)
+        // {
+        //     //cout << material_data[i];
+        // }
 
         return material_data;
     }
