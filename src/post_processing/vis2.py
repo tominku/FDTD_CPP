@@ -45,7 +45,9 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-fig = plt.figure( figsize=(12,12) )
+#fig = plt.figure( figsize=(12,12) )
+fig = plt.figure( figsize=(Ny / 15, Nx / 15) )
+#fig = plt.figure()
 
 a = images[0]
 #im = plt.imshow(a, interpolation='none', cmap='gray', aspect='auto', vmin=0, vmax=1)

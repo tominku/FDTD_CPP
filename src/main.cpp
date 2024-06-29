@@ -23,8 +23,8 @@ using namespace std::chrono;
 #define PRINT 0
 
 #define devisions_per_wave 10  // Divisions per Wavelength   [unitless]
-#define num_waves_x 50 //  # wave lengths in x-dir [unitless]
-#define num_waves_y 50 //  # wave lengths in y-dir 
+#define num_waves_x 15 //  # wave lengths in x-dir [unitless]
+#define num_waves_y 30 //  # wave lengths in y-dir 
 #define Nx (num_waves_x*devisions_per_wave + 1)
 #define Ny (num_waves_y*devisions_per_wave + 1)
 
@@ -119,7 +119,7 @@ int main()
     output_file.open(output_file_path);
     // Define Simulation Based off Source and Wavelength
     int f0 = 1e6; // Frequency of Source  [Hertz]
-    int nt = 1000; // Number of time steps  [unitless]
+    int nt = 2000; // Number of time steps  [unitless]
 
     // Spatial and Temporal System
     value_t eps0 = 8.854 * 1e-12;  // Permittivity of vacuum [farad/meter]
@@ -166,7 +166,7 @@ int main()
     for (int step=0; step<nt; step++)
     {        
         //Point Source        
-        int source_k = ij_to_k(Nx/3, Ny/3, Nx);
+        int source_k = ij_to_k((int)(Nx*0.15), (int)(Ny*0.7), Nx);
         Ez[source_k] += sin(2*M_PI*f0*(dt*step)) * exp(-0.5*pow((step-20)/8, 2));
         
         auto t1 = steady_clock::now();
