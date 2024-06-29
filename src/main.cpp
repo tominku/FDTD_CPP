@@ -45,7 +45,7 @@ bool do_logging = false;
 #define ij_to_k(i, j, Nx) (Nx*(j) + (i))
 
 void step_em_pml(value_t *Hx, value_t *Hy, value_t *Ez,
-    value_t coef_eps_dx, value_t coef_eps_dy, value_t coef_mu_dx, value_t coef_mu_dy)
+    value_t coef_eps_dx, value_t coef_eps_dy, value_t coef_mu_dx, value_t coef_mu_dy, MaterialData material_data)
 {   
 
     // Magnetic Field Update
@@ -58,6 +58,7 @@ void step_em_pml(value_t *Hx, value_t *Hy, value_t *Ez,
             int k_for_ij = ij_to_k(i, j, Nx);
             int k_for_ijp1 = ij_to_k(i, j+1, Nx);
             int k_for_ip1j = ij_to_k(i+1, j, Nx); 
+            //int material_value = material_data[]
             
             Hx[k_for_ij] -= coef_mu_dy * (Ez[k_for_ij] - Ez[k_for_ijp1]); 
             Hy[k_for_ij] += coef_mu_dx * (Ez[k_for_ij] - Ez[k_for_ip1j]);
@@ -88,7 +89,7 @@ int main()
 {
     Material material("car_interior_2D_image_data.dat");
     //Material material("test.txt");
-    int *material_data = material.parse();
+    MaterialData material_data = material.parse();
 
     struct passwd *pw = getpwuid(getuid());
     const char *c_homedir = pw->pw_dir;
@@ -153,7 +154,7 @@ int main()
         
         auto t1 = steady_clock::now();
         
-        step_em_pml(Hx, Hy, Ez, coef_eps_dx, coef_eps_dy, coef_mu_dx, coef_mu_dy);        
+        step_em_pml(Hx, Hy, Ez, coef_eps_dx, coef_eps_dy, coef_mu_dx, coef_mu_dy, material_data);        
         
         auto t2 = steady_clock::now();
 
