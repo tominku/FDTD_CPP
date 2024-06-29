@@ -50,12 +50,23 @@ public:
         {        
             for (int j=0; j<Ny; j++)
             {
+                float float_i = i / (float)(Nx - 1);
+                float float_j = j / (float)(Ny - 1);
+                int origin_i = (int)round((material_data.origin_height - 1)*float_i);
+                int origin_j = (int)round((material_data.origin_width - 1)*float_j);
+                int origin_height = material_data.origin_height;
+                int pixel_value = material_data.origin_data[ij_to_k(origin_i, origin_j, origin_height)];
                 int k_for_ij = ij_to_k(i, j, Nx);
-                scaled_data[k_for_ij] = 0;
+                scaled_data[k_for_ij] = pixel_value;
             }
         }
 
+        // for (int k=0; k<N; ++k)
+        // {
+        //     cout << scaled_data[k];
+        // }
         material_data.scaled_data = scaled_data;
+        return material_data;
     }
 
     MaterialData parse()
