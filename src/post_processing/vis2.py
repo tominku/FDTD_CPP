@@ -27,7 +27,7 @@ for value, k in zip(material_values, range(len(material_values))):
     j = int(k / Nx)
     material_image[i, j] = val
 
-plt.imshow(material_image)
+#plt.imshow(material_image)
 #plt.show()
 
 
@@ -45,7 +45,9 @@ print(f'Nx: {Nx}, Ny: {Ny}, Nt: {steps}, logging_period: {logging_period}')
 min_value = 1e6
 max_value = -1e6
 frames = output.read().split(";")
-for frame in frames:
+num_frames = len(frames)
+print(f'num_frames: {num_frames}')
+for frame, frame_i in zip(frames, range(num_frames)):
     image = np.zeros((Nx, Ny))
     #image = material_image.copy()
     frame_str_length = len(frame);
@@ -54,20 +56,33 @@ for frame in frames:
         frame_values_len = len(frame_values)
         assert( N == frame_values_len )
         #print(f'frame_values_len: {frame_values_len}')
+        min_value_in_frame = min_value
+        max_value_in_frame = max_value
         for value, k in zip(frame_values, range(len(frame_values))):
             val = float(value)
             i = int(k % Nx)
             j = int(k / Nx)
-            image[i, j] = val
-            if val < min_value:
-                min_value = val
-            elif val > max_value:
-                max_value = val
+            image[i, j] = val               
+            if val < min_value_in_frame:
+                min_value_in_frame = val
+            elif val > max_value_in_frame:
+                max_value_in_frame = val
+                
+        if frame_i > int(num_frames * 0.1):
+            min_value = min_value_in_frame                
+            max_value = max_value_in_frame
     else:
         print(f'no frame: {frame_str_length}');
-    
-    image = image + material_image
-    images.append(image)            
+        
+    #image = image + material_image
+    images.append(image)
+
+images_normalized = []
+value_range = (max_value - min_value)
+for image in images: # normalize images
+    image = (image - min_value) / value_range
+    image = (image * 2) - 1
+    images_normalized.append(image)
 
 
 print(f'min_value: {min_value}, max_value: {max_value}')
@@ -76,18 +91,22 @@ print(f'min_value: {min_value}, max_value: {max_value}')
 fig = plt.figure( figsize=(Ny / 15, Nx / 15) )
 #fig = plt.figure()
 
-a = images[0]
+print(f'material: min {np.min(material_image)} max {np.max(material_image)}')
+
+a = images_normalized[0]
 #im = plt.imshow(a, interpolation='none', cmap='gray', aspect='auto', vmin=0, vmax=1)
-im = plt.imshow(a, cmap='Greys', aspect='auto', vmin=min_value, vmax=max_value)
+#im = plt.imshow(a, interpolation='none', cmap='gray', aspect='auto', vmin=min_value, vmax=max_value)
+#im = plt.imshow(a, interpolation='none', cmap='viridis', aspect='auto', vmin=min_value, vmax=max_value, alpha=(1-material_image))
+im = plt.imshow(a, interpolation='none', cmap='viridis', aspect='auto', vmin=-1, vmax=1, alpha=(1-material_image))
 
 def animate_func(i):
-    im.set_array(images[i])
+    im.set_array(images_normalized[i])
     return [im]
 
 anim = animation.FuncAnimation(
                                fig, 
                                animate_func, 
-                               interval = 50, # in ms
+                               interval = 100, # in ms
                                
                                )
 
