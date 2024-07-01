@@ -24,6 +24,8 @@ private:
     std::string output_material_file_name;
     fs::path data_dir_path;
     fs::path material_file_path;    
+    
+    FileManager() { init(); }
 
     void init()
     {
@@ -52,10 +54,16 @@ protected:
     }
 
 public:
-    FileManager(std::string output_file_name_, std::string output_material_file_name_)
+    void set_file_names(std::string output_file_name_, std::string output_material_file_name_)
     {        
         output_file_name = output_file_name_;
         output_material_file_name = output_material_file_name_;
         init();
     }
+   
+   static FileManager& instance()
+   {
+      static FileManager INSTANCE;
+      return INSTANCE;
+   }    
 };

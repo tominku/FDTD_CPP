@@ -104,7 +104,8 @@ void step_em_pml(value_t *Hx, value_t *Hy, value_t *Ez,
 
 int main()
 {
-    FileManager fileManager("output_cpu.txt", "output_material.txt");
+    //FileManager fileManager("output_cpu.txt", "output_material.txt");
+    FileManager &fileManager = FileManager::instance();
     Material material("car_interior_2D_image_data.dat");
     ;
     material.parse();
