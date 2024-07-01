@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include "macros.h"
 #include "Material.h"
+#include "FileUtil.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -104,22 +105,25 @@ void step_em_pml(value_t *Hx, value_t *Hy, value_t *Ez,
 
 int main()
 {
+    FileUtil fileUtil;
     Material material("car_interior_2D_image_data.dat");
     //Material material("test.txt");
     material.parse();
     MaterialData material_data = material.scaleToFit(Nx, Ny);
-
-    struct passwd *pw = getpwuid(getuid());
-    const char *c_homedir = pw->pw_dir;
-    const string homedir = c_homedir;
-    const string data_dir = homedir + "/.data";
+        
+    const string str_home_path = getenv("HOME");    
+    auto home_dir_path = fs::path(str_home_path);        
+    //home_dir_path += data_dir;
+    auto data_dir_path = home_dir_path / ".data";
+    fs::create_directory(data_dir_path);
+    assert(!fs::create_directory(data_dir_path));    
     
-    cout << "data_dir: " << data_dir << "\n";
-    const string output_file_path = data_dir +"/output_cpu.txt";
+    cout << "data_dir: " << data_dir_path << "\n";    
+    auto output_file_path = data_dir_path / "output_cpu.txt";
     std::cout << output_file_path << std::endl;
     output_file.open(output_file_path);
 
-    const string output_material_file_path = data_dir +"/output_material.txt";
+    auto output_material_file_path = data_dir_path / "output_material.txt";
     std::cout << output_material_file_path << std::endl;
     output_material_file.open(output_material_file_path);
 
@@ -134,8 +138,10 @@ int main()
     value_t lam = c0/f0;  // Freespace Wavelength  [meter]
     value_t t0  = 1/f0;  // Source Period  [second]
 
-    value_t dx = num_waves_x * lam / (Nx-1);
-    value_t dy = num_waves_y * lam / (Ny-1);
+    value_t space_size_x = num_waves_x * lam;
+    value_t space_size_y = num_waves_y * lam;
+    value_t dx = space_size_x / (Nx-1);
+    value_t dy = space_size_y / (Ny-1);
     value_t dt = pow(pow(dx,-2) + pow(dy,-2), -0.5)/c0*.99;
 
     value_t coef_eps_dx = dt/(eps0*dx);
@@ -151,7 +157,7 @@ int main()
     */
 
     //printf("R_LI %d \n", x_li);
-    printf("Nx: %d, Ny:%d, L0: %f, dx: %f, dt: %.9f \n", Nx, Ny, lam, dx, dt);
+    printf("c0: %f, Nx: %d, Ny:%d, L0: %f, dx: %f, dt: %.9f, space_x: %f,space_y: %f\n", c0, Nx, Ny, lam, dx, dt, space_size_x, space_size_y);
 
     int computation_time = 0; 
     int N = Nx * Ny;
