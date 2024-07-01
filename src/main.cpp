@@ -2,7 +2,6 @@
 #include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <iostream>
 #include <cmath>
 #include <chrono> 
 #include <iostream>
@@ -15,7 +14,7 @@
 #include <cstdlib>
 #include "macros.h"
 #include "Material.h"
-#include "FileUtil.h"
+#include "FileManager.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -105,7 +104,7 @@ void step_em_pml(value_t *Hx, value_t *Hy, value_t *Ez,
 
 int main()
 {
-    FileUtil fileUtil;
+    FileManager fileUtil;
     Material material("car_interior_2D_image_data.dat");
     //Material material("test.txt");
     material.parse();

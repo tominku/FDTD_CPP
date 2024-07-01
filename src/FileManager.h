@@ -14,9 +14,11 @@
 #include <cstdlib>
 #include "Base.h"
 
-class FileUtil : Base
+class FileManager : Base
 {
 private:
+    std::ofstream output_file;
+    std::ofstream output_material_file;
     fs::path data_dir_path;    
 
     void init()
@@ -42,7 +44,7 @@ protected:
     }
 
 public:
-    FileUtil()
+    FileManager()
     {        
         init();
     }
