@@ -25,10 +25,20 @@ private:
     fs::path data_dir_path;
     fs::path material_file_path;    
     
-    FileManager() { init(); }
+    FileManager() { }
 
-    void init()
+protected:
+    std::string toName()
     {
+        return "FileUtil";
+    }
+
+public:
+
+    void init(std::string output_file_name_, std::string output_material_file_)
+    {
+        output_file_name = output_file_name_;
+        output_material_file_name = output_material_file_;
         const std::string str_home_path = getenv("HOME");     
         auto home_dir_path = fs::path(str_home_path);                
         data_dir_path = home_dir_path / ".data";
@@ -45,20 +55,6 @@ private:
         auto material_file_path = data_dir_path / output_material_file_name;
         msg = fmt::format("material_file_path: {}", material_file_path.c_str());
         print(msg);
-    }
-
-protected:
-    std::string toName()
-    {
-        return "FileUtil";
-    }
-
-public:
-    void set_file_names(std::string output_file_name_, std::string output_material_file_name_)
-    {        
-        output_file_name = output_file_name_;
-        output_material_file_name = output_material_file_name_;
-        init();
     }
    
    static FileManager& instance()

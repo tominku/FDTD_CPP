@@ -106,8 +106,10 @@ int main()
 {
     //FileManager fileManager("output_cpu.txt", "output_material.txt");
     FileManager &fileManager = FileManager::instance();
+    fileManager.init("output_cpu.txt", "output_material.txt");
+    
     Material material("car_interior_2D_image_data.dat");
-    ;
+    
     material.parse();
     MaterialData material_data = material.scaleToFit(Nx, Ny);
         
