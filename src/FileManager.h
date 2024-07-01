@@ -1,3 +1,4 @@
+#pragma once
 #include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,7 +20,10 @@ class FileManager : Base
 private:
     std::ofstream output_file;
     std::ofstream output_material_file;
-    fs::path data_dir_path;    
+    std::string output_file_name;
+    std::string output_material_file_name;
+    fs::path data_dir_path;
+    fs::path material_file_path;    
 
     void init()
     {
@@ -32,8 +36,12 @@ private:
         std::string msg = fmt::format("data_dir_path: {}", data_dir_path.c_str());
         print(msg);
         
-        auto output_file_path = data_dir_path / "output_cpu.txt";
+        auto output_file_path = data_dir_path / output_file_name;
         msg = fmt::format("output_file_path: {}", output_file_path.c_str());
+        print(msg);
+
+        auto material_file_path = data_dir_path / output_material_file_name;
+        msg = fmt::format("material_file_path: {}", material_file_path.c_str());
         print(msg);
     }
 
@@ -44,8 +52,10 @@ protected:
     }
 
 public:
-    FileManager()
+    FileManager(std::string output_file_name_, std::string output_material_file_name_)
     {        
+        output_file_name = output_file_name_;
+        output_material_file_name = output_material_file_name_;
         init();
     }
 };

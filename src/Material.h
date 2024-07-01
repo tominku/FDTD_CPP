@@ -13,8 +13,8 @@
 #include <cassert>
 #include <cstdlib>
 #include "macros.h"
-
-namespace fs = std::filesystem;
+#include "Base.h"
+#include "FileManager.h"
 
 struct MaterialData
 {
@@ -27,13 +27,19 @@ struct MaterialData
 
 using namespace std;
 
-class Material
+class Material : Base
 {
 
 private:
     string file;
     MaterialData material_data;
     int num_pixels;
+
+protected:
+    std::string toName()
+    {
+        return "Material";
+    }
 
 public:
     Material(string file_)
@@ -78,8 +84,7 @@ public:
         const string homedir = c_homedir;
         //const string data_dir = homedir + "/.data/";        
         const string data_dir = "data/";
-
-        std::cout << "Current path is " << fs::current_path() << '\n';        
+      
         cout << "material data_dir: " << data_dir << "\n";
         const string file_path = data_dir + file;
         std::cout << "material file path: " << file_path << std::endl;

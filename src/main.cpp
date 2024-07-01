@@ -104,9 +104,9 @@ void step_em_pml(value_t *Hx, value_t *Hy, value_t *Ez,
 
 int main()
 {
-    FileManager fileUtil;
+    FileManager fileManager("output_cpu.txt", "output_material.txt");
     Material material("car_interior_2D_image_data.dat");
-    //Material material("test.txt");
+    ;
     material.parse();
     MaterialData material_data = material.scaleToFit(Nx, Ny);
         
