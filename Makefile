@@ -1,5 +1,5 @@
 CXX		  := g++
-CXX_FLAGS := -Wall -Wextra -std=c++17 -ggdb -fopenmp
+CXX_FLAGS := -Wall -Wextra -std=c++2a -ggdb -fopenmp
 
 BIN		:= bin
 SRC		:= src

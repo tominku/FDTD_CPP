@@ -49,8 +49,10 @@
     "stdexcept": "cpp",
     "streambuf": "cpp",
     "typeinfo": "cpp",
-    "bit": "cpp"
-  },
+    "bit": "cpp",
+    "cstring": "cpp",
+    "cinttypes": "cpp"
+},
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",
   "C_Cpp_Runner.debuggerPath": "gdb",
