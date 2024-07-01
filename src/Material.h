@@ -14,6 +14,8 @@
 #include <cstdlib>
 #include "macros.h"
 
+namespace fs = std::filesystem;
+
 struct MaterialData
 {
     int *origin_data;
@@ -70,12 +72,14 @@ public:
     }
 
     MaterialData parse()
-    {
+    {        
         struct passwd *pw = getpwuid(getuid());
         const char *c_homedir = pw->pw_dir;
         const string homedir = c_homedir;
-        const string data_dir = homedir + "/.data/";
-        
+        //const string data_dir = homedir + "/.data/";        
+        const string data_dir = "data/";
+
+        std::cout << "Current path is " << fs::current_path() << '\n';        
         cout << "material data_dir: " << data_dir << "\n";
         const string file_path = data_dir + file;
         std::cout << "material file path: " << file_path << std::endl;
