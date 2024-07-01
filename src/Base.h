@@ -7,18 +7,18 @@
 
 namespace fs = std::filesystem;
 
-std::string className(const std::string& prettyFunction)
-{
-    size_t colons = prettyFunction.find("::");
-    if (colons == std::string::npos)
-        return "::";
-    size_t begin = prettyFunction.substr(0,colons).rfind(" ") + 1;
-    size_t n = colons - begin;
+// std::string className(const std::string& prettyFunction)
+// {
+//     size_t colons = prettyFunction.find("::");
+//     if (colons == std::string::npos)
+//         return "::";
+//     size_t begin = prettyFunction.substr(0,colons).rfind(" ") + 1;
+//     size_t n = colons - begin;
 
-    return prettyFunction.substr(begin, n);
-}
+//     return prettyFunction.substr(begin, n);
+// }
 
-#define __CLASS_NAME__ className(__PRETTY_FUNCTION__)
+// #define __CLASS_NAME__ className(__PRETTY_FUNCTION__)
 
 class Base
 {
@@ -36,6 +36,8 @@ protected:
 public:
     void print(std::string message)
     {
-        std::cout << message << std::endl;
+        std::string name = toName();
+        std::string _message = fmt::format("[{}] {}", name, message);
+        std::cout << _message << std::endl;
     }
 };

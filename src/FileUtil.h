@@ -27,12 +27,12 @@ private:
         fs::create_directory(data_dir_path);
         assert(!fs::create_directory(data_dir_path));    
         
-        std::string className = toName();
-        std::string msg = fmt::format("[{}] data_dir: {}", className, data_dir_path.c_str());
+        std::string msg = fmt::format("data_dir_path: {}", data_dir_path.c_str());
         print(msg);
         
-        //auto output_file_path = data_dir_path / "output_cpu.txt";
-        //std::cout << "[FileUtil] output_path: " <<output_file_path << std::endl;
+        auto output_file_path = data_dir_path / "output_cpu.txt";
+        msg = fmt::format("output_file_path: {}", output_file_path.c_str());
+        print(msg);
     }
 
 protected:
