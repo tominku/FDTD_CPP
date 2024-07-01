@@ -16,8 +16,12 @@ run: clean all
 	#clear
 	./$(BIN)/$(EXECUTABLE)
 
+debug: CXX_FLAGS += -DDEBUG -g
+debug: clean $(BIN)/$(EXECUTABLE)
+
 $(BIN)/$(EXECUTABLE): $(SRC)/main.cpp
 	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) -L$(LIB) $^ -o $@ $(LIBRARIES) -lm -lpthread
+
 
 clean:
 	-rm $(BIN)/*

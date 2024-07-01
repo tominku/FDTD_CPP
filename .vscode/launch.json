@@ -6,7 +6,7 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/bin/main",
-      "preLaunchTask": "Build C++ project",
+      "preLaunchTask": "Build C++ project for DEBUG",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
@@ -30,7 +30,7 @@
       "stopAtEntry": false,
       "externalConsole": false,
       "cwd": "/home/minku/FDTD_CPP/src",
-      "program": "/home/minku/FDTD_CPP/src/build/Release/outRelease",
+      "program": "/home/minku/FDTD_CPP/src/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

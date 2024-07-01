@@ -21,6 +21,19 @@
             "args": [
                 "run"
             ]
-        }
+        },
+        {
+            "label": "Build C++ project for DEBUG",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "command": "make",
+            "args": [
+                "debug",
+                "DEBUG=1",
+            ]
+        }        
     ]
 }
