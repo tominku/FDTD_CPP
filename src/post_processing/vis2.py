@@ -45,6 +45,7 @@ print(f'Nx: {Nx}, Ny: {Ny}, Nt: {steps}, logging_period: {logging_period}')
 min_value = 1e6
 max_value = -1e6
 frames = output.read().split(";")
+#frames = frames[:50]
 num_frames = len(frames)
 print(f'num_frames: {num_frames}')
 for frame, frame_i in zip(frames, range(num_frames)):
@@ -68,7 +69,7 @@ for frame, frame_i in zip(frames, range(num_frames)):
             elif val > max_value_in_frame:
                 max_value_in_frame = val
                 
-        if frame_i > int(num_frames * 0.1):
+        if frame_i > int(num_frames * 0.2):
             min_value = min_value_in_frame                
             max_value = max_value_in_frame
     else:
@@ -94,23 +95,30 @@ fig = plt.figure( figsize=(Ny / 15, Nx / 15) )
 print(f'material: min {np.min(material_image)} max {np.max(material_image)}')
 
 a = images_normalized[0]
+cmap = "afmhot"
 #im = plt.imshow(a, interpolation='none', cmap='gray', aspect='auto', vmin=0, vmax=1)
 #im = plt.imshow(a, interpolation='none', cmap='gray', aspect='auto', vmin=min_value, vmax=max_value)
 #im = plt.imshow(a, interpolation='none', cmap='viridis', aspect='auto', vmin=min_value, vmax=max_value, alpha=(1-material_image))
-im = plt.imshow(a, interpolation='none', cmap='viridis', aspect='auto', vmin=-1, vmax=1, alpha=(1-material_image))
+im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto', vmin=-1, vmax=1, alpha=(1-material_image))
+#plt.colorbar()
 
 def animate_func(i):
     im.set_array(images_normalized[i])
+    plt.title('%d / %d frame' % ((i * logging_period), steps))
     return [im]
+#plt.colorbar(im)
 
+interval_in_ms = 100
 anim = animation.FuncAnimation(
                                fig, 
                                animate_func, 
-                               interval = 100, # in ms
-                               
+                               interval = interval_in_ms, # in ms
+                               frames=(num_frames),
+                               blit=False                               
                                )
-
-#anim.save('test_anim.avi', fps=30)
+fps = int(1.0 / (interval_in_ms / 1000.0))
+video_writer = animation.FFMpegWriter(fps=fps) 
+anim.save('anim_Nx:%d_Ny:%d_logper:%d.mp4' % (Nx, Ny, logging_period), writer=video_writer)
 #ani = animation.FuncAnimation(fig, updatefig, interval=50, blit=True)
 plt.show()
 #plt.colorbar(ax=im)

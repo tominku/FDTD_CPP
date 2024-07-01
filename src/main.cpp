@@ -134,8 +134,10 @@ int main()
     value_t lam = c0/f0;  // Freespace Wavelength  [meter]
     value_t t0  = 1/f0;  // Source Period  [second]
 
-    value_t dx = num_waves_x * lam / (Nx-1);
-    value_t dy = num_waves_y * lam / (Ny-1);
+    value_t space_size_x = num_waves_x * lam;
+    value_t space_size_y = num_waves_y * lam;
+    value_t dx = space_size_x / (Nx-1);
+    value_t dy = space_size_y / (Ny-1);
     value_t dt = pow(pow(dx,-2) + pow(dy,-2), -0.5)/c0*.99;
 
     value_t coef_eps_dx = dt/(eps0*dx);
@@ -151,7 +153,7 @@ int main()
     */
 
     //printf("R_LI %d \n", x_li);
-    printf("Nx: %d, Ny:%d, L0: %f, dx: %f, dt: %.9f \n", Nx, Ny, lam, dx, dt);
+    printf("c0: %f, Nx: %d, Ny:%d, L0: %f, dx: %f, dt: %.9f, space_x: %f,space_y: %f\n", c0, Nx, Ny, lam, dx, dt, space_size_x, space_size_y);
 
     int computation_time = 0; 
     int N = Nx * Ny;
