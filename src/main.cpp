@@ -108,18 +108,20 @@ int main()
     //Material material("test.txt");
     material.parse();
     MaterialData material_data = material.scaleToFit(Nx, Ny);
-
-    struct passwd *pw = getpwuid(getuid());
-    const char *c_homedir = pw->pw_dir;
-    const string homedir = c_homedir;
-    const string data_dir = homedir + "/.data";
+        
+    const string str_home_path = getenv("HOME");    
+    auto home_dir_path = fs::path(str_home_path);        
+    //home_dir_path += data_dir;
+    auto data_dir_path = home_dir_path / ".data";
+    fs::create_directory(data_dir_path);
+    assert(!fs::create_directory(data_dir_path));    
     
-    cout << "data_dir: " << data_dir << "\n";
-    const string output_file_path = data_dir +"/output_cpu.txt";
+    cout << "data_dir: " << data_dir_path << "\n";    
+    auto output_file_path = data_dir_path / "output_cpu.txt";
     std::cout << output_file_path << std::endl;
     output_file.open(output_file_path);
 
-    const string output_material_file_path = data_dir +"/output_material.txt";
+    auto output_material_file_path = data_dir_path / "output_material.txt";
     std::cout << output_material_file_path << std::endl;
     output_material_file.open(output_material_file_path);
 
