@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include "macros.h"
 #include "Material.h"
+#include "FileUtil.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -104,6 +105,7 @@ void step_em_pml(value_t *Hx, value_t *Hy, value_t *Ez,
 
 int main()
 {
+    FileUtil fileUtil;
     Material material("car_interior_2D_image_data.dat");
     //Material material("test.txt");
     material.parse();
