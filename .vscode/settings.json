@@ -56,8 +56,12 @@
     "complex": "cpp",
     "forward_list": "cpp",
     "map": "cpp",
-    "valarray": "cpp"
-  },
+    "valarray": "cpp",
+    "bitset": "cpp",
+    "condition_variable": "cpp",
+    "regex": "cpp",
+    "shared_mutex": "cpp"
+},
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",
   "C_Cpp_Runner.debuggerPath": "gdb",

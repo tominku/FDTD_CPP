@@ -204,7 +204,7 @@ int main()
 
     int logging_period = 5;
 
-    std::vector<float> vec_Ez(N);    
+    //std::vector<float> vec_Ez(N);    
     json j_sim;
     j_sim["Nx"] = Nx;
     j_sim["Ny"] = Ny;
@@ -232,7 +232,8 @@ int main()
         if (do_logging && step % logging_period == 0)
         {
             timer.begin();
-            vec_Ez.assign(Ez, Ez+N);
+            //vec_Ez.assign(Ez, Ez+N);
+            std::vector<float> vec_Ez(Ez, Ez + N);
             std::string time_stamp = fmt::format("t{}", step);
             j_sim[time_stamp] = vec_Ez;
             float elapsed_time = timer.end();
