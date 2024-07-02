@@ -187,10 +187,11 @@ int main()
     json j;
     j["material_data_size"] = vec_size;
     j["material_data"] = material_values;
-    std::ofstream o("test.json");
+    std::string path = fileManager.convert_to_path("material.json");
+    std::ofstream o(path);
     o << j;
     timer.end();
-    timer.print_elapsed_time("<test.json> save elapsed time");
+    timer.print_elapsed_time("<material.json> save elapsed time");
 
     assert (vec_size == N);
     

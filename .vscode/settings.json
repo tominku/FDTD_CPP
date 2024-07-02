@@ -51,8 +51,13 @@
     "typeinfo": "cpp",
     "bit": "cpp",
     "cstring": "cpp",
-    "cinttypes": "cpp"
-},
+    "cinttypes": "cpp",
+    "any": "cpp",
+    "complex": "cpp",
+    "forward_list": "cpp",
+    "map": "cpp",
+    "valarray": "cpp"
+  },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",
   "C_Cpp_Runner.debuggerPath": "gdb",

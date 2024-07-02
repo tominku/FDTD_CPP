@@ -69,6 +69,17 @@ public:
         msg = fmt::format("material_file_path: {}", material_file_path.c_str());
         print(msg);
     }
+
+    std::string get_data_dir_path()
+    {
+        return data_dir_path.c_str();
+    }        
+
+    std::string convert_to_path(std::string file_name)
+    {
+        auto path = data_dir_path / file_name;
+        return path.c_str();
+    }
    
    static FileManager& instance()
    {
