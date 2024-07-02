@@ -3,16 +3,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import json
-
-path = "/home/minku/.data/output_cpu.txt"
-#path = "/home/minku/.data/output_matlab.txt"
-output = open(path, "r")
-info_line = output.readline()
-
-info = info_line.split(",")
-Nx = int(info[0])
-Ny = int(info[1])
-N = Nx * Ny
+import time
 
 # material_image = np.zeros((Nx, Ny))
 # path = "/home/minku/.data/output_material.txt"
@@ -29,6 +20,7 @@ N = Nx * Ny
 #     material_image[i, j] = val
 
 
+begin = time.time()
 path = "/home/minku/.data/material.json"
 with open(path, "r") as json_file:
     material = json.load(json_file)
@@ -43,6 +35,8 @@ with open(path, "r") as json_file:
 material_image = material_image_2D
 #plt.imshow(material_image)
 #plt.show()
+end = time.time()
+print(f'elapsed time loading material file {end - begin} seconds')
 
 
 path = "/home/minku/.data/output_cpu.txt"
