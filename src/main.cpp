@@ -43,7 +43,6 @@ const int n_PML_X = 10;
 const int n_PML_Y = 10;
 
 ofstream output_file;
-ofstream output_material_file;
 
 bool do_parallel = true;
 bool do_logging = true;
@@ -107,8 +106,7 @@ void step_em_pml(value_t *Hx, value_t *Hy, value_t *Ez,
 }
 
 int main()
-{
-    //FileManager fileManager("output_cpu.txt", "output_material.txt");
+{    
     FileManager &fileManager = FileManager::instance();
     fileManager.init("output_cpu.txt", "output_material.txt");
     
@@ -128,10 +126,6 @@ int main()
     auto output_file_path = data_dir_path / "output_cpu.txt";
     std::cout << output_file_path << std::endl;
     output_file.open(output_file_path);
-
-    auto output_material_file_path = data_dir_path / "output_material.txt";
-    std::cout << output_material_file_path << std::endl;
-    output_material_file.open(output_material_file_path);
 
     // Define Simulation Based off Source and Wavelength
     int f0 = 1e6; // Frequency of Source  [Hertz]
@@ -194,21 +188,30 @@ int main()
     o << j;
     timer.end();
     timer.print_elapsed_time("<material.json> save elapsed time");
-
     assert (vec_size == N);
     
 
-    for (int k=0; k<N; k++)
-    {
-        int material_value = material_data.scaled_data[k];
-        output_material_file << material_value;
-        if (k < (N-1))
-        {
-            output_material_file << ",";
-        }
-    }
-    
+    // for (int k=0; k<N; k++)
+    // {
+    //     int material_value = material_data.scaled_data[k];
+    //     output_material_file << material_value;
+    //     if (k < (N-1))
+    //     {
+    //         output_material_file << ",";
+    //     }
+    // }
+
     int logging_period = 5;
+
+    std::vector<float> vec_Ez(N);    
+    json j_sim;
+    j_sim["Nx"] = Nx;
+    j_sim["Ny"] = Ny;
+    j_sim["N"] = N;  
+    j_sim["logging_period"] = logging_period;          
+    path = fileManager.convert_to_path("output_cpu.json");
+    std::ofstream o_sim(path);
+    
     output_file << Nx << "," << Ny << "," << nt << "," << logging_period << "\n";
     for (int step=0; step<nt; step++)
     {        
@@ -224,11 +227,14 @@ int main()
 
         auto duration = duration_cast<microseconds>(t2 - t1);
         computation_time += duration.count();
-
+        
         // logging
         if (do_logging && step % logging_period == 0)
         {
-            // copy frames to the output file
+            vec_Ez.assign(Ez, Ez+N);
+            std::string time_stamp = fmt::format("t{}", step);
+            j_sim[time_stamp] = vec_Ez;
+            //copy frames to the output file
             for (int k=0; k<N; k++)
             {
                 value_t value_Ez = Ez[k];
@@ -244,6 +250,7 @@ int main()
             }      
         }     
     }
+    o_sim << j_sim;
     
     // To get the value of duration use the count()
     // member function on the duration object
