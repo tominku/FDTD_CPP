@@ -212,7 +212,8 @@ int main()
     path = fileManager.convert_to_path("output_cpu.json");
     std::ofstream o_sim(path);
     
-    output_file << Nx << "," << Ny << "," << nt << "," << logging_period << "\n";
+    //output_file << Nx << "," << Ny << "," << nt << "," << logging_period << "\n";
+    float time_for_data_write = 0;
     for (int step=0; step<nt; step++)
     {        
         //Point Source        
@@ -231,28 +232,40 @@ int main()
         // logging
         if (do_logging && step % logging_period == 0)
         {
+            timer.begin();
             vec_Ez.assign(Ez, Ez+N);
             std::string time_stamp = fmt::format("t{}", step);
             j_sim[time_stamp] = vec_Ez;
+            float elapsed_time = timer.end();
+            time_for_data_write += elapsed_time;
+            
+            // std::string str = fmt::format("sim_data saving time");
+            // timer.print_elapsed_time(str);
+
             //copy frames to the output file
-            for (int k=0; k<N; k++)
-            {
-                value_t value_Ez = Ez[k];
-                output_file << value_Ez;
-                if (k % N == (N-1)) // a frame ended            
-                {
-                    output_file << ";";
-                }
-                else
-                {
-                    output_file << ",";
-                }            
-            }      
+            // timer.begin();
+            // for (int k=0; k<N; k++)
+            // {
+            //     value_t value_Ez = Ez[k];
+            //     output_file << value_Ez;
+            //     if (k % N == (N-1)) // a frame ended            
+            //     {
+            //         output_file << ";";
+            //     }
+            //     else
+            //     {
+            //         output_file << ",";
+            //     }            
+            // }    
+            // timer.end();
+            // str = fmt::format("sim_data saving time2");
+            // timer.print_elapsed_time(str);  
         }     
     }
     o_sim << j_sim;
     
     // To get the value of duration use the count()
     // member function on the duration object
-    std::cout << "computation_time: " << computation_time / 1000 << " ms" << std::endl;
+    std::cout << "computation time: " << computation_time / 1000 << " ms" << std::endl;
+    std::cout << "data write time: " << time_for_data_write << " ms" << std::endl;
 }

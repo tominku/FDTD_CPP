@@ -13,7 +13,7 @@ private:
     high_resolution_clock::time_point begin_point;
     high_resolution_clock::time_point end_point;
     
-    int elapsed_time_ms;
+    float elapsed_time_ms;
 
 public:
     Timer()
@@ -21,12 +21,17 @@ public:
         begin_point = high_resolution_clock::now();        
     }
 
-    int end()
+    void begin()
+    {
+        begin_point = high_resolution_clock::now();        
+    }
+
+    float end()
     {
         end_point = high_resolution_clock::now();
         auto duration_micro = duration_cast<microseconds>(end_point - begin_point);
         int elapsed_time_micro = duration_micro.count();
-        elapsed_time_ms = int(elapsed_time_micro / 1000.0);
+        elapsed_time_ms = elapsed_time_micro / 1000.0;
         return elapsed_time_ms;
     }
 

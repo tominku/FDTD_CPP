@@ -3,6 +3,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import json
+#import ujson as json
 import time
 
 # material_image = np.zeros((Nx, Ny))
