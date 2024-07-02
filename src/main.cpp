@@ -187,6 +187,8 @@ int main()
     json j;
     j["material_data_size"] = vec_size;
     j["material_data"] = material_values;
+    j["Nx"] = Nx;
+    j["Ny"] = Ny;
     std::string path = fileManager.convert_to_path("material.json");
     std::ofstream o(path);
     o << j;

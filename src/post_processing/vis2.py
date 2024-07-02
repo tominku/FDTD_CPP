@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import json
 
 path = "/home/minku/.data/output_cpu.txt"
 #path = "/home/minku/.data/output_matlab.txt"
@@ -13,20 +14,33 @@ Nx = int(info[0])
 Ny = int(info[1])
 N = Nx * Ny
 
-material_image = np.zeros((Nx, Ny))
-path = "/home/minku/.data/output_material.txt"
-output = open(path, "r")
-material_values = output.read().split(',')
-#print(material_values)
-material_values_len = len(material_values)
-assert( N == material_values_len )
-print(f'N: {N}, material_values_len: {material_values_len}')
-for value, k in zip(material_values, range(len(material_values))):
-    val = float(value)
-    i = int(k % Nx)
-    j = int(k / Nx)
-    material_image[i, j] = val
+# material_image = np.zeros((Nx, Ny))
+# path = "/home/minku/.data/output_material.txt"
+# output = open(path, "r")
+# material_values = output.read().split(',')
+# #print(material_values)
+# material_values_len = len(material_values)
+# assert( N == material_values_len )
+# print(f'N: {N}, material_values_len: {material_values_len}')
+# for value, k in zip(material_values, range(len(material_values))):
+#     val = float(value)
+#     i = int(k % Nx)
+#     j = int(k / Nx)
+#     material_image[i, j] = val
 
+
+path = "/home/minku/.data/material.json"
+with open(path, "r") as json_file:
+    material = json.load(json_file)
+    size = material["material_data_size"]
+    data = material["material_data"]
+    Nx = material["Nx"]
+    Ny = material["Ny"]
+    N = Nx * Ny
+    material_image_1D = np.array(data, dtype=np.float32)
+    material_image_2D = np.reshape(material_image_1D, (Nx, Ny), order='F')
+
+material_image = material_image_2D
 #plt.imshow(material_image)
 #plt.show()
 
@@ -45,7 +59,7 @@ print(f'Nx: {Nx}, Ny: {Ny}, Nt: {steps}, logging_period: {logging_period}')
 min_value = 1e6
 max_value = -1e6
 frames = output.read().split(";")
-#frames = frames[:50]
+frames = frames[:50]
 num_frames = len(frames)
 print(f'num_frames: {num_frames}')
 for frame, frame_i in zip(frames, range(num_frames)):
