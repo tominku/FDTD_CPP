@@ -15,6 +15,10 @@
 #include "macros.h"
 #include "Material.h"
 #include "FileManager.h"
+#include "Timer.h"
+
+#include "nlohmann/json.hpp"
+using json = nlohmann::json;
 
 using namespace std;
 using namespace std::chrono;
@@ -177,6 +181,20 @@ int main()
 
 
     // write scaled material data
+    Timer timer;
+    std::vector<int> material_values(material_data.scaled_data, material_data.scaled_data+N);
+    int vec_size = material_values.size();
+    json j;
+    j["material_data_size"] = vec_size;
+    j["material_data"] = material_values;
+    std::ofstream o("test.json");
+    o << j;
+    timer.end();
+    timer.print_elapsed_time("<test.json> save elapsed time");
+
+    assert (vec_size == N);
+    
+
     for (int k=0; k<N; k++)
     {
         int material_value = material_data.scaled_data[k];

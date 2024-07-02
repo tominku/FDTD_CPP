@@ -14,6 +14,8 @@
 #include <cassert>
 #include <cstdlib>
 #include "Base.h"
+#include "nlohmann/json.hpp"
+using json = nlohmann::json;
 
 class FileManager : Base
 {
@@ -37,6 +39,17 @@ public:
 
     void init(std::string output_file_name_, std::string output_material_file_)
     {
+        std::ifstream f("example.json");
+        json data = json::parse(f);
+        float pi = data["pi"];
+        json j_list = data["list"];
+        int size = j_list.size();
+
+        // range-based for
+        for (json& element : j_list) {
+            std::cout << element << '\n';
+        }
+
         output_file_name = output_file_name_;
         output_material_file_name = output_material_file_;
         const std::string str_home_path = getenv("HOME");     
