@@ -39,6 +39,7 @@ end = time.time()
 print(f'elapsed time loading material file {end - begin} seconds')
 
 
+begin = time.time()
 path = "/home/minku/.data/output_cpu.json"
 with open(path, "r") as json_file:
     sim_data = json.load(json_file)    
@@ -67,6 +68,9 @@ while(True):
     image_2D = np.reshape(image_1D, (Nx, Ny), order='F')
     images.append(image_2D)
     t += logging_period
+
+end = time.time()
+print(f'elapsed time loading sim file {end - begin} seconds')
 
 num_frames_to_show = 200
 
