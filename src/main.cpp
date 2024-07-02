@@ -166,13 +166,13 @@ int main()
     value_t *Hy = new value_t[N];
     
     // Initialize arrays
+    #pragma omp parallel for num_threads(NUM_THREADS) if(do_parallel)
     for (int i=0; i<N; i++)
     {
         Ez[i] = 0;
         Hx[i] = 0;
         Hy[i] = 0;
     }
-
 
     // write scaled material data
     Timer timer;
