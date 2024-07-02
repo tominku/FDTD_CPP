@@ -1,5 +1,5 @@
 CXX		  := g++
-CXX_FLAGS := -Wall -Wextra -std=c++2a -ggdb -fopenmp
+CXX_FLAGS := -Wall -Wextra -std=c++17 -fopenmp
 
 BIN		:= bin
 SRC		:= src
@@ -21,7 +21,7 @@ debug: CXX_FLAGS += -DDEBUG -g
 debug: clean $(BIN)/$(EXECUTABLE)
 
 $(BIN)/$(EXECUTABLE): $(SRC)/main.cpp
-	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) -L$(LIB) $^ -o $@ $(LIBRARIES) -lm -lpthread
+	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) -L$(LIB) $^ -o $@ $(LIBRARIES) -lm
 
 
 clean:
