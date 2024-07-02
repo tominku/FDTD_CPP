@@ -108,24 +108,24 @@ void step_em_pml(value_t *Hx, value_t *Hy, value_t *Ez,
 int main()
 {    
     FileManager &fileManager = FileManager::instance();
-    fileManager.init("output_cpu.txt", "output_material.txt");
+    //fileManager.init("output_cpu.txt", "output_material.txt");
+    fileManager.init();
     
-    Material material("car_interior_2D_image_data.dat");
-    
+    Material material("car_interior_2D_image_data.dat");    
     material.parse();
     MaterialData material_data = material.scaleToFit(Nx, Ny);
         
-    const string str_home_path = getenv("HOME");    
-    auto home_dir_path = fs::path(str_home_path);        
-    //home_dir_path += data_dir;
-    auto data_dir_path = home_dir_path / ".data";
-    fs::create_directory(data_dir_path);
-    assert(!fs::create_directory(data_dir_path));    
+    // const string str_home_path = getenv("HOME");    
+    // auto home_dir_path = fs::path(str_home_path);        
+    // //home_dir_path += data_dir;
+    // auto data_dir_path = home_dir_path / ".data";
+    // fs::create_directory(data_dir_path);
+    // assert(!fs::create_directory(data_dir_path));    
     
-    cout << "data_dir: " << data_dir_path << "\n";    
-    auto output_file_path = data_dir_path / "output_cpu.txt";
-    std::cout << output_file_path << std::endl;
-    output_file.open(output_file_path);
+    // cout << "data_dir: " << data_dir_path << "\n";    
+    // auto output_file_path = data_dir_path / "output_cpu.txt";
+    // std::cout << output_file_path << std::endl;
+    // output_file.open(output_file_path);
 
     // Define Simulation Based off Source and Wavelength
     int f0 = 1e6; // Frequency of Source  [Hertz]
@@ -184,8 +184,9 @@ int main()
     j["Nx"] = Nx;
     j["Ny"] = Ny;
     std::string path = fileManager.convert_to_path("material.json");
-    std::ofstream o(path);
-    o << j;
+    fileManager.save_json(j, path);
+    // std::ofstream o(path);
+    // o << j;
     timer.end();
     timer.print_elapsed_time("<material.json> save elapsed time");
     assert (vec_size == N);
@@ -208,9 +209,7 @@ int main()
     j_sim["Nx"] = Nx;
     j_sim["Ny"] = Ny;
     j_sim["N"] = N;  
-    j_sim["logging_period"] = logging_period;          
-    path = fileManager.convert_to_path("output_cpu.json");
-    std::ofstream o_sim(path);
+    j_sim["logging_period"] = logging_period;              
     
     //output_file << Nx << "," << Ny << "," << nt << "," << logging_period << "\n";
     float time_for_data_write = 0;
@@ -238,7 +237,7 @@ int main()
             j_sim[time_stamp] = vec_Ez;
             float elapsed_time = timer.end();
             time_for_data_write += elapsed_time;
-            
+
             // std::string str = fmt::format("sim_data saving time");
             // timer.print_elapsed_time(str);
 
@@ -262,7 +261,8 @@ int main()
             // timer.print_elapsed_time(str);  
         }     
     }
-    o_sim << j_sim;
+    path = fileManager.convert_to_path("output_cpu.json");
+    fileManager.save_json(j_sim, path);    
     
     // To get the value of duration use the count()
     // member function on the duration object

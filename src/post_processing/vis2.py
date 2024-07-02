@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-import json
-#import ujson as json
+#import json
+import ujson as json
 import time
 
 # material_image = np.zeros((Nx, Ny))
@@ -162,7 +162,7 @@ anim = animation.FuncAnimation(
                                )
 fps = int(1.0 / (interval_in_ms / 1000.0))
 video_writer = animation.FFMpegWriter(fps=fps) 
-anim.save('anim_Nx:%d_Ny:%d_logper:%d.mp4' % (Nx, Ny, logging_period), writer=video_writer)
+#anim.save('anim_Nx:%d_Ny:%d_logper:%d.mp4' % (Nx, Ny, logging_period), writer=video_writer)
 #ani = animation.FuncAnimation(fig, updatefig, interval=50, blit=True)
 plt.show()
 #plt.colorbar(ax=im)
