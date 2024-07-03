@@ -1,3 +1,4 @@
+#pragma once
 #include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -50,23 +51,23 @@ public:
         material_data.origin_data = NULL;
     }
 
-    MaterialData scaleToFit(int Nx, int Ny)
+    MaterialData scaleToFit(int nx, int ny)
     {
-        int N = Nx * Ny;
+        int N = nx * ny;
         int *scaled_data = new int[N];
 
         #pragma omp parallel for num_threads(6) collapse(2) if(true)   
-        for (int i=0; i<Nx; i++)
+        for (int i=0; i<nx; i++)
         {        
-            for (int j=0; j<Ny; j++)
+            for (int j=0; j<ny; j++)
             {
-                float float_i = i / (float)(Nx - 1);
-                float float_j = j / (float)(Ny - 1);
+                float float_i = i / (float)(nx - 1);
+                float float_j = j / (float)(ny - 1);
                 int origin_i = (int)round((material_data.origin_height - 1)*float_i);
                 int origin_j = (int)round((material_data.origin_width - 1)*float_j);
                 int origin_height = material_data.origin_height;
                 int pixel_value = material_data.origin_data[ij_to_k(origin_i, origin_j, origin_height)];
-                int k_for_ij = ij_to_k(i, j, Nx);
+                int k_for_ij = ij_to_k(i, j, nx);
                 scaled_data[k_for_ij] = pixel_value;
             }
         }

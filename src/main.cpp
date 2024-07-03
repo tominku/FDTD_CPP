@@ -1,4 +1,3 @@
-// OpenMP header
 #include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,7 +11,7 @@
 #include <filesystem>
 #include <cassert>
 #include <cstdlib>
-#include "macros.h"
+#include "base.h"
 #include "Material.h"
 #include "FileManager.h"
 #include "Timer.h"
@@ -23,109 +22,18 @@ using json = nlohmann::json;
 using namespace std;
 using namespace std::chrono;
 
-#define NUM_THREADS 6
-#define PRINT 0
+#include "step_EM_cpu.h"
 
-#define devisions_per_wave 10  // Divisions per Wavelength   [unitless]
-#define num_waves_x 15 //  # wave lengths in x-dir [unitless]
-#define num_waves_y 30 //  # wave lengths in y-dir 
-#define Nx (num_waves_x*devisions_per_wave + 1)
-#define Ny (num_waves_y*devisions_per_wave + 1)
-
-using value_t = float;
-
-const int x_fi = 0;
-const int x_li = Nx - 1;
-const int y_fi = 0;
-const int y_li = Ny - 1;
-
-const int n_PML_X = 10;
-const int n_PML_Y = 10;
-
-ofstream output_file;
-
-bool do_parallel = true;
 bool do_logging = true;
-
-void step_em_pml(value_t *Hx, value_t *Hy, value_t *Ez,
-    value_t coef_eps_dx, value_t coef_eps_dy, value_t coef_mu_dx, value_t coef_mu_dy, MaterialData material_data)
-{   
-
-    // Magnetic Field Update
-    #pragma omp parallel for num_threads(NUM_THREADS) collapse(2) if(do_parallel)   
-    for (int i=x_fi; i<x_li; i++)
-    {        
-        for (int j=y_fi; j<y_li; j++)
-        {
-            
-            int k_for_ij = ij_to_k(i, j, Nx);
-            int k_for_ijp1 = ij_to_k(i, j+1, Nx);
-            int k_for_ip1j = ij_to_k(i+1, j, Nx); 
-            int material_value = material_data.scaled_data[k_for_ij];
-            //material_value = 2;
-            if (material_value == 1)
-            {
-                Hx[k_for_ij] = 0;    
-                Hy[k_for_ij] = 0;
-            }
-            else
-            {
-                Hx[k_for_ij] -= coef_mu_dy * (Ez[k_for_ij] - Ez[k_for_ijp1]); 
-                Hy[k_for_ij] += coef_mu_dx * (Ez[k_for_ij] - Ez[k_for_ip1j]);
-                // Hx[i][j] -= coef_mu_dy * (Ez[i][j] - Ez[i][j+1]); 
-                // Hy[i][j] += coef_mu_dx * (Ez[i][j] - Ez[i+1][j]);
-                }
-            if (PRINT)
-                printf("M-Field i = %d, j= %d, threadId = %d \n", i, j, omp_get_thread_num());
-        }
-    }
-    // Electric Field Update
-    #pragma omp parallel for num_threads(NUM_THREADS) collapse(2) if(do_parallel)
-    for (int i=(x_fi+1); i<x_li; i++)
-    {
-        for (int j=(y_fi+1); j<y_li; j++)
-        {
-            int k_for_ij = ij_to_k(i, j, Nx);
-            int k_for_ijm1 = ij_to_k(i, j-1, Nx);
-            int k_for_im1j = ij_to_k(i-1, j, Nx); 
-            
-            int material_value = material_data.scaled_data[k_for_ij];
-            //material_value = 2;
-            if (material_value == 1)
-            {
-                Ez[k_for_ij] = 0;    
-            }
-            else
-            {
-                Ez[k_for_ij] += coef_eps_dx*(Hy[k_for_im1j] - Hy[k_for_ij]) - coef_eps_dy*(Hx[k_for_ijm1] - Hx[k_for_ij]);
-            }
-            if (PRINT)
-                printf("E-Field i = %d, j= %d, threadId = %d \n", i, j, omp_get_thread_num());
-        }
-    }
-}
 
 int main()
 {    
-    FileManager &fileManager = FileManager::instance();
-    //fileManager.init("output_cpu.txt", "output_material.txt");
+    FileManager &fileManager = FileManager::instance();    
     fileManager.init();
     
     Material material("data/car_interior_2D_image_data.json");    
     material.parse();
-    MaterialData material_data = material.scaleToFit(Nx, Ny);
-        
-    // const string str_home_path = getenv("HOME");    
-    // auto home_dir_path = fs::path(str_home_path);        
-    // //home_dir_path += data_dir;
-    // auto data_dir_path = home_dir_path / ".data";
-    // fs::create_directory(data_dir_path);
-    // assert(!fs::create_directory(data_dir_path));    
-    
-    // cout << "data_dir: " << data_dir_path << "\n";    
-    // auto output_file_path = data_dir_path / "output_cpu.txt";
-    // std::cout << output_file_path << std::endl;
-    // output_file.open(output_file_path);
+    MaterialData material_data = material.scaleToFit(Nx, Ny);            
 
     // Define Simulation Based off Source and Wavelength
     int f0 = 1e6; // Frequency of Source  [Hertz]
@@ -148,6 +56,7 @@ int main()
     value_t coef_eps_dy = dt/(eps0*dy);
     value_t coef_mu_dx = dt/(mu0*dx);
     value_t coef_mu_dy = dt/(mu0*dy);
+    
     /*
     [Nx,Ny] = deal(Lx*Lf,Ly*Lf);    % Points in x,y           [unitless]
     x  = linspace(0,Lx,Nx+1)*L0;    % x vector                [meter]
@@ -155,8 +64,7 @@ int main()
     [dx,dy] = deal(x(2),y(2));      % x,y,z increment         [meter]
     dt = (dx^-2+dy^-2)^-.5/c0*.99;  % Time step CFL condition [second]
     */
-
-    //printf("R_LI %d \n", x_li);
+    
     printf("c0: %f, Nx: %d, Ny:%d, L0: %f, dx: %f, dt: %.9f, space_x: %f,space_y: %f\n", c0, Nx, Ny, lam, dx, dt, space_size_x, space_size_y);
 
     int computation_time = 0; 
@@ -184,23 +92,10 @@ int main()
     j["Nx"] = Nx;
     j["Ny"] = Ny;
     std::string path = fileManager.convert_to_path("material.json");
-    fileManager.save_json(j, path);
-    // std::ofstream o(path);
-    // o << j;
+    fileManager.save_json(j, path);    
     timer.end();
     timer.print_elapsed_time("<material.json> save elapsed time");
-    assert (vec_size == N);
-    
-
-    // for (int k=0; k<N; k++)
-    // {
-    //     int material_value = material_data.scaled_data[k];
-    //     output_material_file << material_value;
-    //     if (k < (N-1))
-    //     {
-    //         output_material_file << ",";
-    //     }
-    // }
+    assert (vec_size == N);    
 
     int logging_period = 5;
     int test = 0;
@@ -238,29 +133,7 @@ int main()
             std::string time_stamp = fmt::format("t{}", step);
             j_sim[time_stamp] = vec_Ez;
             float elapsed_time = timer.end();
-            time_for_data_write += elapsed_time;
-
-            // std::string str = fmt::format("sim_data saving time");
-            // timer.print_elapsed_time(str);
-
-            //copy frames to the output file
-            // timer.begin();
-            // for (int k=0; k<N; k++)
-            // {
-            //     value_t value_Ez = Ez[k];
-            //     output_file << value_Ez;
-            //     if (k % N == (N-1)) // a frame ended            
-            //     {
-            //         output_file << ";";
-            //     }
-            //     else
-            //     {
-            //         output_file << ",";
-            //     }            
-            // }    
-            // timer.end();
-            // str = fmt::format("sim_data saving time2");
-            // timer.print_elapsed_time(str);  
+            time_for_data_write += elapsed_time;             
         }     
     }
     path = fileManager.convert_to_path("output_cpu.json");
