@@ -203,6 +203,7 @@ int main()
     // }
 
     int logging_period = 5;
+    int test = 0;
 
     //std::vector<float> vec_Ez(N);    
     json j_sim;
