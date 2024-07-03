@@ -40,16 +40,16 @@ public:
     //void init(std::string output_file_name_, std::string output_material_file_)
     void init()
     {
-        std::ifstream f("example.json");
-        json data = json::parse(f);
-        float pi = data["pi"];
-        json j_list = data["list"];
-        int size = j_list.size();
+        // std::ifstream f("example.json");
+        // json data = json::parse(f);
+        // float pi = data["pi"];
+        // json j_list = data["list"];
+        // int size = j_list.size();
 
         // range-based for
-        for (json& element : j_list) {
-            std::cout << element << '\n';
-        }
+        // for (json& element : j_list) {
+        //     std::cout << element << '\n';
+        // }
 
         // output_file_name = output_file_name_;
         // output_material_file_name = output_material_file_;
@@ -72,10 +72,22 @@ public:
         // print(msg);
     }
 
+    void get_json(std::string file_path, json &j)
+    {
+        std::ifstream is(file_path);        
+        is >> j;
+    }
+
     std::string get_data_dir_path()
     {
         return data_dir_path.c_str();
     }        
+
+    fs::path get_current_dir_path()
+    {
+        auto cur_path = fs::current_path();
+        return cur_path.c_str();
+    }
 
     std::string convert_to_path(std::string file_name)
     {
@@ -83,7 +95,13 @@ public:
         return path.c_str();
     }
 
-    void save_json(json j, std::string path)
+    std::string convert_to_path(fs::path dir_path, std::string file_name)
+    {
+        auto path = dir_path / file_name;
+        return path.c_str();
+    }
+
+    void save_json(json &j, std::string path)
     {
         std::ofstream o(path);
         o << j;

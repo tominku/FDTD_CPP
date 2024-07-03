@@ -111,7 +111,7 @@ int main()
     //fileManager.init("output_cpu.txt", "output_material.txt");
     fileManager.init();
     
-    Material material("car_interior_2D_image_data.dat");    
+    Material material("data/car_interior_2D_image_data.json");    
     material.parse();
     MaterialData material_data = material.scaleToFit(Nx, Ny);
         
