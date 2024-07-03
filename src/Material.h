@@ -13,7 +13,6 @@
 #include <filesystem>
 #include <cassert>
 #include <cstdlib>
-#include "macros.h"
 #include "Base.h"
 #include "FileManager.h"
 

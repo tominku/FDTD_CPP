@@ -19,13 +19,8 @@ using json = nlohmann::json;
 
 class FileManager : Base
 {
-private:
-    //std::ofstream output_file;
-    //std::ofstream output_material_file;
-    //std::string output_file_name;
-    //std::string output_material_file_name;
-    fs::path data_dir_path;
-    //fs::path material_file_path;    
+private:    
+    fs::path data_dir_path;    
     
     FileManager() { }
 
@@ -36,24 +31,9 @@ protected:
     }
 
 public:
-
-    //void init(std::string output_file_name_, std::string output_material_file_)
+    
     void init()
-    {
-        // std::ifstream f("example.json");
-        // json data = json::parse(f);
-        // float pi = data["pi"];
-        // json j_list = data["list"];
-        // int size = j_list.size();
-
-        // range-based for
-        // for (json& element : j_list) {
-        //     std::cout << element << '\n';
-        // }
-
-        // output_file_name = output_file_name_;
-        // output_material_file_name = output_material_file_;
-        
+    {                
         const std::string str_home_path = getenv("HOME");     
         auto home_dir_path = fs::path(str_home_path);                
         data_dir_path = home_dir_path / ".data";
@@ -61,15 +41,7 @@ public:
         assert(!fs::create_directory(data_dir_path));    
         
         std::string msg = fmt::format("data_dir_path: {}", data_dir_path.c_str());
-        print(msg);
-        
-        // auto output_file_path = data_dir_path / output_file_name;
-        // msg = fmt::format("output_file_path: {}", output_file_path.c_str());
-        // print(msg);
-
-        // auto material_file_path = data_dir_path / output_material_file_name;
-        // msg = fmt::format("material_file_path: {}", material_file_path.c_str());
-        // print(msg);
+        print(msg);                
     }
 
     void get_json(std::string file_path, json &j)

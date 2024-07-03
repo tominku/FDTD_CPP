@@ -7,7 +7,7 @@
 
 int do_parallel = true;
 
-void step_em_pml(value_t *Hx, value_t *Hy, value_t *Ez,
+void step_EM(value_t *Hx, value_t *Hy, value_t *Ez,
     value_t coef_eps_dx, value_t coef_eps_dy, value_t coef_mu_dx, value_t coef_mu_dy, MaterialData material_data)
 {   
 

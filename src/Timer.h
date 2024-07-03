@@ -12,7 +12,8 @@ private:
     //std::chrono::_V2::system_clock::time_point end_point;
     high_resolution_clock::time_point begin_point;
     high_resolution_clock::time_point end_point;
-    
+
+    int elapsed_time_micro;
     float elapsed_time_ms;
 
 public:
@@ -26,13 +27,16 @@ public:
         begin_point = high_resolution_clock::now();        
     }
 
-    float end()
+    float end(bool as_ms = true)
     {
         end_point = high_resolution_clock::now();
         auto duration_micro = duration_cast<microseconds>(end_point - begin_point);
-        int elapsed_time_micro = duration_micro.count();
+        elapsed_time_micro = duration_micro.count();                
         elapsed_time_ms = elapsed_time_micro / 1000.0;
-        return elapsed_time_ms;
+        if (as_ms)
+            return elapsed_time_ms;
+        else        
+            return (float)elapsed_time_micro;
     }
 
     void print_elapsed_time(std::string str)

@@ -9,6 +9,7 @@ LIB		:= lib
 LIBRARIES	:=
 EXECUTABLE	:= main
 
+#CXX_FLAGS += -DUSE_GPU
 
 all: $(BIN)/$(EXECUTABLE)
 

@@ -16,18 +16,21 @@
 #include "FileManager.h"
 #include "Timer.h"
 
-#include "nlohmann/json.hpp"
-using json = nlohmann::json;
-
 using namespace std;
 using namespace std::chrono;
 
-#include "step_EM_cpu.h"
+#ifdef USE_GPU
+    #include "step_EM_gpu.h"
+#else
+    #include "step_EM_cpu.h"
+#endif        
+
+
 
 bool do_logging = true;
 
 int main()
-{    
+{            
     FileManager &fileManager = FileManager::instance();    
     fileManager.init();
     
@@ -66,8 +69,7 @@ int main()
     */
     
     printf("c0: %f, Nx: %d, Ny:%d, L0: %f, dx: %f, dt: %.9f, space_x: %f,space_y: %f\n", c0, Nx, Ny, lam, dx, dt, space_size_x, space_size_y);
-
-    int computation_time = 0; 
+    
     int N = Nx * Ny;
     value_t *Ez = new value_t[N];
     value_t *Hx = new value_t[N];
@@ -109,20 +111,17 @@ int main()
     
     //output_file << Nx << "," << Ny << "," << nt << "," << logging_period << "\n";
     float time_for_data_write = 0;
+    int computation_time = 0; 
     for (int step=0; step<nt; step++)
     {        
         //Point Source        
         int source_k = ij_to_k((int)(Nx*0.15), (int)(Ny*0.7), Nx);
         Ez[source_k] += sin(2*M_PI*f0*(dt*step)) * exp(-0.5*pow((step-20)/8, 2));
         
-        auto t1 = steady_clock::now();
-        
-        step_em_pml(Hx, Hy, Ez, coef_eps_dx, coef_eps_dy, coef_mu_dx, coef_mu_dy, material_data);        
-        
-        auto t2 = steady_clock::now();
-
-        auto duration = duration_cast<microseconds>(t2 - t1);
-        computation_time += duration.count();
+        timer.begin();        
+        step_EM(Hx, Hy, Ez, coef_eps_dx, coef_eps_dy, coef_mu_dx, coef_mu_dy, material_data);        
+        float elapsed_time_micro = timer.end(false);                         
+        computation_time += elapsed_time_micro;
         
         // logging
         if (do_logging && step % logging_period == 0)
@@ -136,11 +135,10 @@ int main()
             time_for_data_write += elapsed_time;             
         }     
     }
+    computation_time /= 1000.0; // to ms
     path = fileManager.convert_to_path("output_cpu.json");
     fileManager.save_json(j_sim, path);    
-    
-    // To get the value of duration use the count()
-    // member function on the duration object
-    std::cout << "computation time: " << computation_time / 1000 << " ms" << std::endl;
+        
+    std::cout << "EM computation time: " << computation_time << " ms" << std::endl;
     std::cout << "data write time: " << time_for_data_write << " ms" << std::endl;
 }

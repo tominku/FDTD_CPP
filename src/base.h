@@ -1,5 +1,12 @@
 #pragma once
 
+// #if !defined( USE_GPU )
+// #define USE_GPU 0
+// #endif
+
+#include "nlohmann/json.hpp"
+using json = nlohmann::json;
+
 using value_t = float;
 
 #define ij_to_k(i, j, Nx) (Nx*(j) + (i))
