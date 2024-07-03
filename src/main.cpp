@@ -15,14 +15,12 @@
 #include "Material.h"
 #include "FileManager.h"
 #include "Timer.h"
-
-using namespace std;
-using namespace std::chrono;
+#include "EM_Sim.h"
 
 #ifdef USE_GPU
     #include "step_EM_gpu.h"
 #else
-    #include "step_EM_cpu.h"
+    #include "EM_Sim_CPU.h"
 #endif        
 
 
@@ -79,6 +77,9 @@ int main()
     j_sim["N"] = N;  
     j_sim["logging_period"] = logging_period;              
     
+    EM_Sim_CPU sim_cpu(Hx, Hy, Ez, material_data);
+    EM_Sim *sim = (EM_Sim *)(&sim_cpu);
+
     //output_file << Nx << "," << Ny << "," << nt << "," << logging_period << "\n";
     float time_for_data_write = 0;
     int computation_time = 0; 
@@ -88,8 +89,8 @@ int main()
         int source_k = ij_to_k((int)(Nx*0.15), (int)(Ny*0.7), Nx);
         Ez[source_k] += sin(2*M_PI*f0*(dt*step)) * exp(-0.5*pow((step-20)/8, 2));
         
-        timer.begin();        
-        step_EM(Hx, Hy, Ez, coef_eps_dx, coef_eps_dy, coef_mu_dx, coef_mu_dy, material_data);        
+        timer.begin();       
+        sim->step_EM();        
         float elapsed_time_micro = timer.end(false);                         
         computation_time += elapsed_time_micro;
         

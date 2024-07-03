@@ -8,6 +8,8 @@
 using json = nlohmann::json;
 
 using value_t = float;
+using namespace std;
+using namespace std::chrono;
 
 #define ij_to_k(i, j, Nx) (Nx*(j) + (i))
 

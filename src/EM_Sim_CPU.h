@@ -1,16 +1,35 @@
 #include <omp.h>
 #include "base.h"
 #include "Material.h"
+#include "EM_Sim.h"
 
 #define PRINT 0
 #define NUM_THREADS 6
 
 int do_parallel = true;
 
-void step_EM(value_t *Hx, value_t *Hy, value_t *Ez,
-    value_t coef_eps_dx, value_t coef_eps_dy, value_t coef_mu_dx, value_t coef_mu_dy, MaterialData material_data)
-{   
+class EM_Sim_CPU : EM_Sim
+{
+private:
 
+protected:
+    std::string toName()
+    {
+        return "EM_Sim_CPU";
+    }
+
+public:
+    EM_Sim_CPU(value_t *Hx, value_t *Hy, value_t *Ez, MaterialData &material_data) 
+    : EM_Sim(Hx, Hy, Ez, material_data)
+    {
+        
+    }
+
+    void step_EM();
+};
+
+void EM_Sim_CPU::step_EM()
+{   
     // Magnetic Field Update
     #pragma omp parallel for num_threads(NUM_THREADS) collapse(2) if(do_parallel)   
     for (int i=x_fi; i<x_li; i++)
@@ -21,7 +40,7 @@ void step_EM(value_t *Hx, value_t *Hy, value_t *Ez,
             int k_for_ij = ij_to_k(i, j, Nx);
             int k_for_ijp1 = ij_to_k(i, j+1, Nx);
             int k_for_ip1j = ij_to_k(i+1, j, Nx); 
-            int material_value = material_data.scaled_data[k_for_ij];
+            int material_value = materialData.scaled_data[k_for_ij];
             //material_value = 2;
             if (material_value == 1)
             {
@@ -49,7 +68,7 @@ void step_EM(value_t *Hx, value_t *Hy, value_t *Ez,
             int k_for_ijm1 = ij_to_k(i, j-1, Nx);
             int k_for_im1j = ij_to_k(i-1, j, Nx); 
             
-            int material_value = material_data.scaled_data[k_for_ij];
+            int material_value = materialData.scaled_data[k_for_ij];
             //material_value = 2;
             if (material_value == 1)
             {
