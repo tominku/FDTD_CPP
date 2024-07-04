@@ -32,6 +32,7 @@ const int n_PML_Y = 10;
 
 // Define Simulation Based off Source and Wavelength
 int f0 = 1e6; // Frequency of Source  [Hertz]
+//int f0 = 1e2;
 //int nt = 2000; // Number of time steps  [unitless]
 
 // Spatial and Temporal System
@@ -61,6 +62,9 @@ void initialize_zero(value_t *values, int len)
         values[i] = 0;
     }
 }
+
+int source_x = (int)(Nx*0.15);
+int source_y = (int)(Ny*0.7);
 
 /*
 [Nx,Ny] = deal(Lx*Lf,Ly*Lf);    % Points in x,y           [unitless]

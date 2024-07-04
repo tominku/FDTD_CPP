@@ -66,6 +66,12 @@ public:
         static EM_Probe_Manager INSTANCE;
         return INSTANCE;
     }
+    void add_prob_around_source(int ix, int iy)
+    {
+        std::string name = "probe_around_source";
+        EM_Probe *probe = new EM_Probe(name, total_steps, ix, iy);
+        probes.push_back(probe);
+    }
 
     void probe(value_t *Ez, int step)
     {
@@ -74,7 +80,7 @@ public:
         int num_threads_ = config.num_threads;
         if (num_threads_ > num_probes)
             num_threads_ = num_probes;
-        #pragma omp parallel for num_threads(num_threads_)
+        //#pragma omp parallel for num_threads(num_threads_)
         for (int p=0; p<num_probes; ++p)
         {
             EM_Probe *probe = probes[p];

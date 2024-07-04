@@ -37,7 +37,7 @@ int main()
     material.parse();
     MaterialData material_data = material.scaleToFit(Nx, Ny);            
     
-    printf("c0: %f, Nx: %d, Ny:%d, L0: %f, dx: %f, dt: %.9f, space_x: %f,space_y: %f\n", c0, Nx, Ny, lam, dx, dt, space_size_x, space_size_y);
+    printf("c0: %f, Nx: %d, Ny:%d, L0: %f, dx: %f, dt: %.9f, space_x: %f,space_y: %f, source_i: %d, source_j: %d\n", c0, Nx, Ny, lam, dx, dt, space_size_x, space_size_y, source_x, source_y);
     
     int N = Nx * Ny;
     value_t *Ez = new value_t[N];
@@ -76,6 +76,8 @@ int main()
     
     EM_Sim_CPU sim_cpu(Hx, Hy, Ez, material_data);
     EM_Sim *sim = (EM_Sim *)(&sim_cpu);
+    EM_Probe_Manager &probeManager = EM_Probe_Manager::instance();
+    probeManager.add_prob_around_source(source_x, source_y);
 
     //output_file << Nx << "," << Ny << "," << nt << "," << logging_period << "\n";
     float time_for_data_write = 0;
@@ -84,8 +86,8 @@ int main()
     for (int step=0; step < total_steps; step++)
     {        
         //Point Source        
-        int source_k = ij_to_k((int)(Nx*0.15), (int)(Ny*0.7));
-        Ez[source_k] += sin(2*M_PI*f0*(dt*step)) * exp(-0.5*pow((step-20)/8, 2));
+        int source_k = ij_to_k(source_x, source_y);
+        Ez[source_k] += sinf(2*M_PI*f0*(dt*step)) * expf(-0.5*powf((step-20)/8.0, 2));
         
         timer.begin();       
         sim->step_EM(step);        
@@ -108,7 +110,6 @@ int main()
     path = fileManager.into_data_dir("output_cpu.json");
     fileManager.save_json(j_sim, path);    
 
-    EM_Probe_Manager &probeManager = EM_Probe_Manager::instance();
     probeManager.save();
         
     std::cout << "EM computation time: " << computation_time << " ms" << std::endl;

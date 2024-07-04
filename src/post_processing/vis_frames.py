@@ -44,7 +44,7 @@ while(True):
         break
     frame = sim_data[time_stamp]
     image_1D = np.array(frame, dtype=np.float32)
-    if t > 100:
+    if t > 200:
         max_temp = max(image_1D)
         min_temp = min(image_1D)
         if max_temp > max_value:
@@ -61,14 +61,31 @@ print(f'elapsed time loading sim file {end - begin} seconds')
 num_frames_to_show = 200
 
 images_normalized = []
+# max_values_over_images = []
+# median_values_over_images = []
+# max_value_indices_over_images = []
 value_range = (max_value - min_value)
 for image in images: # normalize images
     image = (image - min_value) / value_range
     image = (image * 2) - 1
     images_normalized.append(image)
+    # max_values_over_images.append(np.max(image))
+    # max_value_indices_over_images.append(np.argmax(image))
+    # median_values_over_images.append(np.median(image))
 
+# randomly_chosed_image = images[100]
+# print(f'max: {np.max(randomly_chosed_image)}, min: {np.min(randomly_chosed_image)}')
 
+# plt.imshow(randomly_chosed_image)
+# plt.colorbar()
+# plt.show()
+
+# print("max_values_over_images:")
+# print(max_values_over_images)
+# print("median_values_over_images:")
+# print(median_values_over_images)
 print(f'min_value: {min_value}, max_value: {max_value}')
+# print(max_value_indices_over_images)
 
 #fig = plt.figure( figsize=(12,12) )
 fig = plt.figure( figsize=(Ny / 15, Nx / 15) )
