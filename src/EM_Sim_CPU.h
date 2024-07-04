@@ -3,47 +3,18 @@
 #include "Material.h"
 #include "EM_Sim.h"
 #include "Config.h"
+#include "EM_Probe_Manager.h"
 
 #define PRINT 0
 
 int do_parallel = true;
 
-class EM_Probe
-{
-private:
-    std::string name;
-public:
-    int total_steps;
-    value_t *values;
-
-    EM_Probe(int total_steps_)
-    {
-        total_steps = total_steps_;
-        values = new value_t[total_steps];
-        initialize_zero(values, total_steps);
-    }
-
-    void save()
-    {
-        FileManager &fileManager = FileManager::instance();    
-        auto path = fileManager.into_data_dir("em_prob.json");
-        json j;
-        j["name"] = name;
-        std::vector<value_t> vec_values(values, values+total_steps);
-        j["values"] = vec_values;
-        fileManager.save_json(j, path);            
-    }
-
-    ~EM_Probe()
-    {
-        delete values;
-    }
-};
-
 class EM_Sim_CPU : EM_Sim
 {
 private:
     int num_threads;
+    EM_Probe_Manager probeManager;
+
 protected:
     std::string toName()
     {
@@ -54,7 +25,7 @@ public:
     EM_Sim_CPU(value_t *Hx, value_t *Hy, value_t *Ez, MaterialData &material_data) 
     : EM_Sim(Hx, Hy, Ez, material_data)
     {
-        num_threads = Config::instance().num_threads;
+        num_threads = Config::instance().num_threads;        
     }
 
     void step_EM();
