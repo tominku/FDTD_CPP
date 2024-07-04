@@ -43,7 +43,6 @@ class EM_Probe_Manager
 private:
     int total_steps;      
     std::vector<EM_Probe *> probes;  
-public:            
 
     EM_Probe_Manager()
     {
@@ -59,6 +58,13 @@ public:
             EM_Probe *probe = new EM_Probe(probe_name, total_steps, ix, iy);
             probes.push_back(probe);
         }         
+    }
+
+public:            
+    static EM_Probe_Manager& instance()
+    {
+        static EM_Probe_Manager INSTANCE;
+        return INSTANCE;
     }
 
     void probe(value_t *Ez, int step)
@@ -83,12 +89,24 @@ public:
     void save()
     {
         FileManager &fileManager = FileManager::instance();    
-        auto path = fileManager.into_data_dir("em_prob.json");
-        json j;
+        std::string path = fileManager.into_data_dir("EM_probe.json");        
+        json j_parent;
+        for (EM_Probe *probe : probes)
+        {                        
+            json j;
+            std::string probe_name = probe->name;
+            j["name"] = probe_name;
+            j["ix"] = probe->ix;
+            j["iy"] = probe->iy;
+            j["total_steps"] = probe->total_steps;
+            std::vector<float> data(probe->values, probe->values + total_steps);
+            j["data"] = data;
+            j_parent.push_back(j);            
+        }            
         // j["name"] = name;
         // std::vector<value_t> vec_values(values, values+total_steps);
         // j["values"] = vec_values;
-        // fileManager.save_json(j, path);            
+        fileManager.save_json(j_parent, path);            
     }
 
     ~EM_Probe_Manager()

@@ -12,8 +12,7 @@ int do_parallel = true;
 class EM_Sim_CPU : EM_Sim
 {
 private:
-    int num_threads;
-    EM_Probe_Manager probeManager;
+    int num_threads;    
 
 protected:
     std::string toName()
@@ -85,5 +84,6 @@ void EM_Sim_CPU::step_EM(int step_index)
         }
     }
 
+    EM_Probe_Manager &probeManager = EM_Probe_Manager::instance();
     probeManager.probe(Ez, step_index);
 }

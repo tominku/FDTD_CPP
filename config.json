@@ -4,13 +4,13 @@
 	"probes": [
 		{
 			"name": "probe1",
-			"ix": 0,
-			"iy": 0
+			"ix": 200,
+			"iy": 700
 		},
 		{
 			"name": "probe2",
-			"ix": 0,
-			"iy": 0
+			"ix": 200,
+			"iy": 800
 		}
 	]
 }

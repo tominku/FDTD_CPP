@@ -107,6 +107,9 @@ int main()
     computation_time /= 1000.0; // to ms
     path = fileManager.into_data_dir("output_cpu.json");
     fileManager.save_json(j_sim, path);    
+
+    EM_Probe_Manager &probeManager = EM_Probe_Manager::instance();
+    probeManager.save();
         
     std::cout << "EM computation time: " << computation_time << " ms" << std::endl;
     std::cout << "data write time: " << time_for_data_write << " ms" << std::endl;
