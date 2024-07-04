@@ -3,13 +3,14 @@
 	"num_threads": 6,
 	"probes": [
 		{
-			"name": "probe1"
+			"name": "probe1",
+			"ix": 0,
+			"iy": 0
 		},
 		{
-			"name": "probe2"
-		},
-		{
-			"name": "probe3"
+			"name": "probe2",
+			"ix": 0,
+			"iy": 0
 		}
 	]
 }

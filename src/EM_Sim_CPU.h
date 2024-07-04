@@ -28,10 +28,10 @@ public:
         num_threads = Config::instance().num_threads;        
     }
 
-    void step_EM();
+    void step_EM(int step_index);
 };
 
-void EM_Sim_CPU::step_EM()
+void EM_Sim_CPU::step_EM(int step_index)
 {       
     // Magnetic Field Update
     #pragma omp parallel for num_threads(num_threads) collapse(2) if(do_parallel)   
@@ -39,9 +39,9 @@ void EM_Sim_CPU::step_EM()
     {        
         for (int j=y_fi; j<y_li; j++)
         {            
-            int k_for_ij = ij_to_k(i, j, Nx);
-            int k_for_ijp1 = ij_to_k(i, j+1, Nx);
-            int k_for_ip1j = ij_to_k(i+1, j, Nx); 
+            int k_for_ij = ij_to_k(i, j);
+            int k_for_ijp1 = ij_to_k(i, j+1);
+            int k_for_ip1j = ij_to_k(i+1, j); 
             int material_value = materialData.scaled_data[k_for_ij];
             //material_value = 2;
             if (material_value == 1)
@@ -66,9 +66,9 @@ void EM_Sim_CPU::step_EM()
     {
         for (int j=(y_fi+1); j<y_li; j++)
         {
-            int k_for_ij = ij_to_k(i, j, Nx);
-            int k_for_ijm1 = ij_to_k(i, j-1, Nx);
-            int k_for_im1j = ij_to_k(i-1, j, Nx); 
+            int k_for_ij = ij_to_k(i, j);
+            int k_for_ijm1 = ij_to_k(i, j-1);
+            int k_for_im1j = ij_to_k(i-1, j); 
             
             int material_value = materialData.scaled_data[k_for_ij];
             //material_value = 2;
@@ -84,4 +84,6 @@ void EM_Sim_CPU::step_EM()
                 printf("E-Field i = %d, j= %d, threadId = %d \n", i, j, omp_get_thread_num());
         }
     }
+
+    probeManager.probe(Ez, step_index);
 }

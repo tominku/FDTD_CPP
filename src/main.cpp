@@ -84,11 +84,11 @@ int main()
     for (int step=0; step < total_steps; step++)
     {        
         //Point Source        
-        int source_k = ij_to_k((int)(Nx*0.15), (int)(Ny*0.7), Nx);
+        int source_k = ij_to_k((int)(Nx*0.15), (int)(Ny*0.7));
         Ez[source_k] += sin(2*M_PI*f0*(dt*step)) * exp(-0.5*pow((step-20)/8, 2));
         
         timer.begin();       
-        sim->step_EM();        
+        sim->step_EM(step);        
         float elapsed_time_micro = timer.end(false);                         
         computation_time += elapsed_time_micro;
         

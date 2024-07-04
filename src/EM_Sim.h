@@ -22,5 +22,5 @@ public:
         materialData = material_data_;
     }
     
-    virtual void step_EM() = 0;
+    virtual void step_EM(int step_index) = 0;
 };

@@ -65,8 +65,8 @@ public:
                 int origin_i = (int)round((material_data.origin_height - 1)*float_i);
                 int origin_j = (int)round((material_data.origin_width - 1)*float_j);
                 int origin_height = material_data.origin_height;
-                int pixel_value = material_data.origin_data[ij_to_k(origin_i, origin_j, origin_height)];
-                int k_for_ij = ij_to_k(i, j, nx);
+                int pixel_value = material_data.origin_data[ij_to_k_(origin_i, origin_j, origin_height)];
+                int k_for_ij = ij_to_k(i, j);
                 scaled_data[k_for_ij] = pixel_value;
             }
         }

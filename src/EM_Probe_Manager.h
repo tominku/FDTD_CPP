@@ -19,12 +19,14 @@ public:
     float physical_x;
     float physical_y;
 
-    EM_Probe(std::string &name_, int total_steps_)
+    EM_Probe(std::string &name_, int total_steps_, int ix_, int iy_)
     {
         name = name_;
         total_steps = total_steps_;
         values = new value_t[total_steps];
         initialize_zero(values, total_steps);
+        ix = ix_;
+        iy = iy_;
 
         //cout << "constructor " << name << endl;
     }
@@ -52,9 +54,31 @@ public:
         for (json &probe_json : config.probes)
         {
             std::string probe_name = probe_json["name"];            
-            EM_Probe *probe = new EM_Probe(probe_name, total_steps);
+            int ix = probe_json["ix"];
+            int iy = probe_json["iy"];
+            EM_Probe *probe = new EM_Probe(probe_name, total_steps, ix, iy);
             probes.push_back(probe);
         }         
+    }
+
+    void probe(value_t *Ez, int step)
+    {
+        int num_probes = probes.size();        
+        Config &config = Config::instance();            
+        int num_threads_ = config.num_threads;
+        if (num_threads_ > num_probes)
+            num_threads_ = num_probes;
+        #pragma omp parallel for num_threads(num_threads_)
+        for (int p=0; p<num_probes; ++p)
+        {
+            EM_Probe *probe = probes[p];
+            int i = probe->ix;
+            int j = probe->iy;
+            int k = ij_to_k(i, j);
+            value_t value = Ez[k];
+            probe->values[step] = value;
+        }
+        //ij_to_k()
     }
 
     void save()
