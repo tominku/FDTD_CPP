@@ -4,9 +4,36 @@
 #include "EM_Sim.h"
 
 #define PRINT 0
-#define NUM_THREADS 6
 
 int do_parallel = true;
+
+class EM_Probe
+{
+private:
+    std::string name;
+public:
+    value_t *values;
+
+    EM_Probe(int total_steps)
+    {
+        values = new value_t[total_steps];
+        initialize_zero(values, total_steps);
+    }
+
+    void save()
+    {
+        FileManager &fileManager = FileManager::instance();    
+        auto path = fileManager.into_data_dir("em_prob.json");
+        json j;
+        j["name"] = name;
+        fileManager.save_json(j, path);            
+    }
+
+    ~EM_Probe()
+    {
+        delete values;
+    }
+};
 
 class EM_Sim_CPU : EM_Sim
 {

@@ -7,6 +7,8 @@
 #include "nlohmann/json.hpp"
 using json = nlohmann::json;
 
+#define NUM_THREADS 6
+
 using value_t = float;
 using namespace std;
 using namespace std::chrono;
@@ -48,6 +50,15 @@ value_t coef_eps_dx = dt/(eps0*dx);
 value_t coef_eps_dy = dt/(eps0*dy);
 value_t coef_mu_dx = dt/(mu0*dx);
 value_t coef_mu_dy = dt/(mu0*dy);
+
+void initialize_zero(value_t *values, int len)
+{
+    #pragma omp parallel for num_threads(NUM_THREADS)
+    for (int i=0; i<len; ++i)
+    {
+        values[i] = 0;
+    }
+}
 
 /*
 [Nx,Ny] = deal(Lx*Lf,Ly*Lf);    % Points in x,y           [unitless]

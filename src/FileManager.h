@@ -20,18 +20,7 @@ using json = nlohmann::json;
 class FileManager : Base
 {
 private:    
-    fs::path data_dir_path;    
-    
-    FileManager() { }
-
-protected:
-    std::string toName()
-    {
-        return "FileUtil";
-    }
-
-public:
-    
+    fs::path data_dir_path;        
     void init()
     {                
         const std::string str_home_path = getenv("HOME");     
@@ -43,6 +32,15 @@ public:
         std::string msg = fmt::format("data_dir_path: {}", data_dir_path.c_str());
         print(msg);                
     }
+    FileManager() { init(); }
+
+protected:
+    std::string toName()
+    {
+        return "FileUtil";
+    }
+
+public:        
 
     void get_json(std::string file_path, json &j)
     {
@@ -61,7 +59,7 @@ public:
         return cur_path.c_str();
     }
 
-    std::string convert_to_path(std::string file_name)
+    std::string into_data_dir(std::string file_name)
     {
         auto path = data_dir_path / file_name;
         return path.c_str();

@@ -29,8 +29,7 @@ bool do_logging = true;
 
 int main()
 {            
-    FileManager &fileManager = FileManager::instance();    
-    fileManager.init();
+    FileManager &fileManager = FileManager::instance();        
     
     Material material("data/car_interior_2D_image_data.json");    
     material.parse();
@@ -44,13 +43,9 @@ int main()
     value_t *Hy = new value_t[N];
     
     // Initialize arrays
-    #pragma omp parallel for num_threads(NUM_THREADS) if(do_parallel)
-    for (int i=0; i<N; i++)
-    {
-        Ez[i] = 0;
-        Hx[i] = 0;
-        Hy[i] = 0;
-    }
+    initialize_zero(Hx, N);
+    initialize_zero(Hy, N);
+    initialize_zero(Ez, N);    
 
     // write scaled material data
     Timer timer;
@@ -61,7 +56,7 @@ int main()
     j["material_data"] = material_values;
     j["Nx"] = Nx;
     j["Ny"] = Ny;
-    std::string path = fileManager.convert_to_path("material.json");
+    std::string path = fileManager.into_data_dir("material.json");
     fileManager.save_json(j, path);    
     timer.end();
     timer.print_elapsed_time("<material.json> save elapsed time");
@@ -107,7 +102,7 @@ int main()
         }     
     }
     computation_time /= 1000.0; // to ms
-    path = fileManager.convert_to_path("output_cpu.json");
+    path = fileManager.into_data_dir("output_cpu.json");
     fileManager.save_json(j_sim, path);    
         
     std::cout << "EM computation time: " << computation_time << " ms" << std::endl;
