@@ -77,8 +77,7 @@ public:
             int k = ij_to_k(i, j);
             value_t value = Ez[k];
             probe->values[step] = value;
-        }
-        //ij_to_k()
+        }        
     }
 
     void save()
@@ -94,6 +93,9 @@ public:
 
     ~EM_Probe_Manager()
     {        
-        //delete values;
+        for (EM_Probe *probe : probes)
+        {
+            delete probe;
+        }
     }
 };
