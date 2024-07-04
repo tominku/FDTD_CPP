@@ -1,0 +1,14 @@
+{
+	"total_steps": 2000,
+	"probes": [
+		{
+			"name": "probe1"
+		},
+		{
+			"name": "probe2"
+		},
+		{
+			"name": "probe3"
+		}
+	]
+}

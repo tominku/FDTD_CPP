@@ -31,7 +31,7 @@ const int n_PML_Y = 10;
 
 // Define Simulation Based off Source and Wavelength
 int f0 = 1e6; // Frequency of Source  [Hertz]
-int nt = 2000; // Number of time steps  [unitless]
+//int nt = 2000; // Number of time steps  [unitless]
 
 // Spatial and Temporal System
 value_t eps0 = 8.854 * 1e-12;  // Permittivity of vacuum [farad/meter]

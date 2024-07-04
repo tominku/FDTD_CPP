@@ -12,10 +12,12 @@ class EM_Probe
 private:
     std::string name;
 public:
+    int total_steps;
     value_t *values;
 
-    EM_Probe(int total_steps)
+    EM_Probe(int total_steps_)
     {
+        total_steps = total_steps_;
         values = new value_t[total_steps];
         initialize_zero(values, total_steps);
     }
@@ -26,6 +28,8 @@ public:
         auto path = fileManager.into_data_dir("em_prob.json");
         json j;
         j["name"] = name;
+        std::vector<value_t> vec_values(values, values+total_steps);
+        j["values"] = vec_values;
         fileManager.save_json(j, path);            
     }
 

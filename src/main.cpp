@@ -14,6 +14,7 @@
 #include "base.h"
 #include "Material.h"
 #include "FileManager.h"
+#include "Config.h"
 #include "Timer.h"
 #include "EM_Sim.h"
 
@@ -29,7 +30,8 @@ bool do_logging = true;
 
 int main()
 {            
-    FileManager &fileManager = FileManager::instance();        
+    FileManager &fileManager = FileManager::instance();    
+    Config &config = Config::instance();
     
     Material material("data/car_interior_2D_image_data.json");    
     material.parse();
@@ -78,7 +80,8 @@ int main()
     //output_file << Nx << "," << Ny << "," << nt << "," << logging_period << "\n";
     float time_for_data_write = 0;
     int computation_time = 0; 
-    for (int step=0; step<nt; step++)
+    int total_steps = config.total_steps;
+    for (int step=0; step < total_steps; step++)
     {        
         //Point Source        
         int source_k = ij_to_k((int)(Nx*0.15), (int)(Ny*0.7), Nx);
