@@ -1,4 +1,5 @@
 #pragma once
+#include "Config.h"
 
 // #if !defined( USE_GPU )
 // #define USE_GPU 0
@@ -6,8 +7,6 @@
 
 #include "nlohmann/json.hpp"
 using json = nlohmann::json;
-
-#define NUM_THREADS 6
 
 using value_t = float;
 using namespace std;
@@ -53,7 +52,8 @@ value_t coef_mu_dy = dt/(mu0*dy);
 
 void initialize_zero(value_t *values, int len)
 {
-    #pragma omp parallel for num_threads(NUM_THREADS)
+    int num_threads = Config::instance().num_threads;
+    #pragma omp parallel for num_threads(num_threads)
     for (int i=0; i<len; ++i)
     {
         values[i] = 0;

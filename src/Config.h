@@ -22,7 +22,8 @@ using json = nlohmann::json;
 class Config : Base
 {
 public:
-    int total_steps;    
+    int total_steps;  
+    int num_threads;  
 private:        
     void init()
     {                
@@ -36,6 +37,7 @@ private:
         is >> j;   
 
         total_steps = j["total_steps"];
+        num_threads = j["num_threads"];
         std::vector<json> probes = j["probes"].template get<std::vector<json>>();
 
     }

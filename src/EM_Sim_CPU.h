@@ -2,6 +2,7 @@
 #include "base.h"
 #include "Material.h"
 #include "EM_Sim.h"
+#include "Config.h"
 
 #define PRINT 0
 
@@ -42,7 +43,7 @@ public:
 class EM_Sim_CPU : EM_Sim
 {
 private:
-
+    int num_threads;
 protected:
     std::string toName()
     {
@@ -53,16 +54,16 @@ public:
     EM_Sim_CPU(value_t *Hx, value_t *Hy, value_t *Ez, MaterialData &material_data) 
     : EM_Sim(Hx, Hy, Ez, material_data)
     {
-        
+        num_threads = Config::instance().num_threads;
     }
 
     void step_EM();
 };
 
 void EM_Sim_CPU::step_EM()
-{   
+{       
     // Magnetic Field Update
-    #pragma omp parallel for num_threads(NUM_THREADS) collapse(2) if(do_parallel)   
+    #pragma omp parallel for num_threads(num_threads) collapse(2) if(do_parallel)   
     for (int i=x_fi; i<x_li; i++)
     {        
         for (int j=y_fi; j<y_li; j++)
@@ -90,7 +91,7 @@ void EM_Sim_CPU::step_EM()
         }
     }
     // Electric Field Update
-    #pragma omp parallel for num_threads(NUM_THREADS) collapse(2) if(do_parallel)
+    #pragma omp parallel for num_threads(num_threads) collapse(2) if(do_parallel)
     for (int i=(x_fi+1); i<x_li; i++)
     {
         for (int j=(y_fi+1); j<y_li; j++)
