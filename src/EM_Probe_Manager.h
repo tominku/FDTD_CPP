@@ -12,6 +12,12 @@ public:
     std::string name;
     int total_steps;
     value_t *values;    
+    int ix;
+    int iy;
+    float ratio_x;
+    float ratio_y;
+    float physical_x;
+    float physical_y;
 
     EM_Probe(std::string &name_, int total_steps_)
     {
@@ -33,9 +39,10 @@ public:
 class EM_Probe_Manager
 {
 private:
-    int total_steps;  
+    int total_steps;      
     std::vector<EM_Probe *> probes;  
-public:        
+public:            
+
     EM_Probe_Manager()
     {
         Config &config = Config::instance();    

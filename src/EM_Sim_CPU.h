@@ -38,8 +38,7 @@ void EM_Sim_CPU::step_EM()
     for (int i=x_fi; i<x_li; i++)
     {        
         for (int j=y_fi; j<y_li; j++)
-        {
-            
+        {            
             int k_for_ij = ij_to_k(i, j, Nx);
             int k_for_ijp1 = ij_to_k(i, j+1, Nx);
             int k_for_ip1j = ij_to_k(i+1, j, Nx); 
