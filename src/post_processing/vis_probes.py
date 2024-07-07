@@ -21,8 +21,8 @@ with open(path, "r") as json_file:
         em_probes.append(em_probe)
 
 # plt.plot(em_probes[0]['data'], 'r-')
-plt.plot(em_probes[0]['data'][1500:2000])
-plt.plot(em_probes[1]['data'][1500:2000])
+plt.plot(em_probes[0]['data'][1200:2000])
+plt.plot(em_probes[1]['data'][1200:2000])
 #plt.plot(em_probes[2]['data'][:1500])
 #plt.plot(em_probes[2]['data'][:1500], 'o')
 plt.show()
