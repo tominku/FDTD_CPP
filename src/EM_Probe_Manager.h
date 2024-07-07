@@ -97,6 +97,10 @@ public:
         FileManager &fileManager = FileManager::instance();    
         std::string path = fileManager.into_data_dir("EM_probe.json");        
         json j_parent;
+        //Config &config = Config::instance();
+        //config.  
+        j_parent["dt"] = dt;
+        j_parent["probes"] = json::array();
         for (EM_Probe *probe : probes)
         {                        
             json j;
@@ -107,7 +111,7 @@ public:
             j["total_steps"] = probe->total_steps;
             std::vector<float> data(probe->values, probe->values + total_steps);
             j["data"] = data;
-            j_parent.push_back(j);            
+            j_parent["probes"].push_back(j);            
         }            
         // j["name"] = name;
         // std::vector<value_t> vec_values(values, values+total_steps);

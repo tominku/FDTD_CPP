@@ -8,6 +8,7 @@ class Spectrum:
         self.N = len(data)
         self.data = data
         self.dt = T / (self.N - 1)
+        #self.dt = T / (self.N)
         self.fs = 1.0 / self.dt
         self.delta_f = self.fs / self.N
     

@@ -1,10 +1,12 @@
 import spectrum as sptr
 import numpy as np
 
-T = 1e-9    # Total simulation time (s)
+T = 1e-9    # signal duration (s)
 N = 100
 # Create time array
-t = np.linspace(0, T, N)
+t = np.arange(1, N+1)
+delta_t = T / N
+t = delta_t * t
 f1, f2 = 2e9, 5e9  # Frequencies of the sine waves
 signal = np.sin(2 * np.pi * f1 * t) + 0.5 * np.sin(2 * np.pi * f2 * t)
 

@@ -23,7 +23,7 @@ class Config : Base
 {
 public:
     int total_steps;  
-    int num_threads;  
+    int num_threads; 
     std::vector<json> probes;
 
 private:        
