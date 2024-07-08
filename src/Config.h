@@ -24,6 +24,7 @@ class Config : Base
 public:
     int total_steps;  
     int num_threads; 
+    std::string material_file_path;
     std::vector<json> probes;
 
 private:        
@@ -40,6 +41,7 @@ private:
 
         total_steps = j["total_steps"];
         num_threads = j["num_threads"];
+        material_file_path = j["material_file_path"];
         probes = j["probes"].template get<std::vector<json>>();
 
     }

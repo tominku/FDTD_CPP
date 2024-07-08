@@ -10,17 +10,18 @@ begin = time.time()
 path = "/home/minku/.data/material.json"
 with open(path, "r") as json_file:
     material = json.load(json_file)
-    size = material["material_data_size"]
-    data = material["material_data"]
-    Nx = material["Nx"]
-    Ny = material["Ny"]
-    N = Nx * Ny
-    material_image_1D = np.array(data, dtype=np.float32)
-    material_image_2D = np.reshape(material_image_1D, (Nx, Ny), order='F')
-
-material_image = material_image_2D
-#plt.imshow(material_image)
-#plt.show()
+    has_material = material["has_material"]
+    if has_material:
+        size = material["material_data_size"]
+        data = material["material_data"]
+        Nx = material["Nx"]
+        Ny = material["Ny"]
+        N = Nx * Ny
+        material_image_1D = np.array(data, dtype=np.float32)
+        material_image_2D = np.reshape(material_image_1D, (Nx, Ny), order='F')
+        material_image = material_image_2D
+        #plt.imshow(material_image)
+        #plt.show()
 end = time.time()
 print(f'elapsed time loading material file {end - begin} seconds')
 
@@ -69,12 +70,7 @@ for image in images: # normalize images
     image = (image - min_value) / value_range
     image = (image * 2) - 1
     images_normalized.append(image)
-    # max_values_over_images.append(np.max(image))
-    # max_value_indices_over_images.append(np.argmax(image))
-    # median_values_over_images.append(np.median(image))
-
-# randomly_chosed_image = images[100]
-# print(f'max: {np.max(randomly_chosed_image)}, min: {np.min(randomly_chosed_image)}')
+    # max_values_over_images.apminchosed_image)}, min: {np.min(randomly_chosed_image)}')
 
 # plt.imshow(randomly_chosed_image)
 # plt.colorbar()
@@ -91,14 +87,18 @@ print(f'min_value: {min_value}, max_value: {max_value}')
 fig = plt.figure( figsize=(Ny / 15, Nx / 15) )
 #fig = plt.figure()
 
-print(f'material: min {np.min(material_image)} max {np.max(material_image)}')
+if has_material:
+    print(f'material: min {np.min(material_image)} max {np.max(material_image)}')
 
 a = images_normalized[0]
 cmap = "afmhot"
 #im = plt.imshow(a, interpolation='none', cmap='gray', aspect='auto', vmin=0, vmax=1)
 #im = plt.imshow(a, interpolation='none', cmap='gray', aspect='auto', vmin=min_value, vmax=max_value)
 #im = plt.imshow(a, interpolation='none', cmap='viridis', aspect='auto', vmin=min_value, vmax=max_value, alpha=(1-material_image))
-im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto', vmin=-1, vmax=1, alpha=(1-material_image))
+if has_material:
+    im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto', vmin=-1, vmax=1, alpha=(1-material_image))
+else:
+    im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto', vmin=-1, vmax=1)            
 #plt.colorbar()
 
 def animate_func(i):

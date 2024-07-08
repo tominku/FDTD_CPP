@@ -18,6 +18,7 @@
 
 struct MaterialData
 {
+    bool has_material;
     int *origin_data;
     int origin_height;
     int origin_width;
@@ -34,6 +35,7 @@ private:
     string file_path;
     MaterialData material_data;
     int num_pixels;
+    bool has_material;
 
 protected:
     std::string toName()
@@ -44,10 +46,16 @@ protected:
 public:
     Material(string file_)
     {
+        has_material = false;
         FileManager &fileManager = FileManager::instance();
         auto current_dir_path = fileManager.get_current_dir_path();
         file_path = fileManager.convert_to_path(current_dir_path, file_);        
         material_data.origin_data = NULL;
+    }
+
+    bool hasMaterial()
+    {
+        return has_material;
     }
 
     MaterialData scaleToFit(int nx, int ny)
@@ -83,7 +91,12 @@ public:
     {        
         FileManager &fileManager = FileManager::instance(); 
         json material_json;               
-        fileManager.get_json(file_path, material_json);
+        bool is_file_ok = fileManager.get_json(file_path, material_json);
+        if (!is_file_ok)
+        {
+            material_data.has_material = false;
+            return material_data;
+        }
         
         material_data.origin_width = material_json["width"];
         material_data.origin_height = material_json["height"];
@@ -96,6 +109,8 @@ public:
 
         std::copy(data_vector.begin(), data_vector.end(), material_data.origin_data);
 
-        return material_data;
+        material_data.has_material = true;
+        MaterialData material_data_ = scaleToFit(Nx, Ny);        
+        return material_data_;   
     }
 };

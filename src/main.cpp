@@ -33,9 +33,9 @@ int main()
     FileManager &fileManager = FileManager::instance();    
     Config &config = Config::instance();
     
-    Material material("data/car_interior_2D_image_data.json");    
-    material.parse();
-    MaterialData material_data = material.scaleToFit(Nx, Ny);            
+    //Material material("data/car_interior_2D_image_data.json");    
+    Material material(config.material_file_path);    
+    MaterialData material_data = material.parse();             
     
     printf("c0: %f, Nx: %d, Ny:%d, L0: %f, dx: %f, dt: %.9f, space_x: %f,space_y: %f, source_i: %d, source_j: %d\n", c0, Nx, Ny, lam, dx, dt, space_size_x, space_size_y, source_x, source_y);
     
@@ -51,18 +51,23 @@ int main()
 
     // write scaled material data
     Timer timer;
-    std::vector<int> material_values(material_data.scaled_data, material_data.scaled_data+N);
-    int vec_size = material_values.size();
     json j;
-    j["material_data_size"] = vec_size;
-    j["material_data"] = material_values;
+    j["has_material"] = material_data.has_material;
+    if (material_data.has_material)
+    {    
+        std::vector<int> material_values(material_data.scaled_data, material_data.scaled_data+N);
+        int vec_size = material_values.size();
+        assert (vec_size == N);        
+        j["material_data_size"] = vec_size;
+        j["material_data"] = material_values;
+    }
     j["Nx"] = Nx;
     j["Ny"] = Ny;
+    
     std::string path = fileManager.into_data_dir("material.json");
     fileManager.save_json(j, path);    
     timer.end();
-    timer.print_elapsed_time("<material.json> save elapsed time");
-    assert (vec_size == N);    
+    timer.print_elapsed_time("<material.json> save elapsed time");    
 
     int logging_period = 5;
     int test = 0;

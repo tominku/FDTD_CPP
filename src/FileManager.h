@@ -42,10 +42,14 @@ protected:
 
 public:        
 
-    void get_json(std::string file_path, json &j)
+    bool get_json(std::string file_path, json &j)
     {
-        std::ifstream is(file_path);        
-        is >> j;
+        std::ifstream is(file_path);   
+        bool is_ok = !is.fail();
+        if (is_ok)     
+            is >> j;    
+
+        return is_ok;
     }
 
     std::string get_data_dir_path()
