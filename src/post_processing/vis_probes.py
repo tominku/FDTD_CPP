@@ -36,7 +36,7 @@ with open(path, "r") as json_file:
 i_begin = 1000
 i_end = 2000
 N = i_end - i_begin +1
-T = dt * (N)
+T = dt * (N - 1)
 signal = em_probes[0]['data'][i_begin:i_end]
 spectrum = sptr.Spectrum(signal, T)
 spectrum.print_info()
