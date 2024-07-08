@@ -104,8 +104,8 @@ int main()
         signal = np.cos(2*np.pi*(f0*ts + (k/2)*np.power(ts, 2.0)) + np.pi/2)
         */
         int f_begin = 0.1*f0; // chirp initial frequency
-        int f_end = 3.0*f0; // chirp end frequency
-        int chirp_duration_as_steps = 1000; // chirp duration as steps
+        int f_end = 1.0*f0; // chirp end frequency
+        int chirp_duration_as_steps = 750; // chirp duration as steps
         float T = chirp_duration_as_steps * dt;
         float k = (f_end - f_begin) / T; // frequency change rate
         //Ez[source_k] += sinf(2*M_PI*f0*(dt*step));

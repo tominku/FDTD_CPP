@@ -34,7 +34,7 @@ class Spectrum:
     def plot_spectrum(self, freq, fft_result):
         plt.figure(figsize=(10, 6))
         plt.plot(freq / 1e9, fft_result)
-        #plt.plot(freq / 1e9, fft_result, 'ro')
+        plt.plot(freq / 1e9, fft_result, 'ro')
         plt.xlabel('Frequency (GHz)')
         plt.ylabel('Magnitude')
         plt.title('Frequency Spectrum')

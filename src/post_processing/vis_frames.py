@@ -58,7 +58,7 @@ while(True):
 end = time.time()
 print(f'elapsed time loading sim file {end - begin} seconds')
 
-num_frames_to_show = 200
+num_frames_to_show = 400
 
 images_normalized = []
 # max_values_over_images = []

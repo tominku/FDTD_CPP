@@ -33,7 +33,7 @@ with open(path, "r") as json_file:
 
 # i_begin = 1200
 # i_end = 2000
-i_begin = 50
+i_begin = 1500
 i_end = 2000
 
 N = i_end - i_begin +1
@@ -42,5 +42,7 @@ signal = em_probes[2]['data'][i_begin:i_end]
 spectrum = sptr.Spectrum(signal, T)
 spectrum.print_info()
 freq, fft_result = spectrum.compute()
-spectrum.plot_spectrum(freq, fft_result)
-#spectrum.plot_spectrum(freq, 10*np.log10(fft_result))
+bin_size = len(freq)
+show_bin_size = int(bin_size / 3)
+spectrum.plot_spectrum(freq[:show_bin_size], fft_result[:show_bin_size])
+#spectrum.plot_spectrum(freq[:show_bin_size], 10*np.log10(fft_result[:show_bin_size]))
