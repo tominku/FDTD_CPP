@@ -34,7 +34,8 @@ value_t dy = (lam / devisions_per_wave);
 int Nx = (int)(space_size_x / dx);
 int Ny = (int)(space_size_y / dy);
 
-value_t dt = pow(pow(dx,-2) + pow(dy,-2), -0.5)/c0*.99;
+//value_t dt = powf(powf(dx,-2) + powf(dy,-2), -0.5)/c0*.99;
+value_t dt = powf(powf(dx,-2) + powf(dy,-2), -0.5)/c0;
 
 
 #define ij_to_k(i, j) (Nx*(j) + (i))
