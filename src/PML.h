@@ -1,38 +1,46 @@
 #include <cmath>
 
+struct PML_Node
+{
+    float idx;    
+};
+
 class PML
 {    
 private:
-    int n_PML;
-    double order;
-    double *part1_positions_x;
-    double *part2_positions_x;
-    double *part1_positions_y;
-    double *part2_positions_y;
-    void compute_coeffs();
+    int n_PML_nodes_per_part;    
+    float order;
+    PML_Node *part1;
+    PML_Node *part2;        
+    void init();
 
-public:
-    PML(int _n_PML)
+public:    
+    PML(int n_PML_nodes_per_part_, float order_)
     {
-        n_PML = _n_PML;
-        order = 3;
-        part1_positions_x = new double[n_PML];
-        part2_positions_x = new double[n_PML];
-        part1_positions_y = new double[n_PML];
-        part2_positions_y = new double[n_PML];
+        n_PML_nodes_per_part = n_PML_nodes_per_part_;
+        order = order_;        
 
-        compute_coeffs();
+        init();
     }    
+
+    ~PML()
+    {
+        delete [] part1;
+        delete [] part2;
+    }
 };
 
-void PML::compute_coeffs()
+void PML::init()
 {    
-    for (int i=0; i<n_PML; i++)
-        part1_positions_x[i] = pow(i, order);
-    for (int i=0; i<n_PML; i++)
-        part2_positions_x[i] = pow(i, order);           
-    for (int i=0; i<n_PML; i++)
-        part1_positions_y[i] = pow(i, order);
-    for (int i=0; i<n_PML; i++)
-        part2_positions_y[i] = pow(i, order);                   
+    part1 = new PML_Node[n_PML_nodes_per_part];    
+    part2 = new PML_Node[n_PML_nodes_per_part];    
+    //part2 = new PML_Node[n_PML_nodes_per_part];        
+
+    for (int i=0; i<n_PML_nodes_per_part; i++)
+    {
+        PML_Node node;
+        node.idx = i;
+        float idx_to_the_order = 
+        part1[i] = node;
+    }
 }
