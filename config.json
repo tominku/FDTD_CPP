@@ -1,8 +1,8 @@
 {
 	"total_steps": 2000,
 	"num_threads": 6,
-	"material_file_path2": "none",	
-	"material_file_path": "data/car_interior_2D_image_data.json",	
+	"material_file_path": "none",	
+	"material_file_path2": "data/car_interior_2D_image_data.json",	
 	"probes": [
 		{
 			"name": "probe1",

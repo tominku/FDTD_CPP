@@ -53,11 +53,44 @@ void EM_Sim_CPU::step_EM(int step_index)
             }
             else
             {
-                Hx[k_for_ij] -= coef_mu_dy * (Ez[k_for_ij] - Ez[k_for_ijp1]); 
-                Hy[k_for_ij] += coef_mu_dx * (Ez[k_for_ij] - Ez[k_for_ip1j]);
-                // Hx[i][j] -= coef_mu_dy * (Ez[i][j] - Ez[i][j+1]); 
-                // Hy[i][j] += coef_mu_dx * (Ez[i][j] - Ez[i+1][j]);
+                if (!use_pml)
+                {
+                    Hx[k_for_ij] -= coef_mu_dy * (Ez[k_for_ij] - Ez[k_for_ijp1]); 
+                    Hy[k_for_ij] += coef_mu_dx * (Ez[k_for_ij] - Ez[k_for_ip1j]);
                 }
+                else
+                {
+                    int h = 0;
+                    float kappa_x = 1.0;
+                    float kappa_y = 1.0;                    
+                    float Q_x = 0;
+                    float Q_y = 0;
+                    float b_x = 0;
+                    float c_x = 0;
+                    float b_y = 0;
+                    float c_y = 0;                    
+                    PML_Node *pml_node_xdir = NULL;
+                    PML_Node *pml_node_ydir = NULL;                    
+                    if (j < pml_ydir->n_PML_nodes_per_part)                                        
+                        pml_node_ydir = &(pml_ydir->part1[j]);
+                    else if (j > (Ny - pml_ydir->n_PML_nodes_per_part))                                                                
+                    {
+                        //pml_node_ydir = &(pml_ydir->part2[j]);
+                    }
+
+                    if (pml_node_ydir != NULL)
+                    {
+                        kappa_y = pml_node_ydir->kappa_M;
+                        b_y = pml_node_ydir->b_M;
+                        c_y = pml_node_ydir->c_M;
+                    }
+                    //else if ()                        
+                    float kappa_y_m = pml_ydir->part1[h].kappa_M;
+                    float Q_y = pml_ydir->part1[h].Q;
+                    Hx[k_for_ij] -= (coef_mu_dy / kappa_y) * (Ez[k_for_ij] - Ez[k_for_ijp1]) + Q_y;                     
+                    Hy[k_for_ij] += (coef_mu_dx / kappa_x) * (Ez[k_for_ij] - Ez[k_for_ip1j]) + Q_x;
+                }
+            }
             if (PRINT)
                 printf("M-Field i = %d, j= %d, threadId = %d \n", i, j, omp_get_thread_num());
         }

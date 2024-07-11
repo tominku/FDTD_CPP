@@ -24,14 +24,14 @@ private:
     float kappa_max;
     float sigma_max;
     float alpha_min;
-    float alpha_max;
-    PML_Node *part1;
-    PML_Node *part2;     
+    float alpha_max;    
     void init_PML_part(PML_Node *PML_nodes, bool reverse_i, float idx_offset=0);       
     void init();
 
 public: 
-    int n_PML_nodes_per_part;       
+    int n_PML_nodes_per_part;
+    PML_Node *part1;
+    PML_Node *part2;
 
     PML(int n_PML_nodes_per_part_=20, float order_=3, float kappa_max_=2)
     {

@@ -31,6 +31,12 @@ public:
             pml_ydir = new PML(20, 3.0, 2.0);
         }
     }
+
+    ~EM_Sim()
+    {
+        delete pml_xdir;
+        delete pml_ydir;
+    }
     
     virtual void step_EM(int step_index) = 0;
 };
