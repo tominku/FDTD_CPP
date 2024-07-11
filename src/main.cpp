@@ -79,7 +79,8 @@ int main()
     j_sim["N"] = N;  
     j_sim["logging_period"] = logging_period;              
     
-    EM_Sim_CPU sim_cpu(Hx, Hy, Ez, material_data, true);
+    bool use_pml = true;
+    EM_Sim_CPU sim_cpu(Hx, Hy, Ez, material_data, use_pml);
     EM_Sim *sim = (EM_Sim *)(&sim_cpu);
     EM_Probe_Manager &probeManager = EM_Probe_Manager::instance();
     probeManager.add_prob_around_source(source_x, source_y);

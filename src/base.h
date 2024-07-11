@@ -22,10 +22,10 @@ using namespace std::chrono;
 
 //int f0 = 60*1e9; // Nominal Frequency [Hertz]
 //long f0 = 5*1e9; // Nominal Frequency [Hertz]
-long f0 = 1*1e9; // Nominal Frequency [Hertz]
+long f0 = 2*1e9; // Nominal Frequency [Hertz]
 value_t t0  = 1.0/f0;  // Source Period  [second]
-value_t space_size_x = 2; // m;
-value_t space_size_y = 4; // m;
+value_t space_size_x = 1; // m;
+value_t space_size_y = 2; // m;
 value_t eps0 = 8.854 * 1e-12;  // Permittivity of vacuum [farad/meter]
 value_t mu0 = 4*M_PI* 1e-7;  // Permeability of vacuum [henry/meter]
 value_t c0 = 1/pow((eps0*mu0), 0.5);  // Speed of light  [meter/second]
