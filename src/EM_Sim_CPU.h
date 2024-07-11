@@ -27,8 +27,40 @@ public:
         num_threads = Config::instance().num_threads;        
     }
 
+    void get_PML_info(float kappas[DIRECTIONS], float Qs[DIRECTIONS], int i, int j);
     void step_EM(int step_index);
 };
+
+void EM_Sim_CPU::get_PML_info(float kappas[DIRECTIONS], float Qs[DIRECTIONS], int i, int j)
+{
+    PML *pmls[DIRECTIONS] = {pml_xdir, pml_ydir};
+    int N_along_dir[DIRECTIONS] = {Nx, Ny}; 
+    int index_along_dir[DIRECTIONS] = {i, j};
+    // float Ez_diff[DIRECTIONS] = {
+    //     Ez[k_for_ij] - Ez[k_for_ip1j], 
+    //     Ez[k_for_ij] - Ez[k_for_ijp1] };
+    for (int d=0; d<DIRECTIONS; ++d)
+    {   
+        PML *pml = pmls[d];
+        PML_Node *pml_node = NULL;
+        int n_PML = pml->n_PML_nodes_per_part;
+        pml_node = get_PML_node(
+            pml->part1, pml->part2, n_PML, 
+            N_along_dir[d], index_along_dir[d]);
+        float kappa = 1.0;                    
+        float Q = 0, b = 0, c = 0;
+        if (pml_node != NULL)
+        { 
+            kappa = pml_node->kappa_M;
+            Q = pml_node->Q;
+            b = pml_node->b_M;
+            c = pml_node->c_M;
+            kappas[d] = kappa;
+            //Qs[d] = b*Q - c*Ez_diff[d];
+            Qs[d] = b*Q;
+        }
+    }
+}
 
 void EM_Sim_CPU::step_EM(int step_index)
 {       
@@ -59,42 +91,15 @@ void EM_Sim_CPU::step_EM(int step_index)
                     Hy[k_for_ij] += coef_mu_dx * (Ez[k_for_ij] - Ez[k_for_ip1j]);
                 }
                 else
-                {   
-                    #define X_DIR 0
-                    #define Y_DIR 1                
-                    #define DIRECTIONS 2 
-                    PML *pmls[DIRECTIONS] = {pml_xdir, pml_ydir};
-                    int N_along_dir[DIRECTIONS] = {Nx, Ny}; 
-                    int index_along_dir[DIRECTIONS] = {i, j};
+                {                        
                     float kappas[DIRECTIONS] = {1.0, 1.0};
                     float Qs[DIRECTIONS] = {0, 0};
+                    get_PML_info(kappas, Qs, i, j);
                     float Ez_diff[DIRECTIONS] = {
                         Ez[k_for_ij] - Ez[k_for_ip1j], 
                         Ez[k_for_ij] - Ez[k_for_ijp1] };
-                    for (int d=0; d<DIRECTIONS; ++d)
-                    {   
-                        PML *pml = pmls[d];
-                        PML_Node *pml_node = NULL;
-                        int n_PML = pml->n_PML_nodes_per_part;
-                        pml_node = get_PML_node(
-                            pml->part1, pml->part2, n_PML, 
-                            N_along_dir[d], index_along_dir[d]);
-                        float kappa = 1.0;                    
-                        float Q = 0, b = 0, c = 0;
-                        if (pml_node != NULL)
-                        { 
-                            kappa = pml_node->kappa_M;
-                            Q = pml_node->Q;
-                            b = pml_node->b_M;
-                            c = pml_node->c_M;
-                            //kappas[d] = kappa;
-                            //Qs[d] = Q;
-                        }
-                    }
-                    
                     Hy[k_for_ij] += (coef_mu_dx / kappas[X_DIR]) * (Ez_diff[X_DIR]) + Qs[X_DIR];
                     Hx[k_for_ij] -= (coef_mu_dy / kappas[Y_DIR]) * (Ez_diff[Y_DIR]) + Qs[Y_DIR];                     
-                    
                 }
             }
             if (PRINT)

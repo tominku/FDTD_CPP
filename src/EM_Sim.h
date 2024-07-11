@@ -27,8 +27,10 @@ public:
         use_pml = use_pml_;
         if (use_pml)
         {
-            pml_xdir = new PML(20, 3.0, 2.0);
-            pml_ydir = new PML(20, 3.0, 2.0);
+            int n_PML = 30;
+            int kappa_max = 5.0;
+            pml_xdir = new PML(n_PML, 3.0, kappa_max);
+            pml_ydir = new PML(n_PML, 3.0, kappa_max);
         }
     }
 

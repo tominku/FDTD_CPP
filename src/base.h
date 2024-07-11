@@ -22,7 +22,7 @@ using namespace std::chrono;
 
 //int f0 = 60*1e9; // Nominal Frequency [Hertz]
 //long f0 = 5*1e9; // Nominal Frequency [Hertz]
-long f0 = 2*1e9; // Nominal Frequency [Hertz]
+long f0 = 3*1e9; // Nominal Frequency [Hertz]
 value_t t0  = 1.0/f0;  // Source Period  [second]
 value_t space_size_x = 1; // m;
 value_t space_size_y = 2; // m;
@@ -34,6 +34,10 @@ value_t dx = (lam / devisions_per_wave);
 value_t dy = (lam / devisions_per_wave);
 int Nx = (int)(space_size_x / dx);
 int Ny = (int)(space_size_y / dy);
+
+#define X_DIR 0
+#define Y_DIR 1                
+#define DIRECTIONS 2
 
 //value_t dt = powf(powf(dx,-2) + powf(dy,-2), -0.5)/c0*.99;
 value_t dt = powf(powf(dx,-2) + powf(dy,-2), -0.5)/c0;
