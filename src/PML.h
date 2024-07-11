@@ -51,7 +51,7 @@ public:
     }
 };
 
-void PML::init_PML_part(PML_Node *PML_nodes, bool reverse_i, float idx_offset=0)
+void PML::init_PML_part(PML_Node *PML_nodes, bool reverse_i, float idx_offset)
 {
     vector<float> vec_idx(n_PML_nodes_per_part);
     for (int i=0; i<n_PML_nodes_per_part; i++)
@@ -62,7 +62,7 @@ void PML::init_PML_part(PML_Node *PML_nodes, bool reverse_i, float idx_offset=0)
             vec_idx[i] = (float)(i + 1.0);
     }
 
-    for (int i=0; i<=n_PML_nodes_per_part; ++i)
+    for (int i=0; i<n_PML_nodes_per_part; ++i)
     {
         PML_Node node;
         node.idx = vec_idx[i] + idx_offset;        
@@ -95,8 +95,8 @@ void PML::init_PML_part(PML_Node *PML_nodes, bool reverse_i, float idx_offset=0)
 
 void PML::init()
 {    
-    part1 = new PML_Node[n_PML_nodes_per_part];  
-    init_PML_part(part1, true, 0);
-    part2 = new PML_Node[n_PML_nodes_per_part];      
+    part1 = new PML_Node[n_PML_nodes_per_part];          
+    init_PML_part(part1, true, 0);    
+    part2 = new PML_Node[n_PML_nodes_per_part];  
     init_PML_part(part2, false, 0);    
 }

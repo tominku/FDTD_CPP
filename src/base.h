@@ -21,7 +21,8 @@ using namespace std::chrono;
 // #define Ny (num_waves_y*devisions_per_wave + 1)
 
 //int f0 = 60*1e9; // Nominal Frequency [Hertz]
-long f0 = 5*1e9; // Nominal Frequency [Hertz]
+//long f0 = 5*1e9; // Nominal Frequency [Hertz]
+long f0 = 1*1e9; // Nominal Frequency [Hertz]
 value_t t0  = 1.0/f0;  // Source Period  [second]
 value_t space_size_x = 2; // m;
 value_t space_size_y = 4; // m;

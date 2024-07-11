@@ -21,8 +21,8 @@ protected:
     }
 
 public:
-    EM_Sim_CPU(value_t *Hx, value_t *Hy, value_t *Ez, MaterialData &material_data) 
-    : EM_Sim(Hx, Hy, Ez, material_data)
+    EM_Sim_CPU(value_t *Hx, value_t *Hy, value_t *Ez, MaterialData &material_data, bool use_pml_) 
+    : EM_Sim(Hx, Hy, Ez, material_data, use_pml_)
     {
         num_threads = Config::instance().num_threads;        
     }
