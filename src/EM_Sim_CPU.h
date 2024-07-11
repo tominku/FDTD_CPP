@@ -27,11 +27,13 @@ public:
         num_threads = Config::instance().num_threads;        
     }
 
-    void get_PML_info(float kappas[DIRECTIONS], float Qs[DIRECTIONS], int i, int j);
+    void get_PML_info(float kappas[DIRECTIONS], 
+        float Qs[DIRECTIONS], int i, int j, bool is_for_M);
     void step_EM(int step_index);
 };
 
-void EM_Sim_CPU::get_PML_info(float kappas[DIRECTIONS], float Qs[DIRECTIONS], int i, int j)
+void EM_Sim_CPU::get_PML_info(float kappas[DIRECTIONS], 
+    float Qs[DIRECTIONS], int i, int j, bool is_for_M)
 {
     PML *pmls[DIRECTIONS] = {pml_xdir, pml_ydir};
     int N_along_dir[DIRECTIONS] = {Nx, Ny}; 
@@ -51,10 +53,20 @@ void EM_Sim_CPU::get_PML_info(float kappas[DIRECTIONS], float Qs[DIRECTIONS], in
         float Q = 0, b = 0, c = 0;
         if (pml_node != NULL)
         { 
-            kappa = pml_node->kappa_M;
-            Q = pml_node->Q;
-            b = pml_node->b_M;
-            c = pml_node->c_M;
+            if (is_for_M)
+            {
+                kappa = pml_node->kappa_M;
+                Q = pml_node->Q;
+                b = pml_node->b_M;
+                c = pml_node->c_M;
+            }
+            else
+            {
+                kappa = pml_node->kappa_E;
+                Q = pml_node->Q;
+                b = pml_node->b_E;
+                c = pml_node->c_E;                
+            }
             kappas[d] = kappa;
             //Qs[d] = b*Q - c*Ez_diff[d];
             Qs[d] = b*Q;
@@ -94,7 +106,8 @@ void EM_Sim_CPU::step_EM(int step_index)
                 {                        
                     float kappas[DIRECTIONS] = {1.0, 1.0};
                     float Qs[DIRECTIONS] = {0, 0};
-                    get_PML_info(kappas, Qs, i, j);
+                    bool is_for_M = true; 
+                    get_PML_info(kappas, Qs, i, j, is_for_M);
                     float Ez_diff[DIRECTIONS] = {
                         Ez[k_for_ij] - Ez[k_for_ip1j], 
                         Ez[k_for_ij] - Ez[k_for_ijp1] };
@@ -126,7 +139,13 @@ void EM_Sim_CPU::step_EM(int step_index)
             }
             else
             {
-                Ez[k_for_ij] += coef_eps_dx*(Hy[k_for_im1j] - Hy[k_for_ij]) - coef_eps_dy*(Hx[k_for_ijm1] - Hx[k_for_ij]);
+                float kappas[DIRECTIONS] = {1.0, 1.0};
+                float Qs[DIRECTIONS] = {0, 0};
+                bool is_for_M = false; 
+                get_PML_info(kappas, Qs, i, j, is_for_M);  
+                Ez[k_for_ij] += (coef_eps_dx / kappas[X_DIR])*(Hy[k_for_im1j] - Hy[k_for_ij]) -
+                                (coef_eps_dy / kappas[Y_DIR])*(Hx[k_for_ijm1] - Hx[k_for_ij]) +
+                                Qs[X_DIR] + Qs[Y_DIR];
             }
             if (PRINT)
                 printf("E-Field i = %d, j= %d, threadId = %d \n", i, j, omp_get_thread_num());
