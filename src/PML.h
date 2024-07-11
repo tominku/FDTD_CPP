@@ -100,3 +100,16 @@ void PML::init()
     part2 = new PML_Node[n_PML_nodes_per_part];  
     init_PML_part(part2, false, 0);    
 }
+
+inline PML_Node *get_PML_node(PML_Node *part1, PML_Node *part2, int n_PML, int n, int node_i)
+{               
+    PML_Node *pml_node = NULL;    
+    int part2_begin_i = n - n_PML;              
+    if (node_i < n_PML)                                        
+        pml_node = part1 + node_i;
+    else if (node_i >= part2_begin_i)                                                                
+    {
+        pml_node = part2 + (node_i - part2_begin_i);
+    }
+    return pml_node;
+}

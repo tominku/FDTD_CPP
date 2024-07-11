@@ -59,34 +59,33 @@ void EM_Sim_CPU::step_EM(int step_index)
                     Hy[k_for_ij] += coef_mu_dx * (Ez[k_for_ij] - Ez[k_for_ip1j]);
                 }
                 else
-                {
-                    int h = 0;
-                    float kappa_x = 1.0;
-                    float kappa_y = 1.0;                    
-                    float Q_x = 0;
-                    float Q_y = 0;
-                    float b_x = 0;
-                    float c_x = 0;
-                    float b_y = 0;
-                    float c_y = 0;                    
+                {                    
                     PML_Node *pml_node_xdir = NULL;
-                    PML_Node *pml_node_ydir = NULL;                    
-                    if (j < pml_ydir->n_PML_nodes_per_part)                                        
-                        pml_node_ydir = &(pml_ydir->part1[j]);
-                    else if (j > (Ny - pml_ydir->n_PML_nodes_per_part))                                                                
-                    {
-                        //pml_node_ydir = &(pml_ydir->part2[j]);
+                    PML_Node *pml_node_ydir = NULL;
+                    int n_PML_xdir = pml_xdir->n_PML_nodes_per_part; 
+                    int n_PML_ydir = pml_ydir->n_PML_nodes_per_part;                    
+                    pml_node_xdir = get_PML_node(pml_xdir->part1,
+                        pml_xdir->part2, n_PML_xdir, Nx, i);
+                    pml_node_ydir = get_PML_node(pml_ydir->part1,
+                        pml_ydir->part2, n_PML_ydir, Ny, j);                    
+                    
+                    float kappa_x = 1.0, kappa_y = 1.0;                    
+                    float Q_x = 0, b_x = 0, c_x = 0;
+                    float Q_y = 0, b_y = 0, c_y = 0;
+                    if (pml_node_xdir != NULL)
+                    { 
+                        kappa_x = pml_node_xdir->kappa_M;
+                        Q_x = pml_node_xdir->Q;
+                        b_x = pml_node_xdir->b_M;
+                        c_x = pml_node_xdir->c_M;
                     }
-
                     if (pml_node_ydir != NULL)
-                    {
+                    { 
                         kappa_y = pml_node_ydir->kappa_M;
+                        Q_y = pml_node_ydir->Q;
                         b_y = pml_node_ydir->b_M;
                         c_y = pml_node_ydir->c_M;
                     }
-                    //else if ()                        
-                    float kappa_y_m = pml_ydir->part1[h].kappa_M;
-                    float Q_y = pml_ydir->part1[h].Q;
                     Hx[k_for_ij] -= (coef_mu_dy / kappa_y) * (Ez[k_for_ij] - Ez[k_for_ijp1]) + Q_y;                     
                     Hy[k_for_ij] += (coef_mu_dx / kappa_x) * (Ez[k_for_ij] - Ez[k_for_ip1j]) + Q_x;
                 }
