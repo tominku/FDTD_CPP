@@ -38,6 +38,9 @@ void EM_Sim_CPU::get_PML_info(float kappas[DIRECTIONS],
     PML *pmls[DIRECTIONS] = {pml_xdir, pml_ydir};
     int N_along_dir[DIRECTIONS] = {Nx, Ny}; 
     int index_along_dir[DIRECTIONS] = {i, j};
+    value_t *Q_M[DIRECTIONS] = {Q_M_x, Q_M_y};
+    value_t *Q_E[DIRECTIONS] = {Q_E_x, Q_E_y};
+    int k_for_ij = ij_to_k(i, j);
     for (int d=0; d<DIRECTIONS; ++d)
     {   
         PML *pml = pmls[d];
@@ -55,7 +58,8 @@ void EM_Sim_CPU::get_PML_info(float kappas[DIRECTIONS],
             {
                 kappa = pml_node->kappa_M;
                 b = pml_node->b_M;
-                c = pml_node->c_M;
+                c = pml_node->c_M;  
+                //Q_M[d][k_for_ij] = b*Q_M[d][k_for_ij] - c*field_diff;
             }
             else
             {
@@ -115,7 +119,7 @@ void EM_Sim_CPU::step_EM(int step_index)
                         Q[k_for_ij] = bs[dir]*Q[k_for_ij] - cs[dir]*Ez_diff[dir];
                     }
                     Hy[k_for_ij] += (coef_mu_dx / kappas[X_DIR]) * (Ez_diff[X_DIR]) + Q_M[X_DIR][k_for_ij];
-                    Hx[k_for_ij] -= (coef_mu_dy / kappas[Y_DIR]) * (Ez_diff[Y_DIR]) - Q_M[Y_DIR][k_for_ij];                     
+                    Hx[k_for_ij] -= (coef_mu_dy / kappas[Y_DIR]) * (Ez_diff[Y_DIR]) + Q_M[Y_DIR][k_for_ij];                     
                 }
             }
             if (PRINT)
@@ -158,7 +162,7 @@ void EM_Sim_CPU::step_EM(int step_index)
                 } 
                 Ez[k_for_ij] += (coef_eps_dx / kappas[X_DIR])*(Hy[k_for_im1j] - Hy[k_for_ij]) -
                                 (coef_eps_dy / kappas[Y_DIR])*(Hx[k_for_ijm1] - Hx[k_for_ij]) +
-                                - Q_E[X_DIR][k_for_ij] + Q_E[Y_DIR][k_for_ij];
+                                + Q_E[X_DIR][k_for_ij] + Q_E[Y_DIR][k_for_ij];
             }
             if (PRINT)
                 printf("E-Field i = %d, j= %d, threadId = %d \n", i, j, omp_get_thread_num());
