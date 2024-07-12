@@ -80,6 +80,7 @@ int main()
     j_sim["logging_period"] = logging_period;              
     
     bool use_pml = true;
+    //bool use_pml = false;
     EM_Sim_CPU sim_cpu(Hx, Hy, Ez, material_data, use_pml);
     EM_Sim *sim = (EM_Sim *)(&sim_cpu);
     EM_Probe_Manager &probeManager = EM_Probe_Manager::instance();
