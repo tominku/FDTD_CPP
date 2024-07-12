@@ -37,7 +37,7 @@ int main()
     Material material(config.material_file_path);    
     MaterialData material_data = material.parse();             
     
-    printf("c0: %f, Nx: %d, Ny:%d, L0: %f, dx: %f, dt: %.9f, space_x: %f,space_y: %f, source_i: %d, source_j: %d\n", c0, Nx, Ny, lam, dx, dt, space_size_x, space_size_y, source_x, source_y);
+    printf("c0: %f, Nx: %d, Ny:%d, L0: %f, dx: %f, dt: %.12f, space_x: %f,space_y: %f, source_i: %d, source_j: %d\n", c0, Nx, Ny, lam, dx, dt, space_size_x, space_size_y, source_x, source_y);
     
     int N = Nx * Ny;
     value_t *Ez = new value_t[N];
@@ -134,8 +134,19 @@ int main()
         {
             timer.begin();
             //vec_Ez.assign(Ez, Ez+N);
-            std::vector<float> vec_Ez(Ez, Ez + N);
+            std::vector<value_t> vec_Ez(Ez, Ez + N);
+            //std::vector<value_t> vec_kappa_x_image(sim->kappa_x_image, sim->kappa_x_image + N);
+            //std::vector<value_t> vec_kappa_y_image(sim->kappa_y_image, sim->kappa_y_image + N);
+            //std::vector<value_t> vec_sigma_x_image(sim->sigma_x_image, sim->sigma_x_image + N);
+            //std::vector<value_t> vec_sigma_y_image(sim->sigma_y_image, sim->sigma_y_image + N);
+            //std::vector<value_t> vec_b_x_image(sim->b_x_image, sim->b_x_image + N);
+            //std::vector<value_t> vec_b_y_image(sim->b_y_image, sim->b_y_image + N);
+            std::vector<value_t> vec_c_x_image(sim->c_x_image, sim->c_x_image + N);
+            //std::vector<value_t> vec_c_y_image(sim->c_y_image, sim->c_y_image + N);
             std::string time_stamp = fmt::format("t{}", step);
+            //j_sim[time_stamp] = vec_c_y_image;
+            //j_sim[time_stamp] = vec_c_x_image;
+            //j_sim[time_stamp] = vec_sigma_y_image;
             j_sim[time_stamp] = vec_Ez;
             float elapsed_time = timer.end();
             time_for_data_write += elapsed_time;             

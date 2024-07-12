@@ -26,9 +26,9 @@ long f0 = 3*1e9; // Nominal Frequency [Hertz]
 value_t t0  = 1.0/f0;  // Source Period  [second]
 value_t space_size_x = 1; // m;
 value_t space_size_y = 1; // m;
-value_t eps0 = 8.854 * 1e-12;  // Permittivity of vacuum [farad/meter]
-value_t mu0 = 4*M_PI* 1e-7;  // Permeability of vacuum [henry/meter]
-value_t c0 = 1/pow((eps0*mu0), 0.5);  // Speed of light  [meter/second]
+double eps0 = 8.854 * 1e-12;  // Permittivity of vacuum [farad/meter]
+double mu0 = 4*M_PI* 1e-7;  // Permeability of vacuum [henry/meter]
+float c0 = 1/pow((eps0*mu0), 0.5);  // Speed of light  [meter/second]
 value_t lam = c0 / f0;  // Freespace Wavelength  [meter]
 value_t dx = (lam / devisions_per_wave);
 value_t dy = (lam / devisions_per_wave);
@@ -40,7 +40,7 @@ int Ny = (int)(space_size_y / dy);
 #define DIRECTIONS 2
 
 //value_t dt = powf(powf(dx,-2) + powf(dy,-2), -0.5)/c0*.99;
-value_t dt = powf(powf(dx,-2) + powf(dy,-2), -0.5)/c0;
+double dt = powf(powf(dx,-2) + powf(dy,-2), -0.5)/c0;
 
 
 #define ij_to_k(i, j) (Nx*(j) + (i))

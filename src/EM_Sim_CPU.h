@@ -28,12 +28,14 @@ public:
     }
 
     void get_PML_info(float kappas[DIRECTIONS], 
-        float bs[DIRECTIONS], float cs[DIRECTIONS], value_t field_diffs[DIRECTIONS], int i, int j, bool is_for_M);
+        float bs[DIRECTIONS], float cs[DIRECTIONS],
+        value_t field_diffs[DIRECTIONS], int i, int j, bool is_for_M,
+        float sigmas[DIRECTIONS]);
     void step_EM(int step_index);
 };
 
 void EM_Sim_CPU::get_PML_info(float kappas[DIRECTIONS], 
-    float bs[DIRECTIONS], float cs[DIRECTIONS], value_t field_diffs[DIRECTIONS], int i, int j, bool is_for_M)
+    float bs[DIRECTIONS], float cs[DIRECTIONS], value_t field_diffs[DIRECTIONS], int i, int j, bool is_for_M, float sigmas[DIRECTIONS])
 {
     PML *pmls[DIRECTIONS] = {pml_xdir, pml_ydir};
     int N_along_dir[DIRECTIONS] = {Nx, Ny}; 
@@ -49,7 +51,8 @@ void EM_Sim_CPU::get_PML_info(float kappas[DIRECTIONS],
         pml_node = get_PML_node(
             pml->part1, pml->part2, n_PML, 
             N_along_dir[d], index_along_dir[d]);
-        float kappa = 1.0;                    
+        float kappa = 1.0;   
+        float sigma= 0;                 
         float Q = 0, b = 0, c = 0;
         value_t field_diff = field_diffs[d];
         if (pml_node != NULL)
@@ -59,17 +62,19 @@ void EM_Sim_CPU::get_PML_info(float kappas[DIRECTIONS],
                 kappa = pml_node->kappa_M;
                 b = pml_node->b_M;
                 c = pml_node->c_M;  
-                //Q_M[d][k_for_ij] = b*Q_M[d][k_for_ij] - c*field_diff;
+                sigma = pml_node->sigma_M;
             }
             else
             {
                 kappa = pml_node->kappa_E;
                 b = pml_node->b_E;
                 c = pml_node->c_E;   
+                sigma = pml_node->sigma_E;
             }
             kappas[d] = kappa;
             bs[d] = b;
             cs[d] = c;
+            sigmas[d] = sigma;
         }
     }
 }
@@ -105,6 +110,11 @@ void EM_Sim_CPU::step_EM(int step_index)
                 else
                 {                        
                     float kappas[DIRECTIONS] = {1.0, 1.0};
+                    float sigmas[DIRECTIONS] = {0, 0};
+                    value_t *b_images[DIRECTIONS] = {b_x_image, b_y_image};
+                    value_t *c_images[DIRECTIONS] = {c_x_image, c_y_image};
+                    value_t *kappa_images[DIRECTIONS] = {kappa_x_image, kappa_y_image};
+                    value_t *sigma_images[DIRECTIONS] = {sigma_x_image, sigma_y_image};
                     float bs[DIRECTIONS] = {0, 0};
                     float cs[DIRECTIONS] = {0, 0};
                     value_t *Q_M[DIRECTIONS] = {Q_M_x, Q_M_y};
@@ -113,10 +123,19 @@ void EM_Sim_CPU::step_EM(int step_index)
                         Ez[k_for_ip1j] - Ez[k_for_ij], 
                         Ez[k_for_ijp1] - Ez[k_for_ij] };
                     float delta_spatial[DIRECTIONS] = {dx, dy};
-                    get_PML_info(kappas, bs, cs, Ez_diff, i, j, is_for_M);
+                    get_PML_info(kappas, bs, cs, Ez_diff, i, j, is_for_M, sigmas);
+                    //kappa_images[X_DIR][k_for_ij] = kappas[X_DIR];
+                    //kappa_images[Y_DIR][k_for_ij] = kappas[Y_DIR];
+                    // sigma_images[X_DIR][k_for_ij] = [X_DIR];
+                    // sigma_images[Y_DIR][k_for_ij] = kappas[Y_DIR]; 
+                    b_images[X_DIR][k_for_ij] = bs[X_DIR];
+                    b_images[Y_DIR][k_for_ij] = bs[Y_DIR];
+                    // c_images[X_DIR][k_for_ij] = cs[X_DIR];
+                    // c_images[Y_DIR][k_for_ij] = cs[Y_DIR];                      
                     for (int dir=0; dir<DIRECTIONS; ++dir)
                     {
                         value_t *Q = Q_M[dir];
+                        //cs[dir] = 0;
                         Q[k_for_ij] = bs[dir]*Q[k_for_ij] - cs[dir]*Ez_diff[dir] / delta_spatial[dir];
                     }
                     Hy[k_for_ij] = Hy[k_for_ij] -(-(coef_mu_dx / kappas[X_DIR]) * (Ez_diff[X_DIR]) - Q_M[X_DIR][k_for_ij]);
@@ -148,6 +167,11 @@ void EM_Sim_CPU::step_EM(int step_index)
             else
             {
                 float kappas[DIRECTIONS] = {1.0, 1.0};
+                float sigmas[DIRECTIONS] = {0, 0};
+                value_t *kappa_images[DIRECTIONS] = {kappa_x_image, kappa_y_image};
+                value_t *sigma_images[DIRECTIONS] = {sigma_x_image, sigma_y_image};
+                value_t *b_images[DIRECTIONS] = {b_x_image, b_y_image};
+                value_t *c_images[DIRECTIONS] = {c_x_image, c_y_image};
                 float bs[DIRECTIONS] = {0, 0};
                 float cs[DIRECTIONS] = {0, 0};
                 value_t *Q_E[DIRECTIONS] = {Q_E_x, Q_E_y};
@@ -156,10 +180,19 @@ void EM_Sim_CPU::step_EM(int step_index)
                     Hy[k_for_ij] - Hy[k_for_im1j], 
                     Hx[k_for_ij] - Hx[k_for_ijm1] };
                 float delta_spatial[DIRECTIONS] = {dx, dy};
-                get_PML_info(kappas, bs, cs, H_diff, i, j, is_for_M); 
+                get_PML_info(kappas, bs, cs, H_diff, i, j, is_for_M, sigmas); 
+                kappa_images[X_DIR][k_for_ij] = kappas[X_DIR];
+                kappa_images[Y_DIR][k_for_ij] = kappas[Y_DIR];
+                sigma_images[X_DIR][k_for_ij] = sigmas[X_DIR];
+                sigma_images[Y_DIR][k_for_ij] = sigmas[Y_DIR];
+                // b_images[X_DIR][k_for_ij] = bs[X_DIR];
+                // b_images[Y_DIR][k_for_ij] = bs[Y_DIR];
+                c_images[X_DIR][k_for_ij] = cs[X_DIR];
+                c_images[Y_DIR][k_for_ij] = cs[Y_DIR];                
                 for (int dir=0; dir<DIRECTIONS; ++dir)
                 {
                     value_t *Q = Q_E[dir];
+                    //cs[dir] = 0;
                     Q[k_for_ij] = bs[dir]*Q[k_for_ij] - cs[dir]*H_diff[dir] / delta_spatial[dir];
                 } 
                 Ez[k_for_ij] = Ez[k_for_ij] +

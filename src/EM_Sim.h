@@ -21,6 +21,15 @@ protected:
     PML *pml_ydir;
 
 public:
+    value_t *sigma_x_image;
+    value_t *sigma_y_image;
+    value_t *kappa_x_image;
+    value_t *kappa_y_image;
+    value_t *b_x_image;
+    value_t *b_y_image;
+    value_t *c_x_image;
+    value_t *c_y_image;
+
     EM_Sim(){}
     EM_Sim(value_t *Hx_, value_t *Hy_, value_t *Ez_, MaterialData &material_data_, bool use_pml_)
     {
@@ -36,6 +45,23 @@ public:
             initialize_zero(Q_E_y, N);
             initialize_zero(Q_M_x, N);
             initialize_zero(Q_M_y, N);
+
+            sigma_x_image = new value_t[N];
+            kappa_x_image = new value_t[N];
+            sigma_y_image = new value_t[N];
+            kappa_y_image = new value_t[N];
+            b_x_image = new value_t[N];
+            b_y_image = new value_t[N];
+            c_x_image = new value_t[N];
+            c_y_image = new value_t[N];
+            initialize_zero(sigma_x_image, N);
+            initialize_zero(kappa_x_image, N);
+            initialize_zero(sigma_y_image, N);
+            initialize_zero(kappa_y_image, N);
+            initialize_zero(b_x_image, N);
+            initialize_zero(b_y_image, N);
+            initialize_zero(c_x_image, N);
+            initialize_zero(c_y_image, N);
         }
         Hx = Hx_;
         Hy = Hy_;
@@ -45,8 +71,8 @@ public:
         if (use_pml)
         {
             int n_PML = 20;
-            int kappa_max = 7.0;
-            float order = 4.0;
+            int kappa_max = 5.0;
+            float order = 3.0;
             pml_xdir = new PML(n_PML, order, kappa_max);
             pml_ydir = new PML(n_PML, order, kappa_max);
         }

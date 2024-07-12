@@ -38,6 +38,7 @@ public:
         order = order_;        
         kappa_max = kappa_max_;
         sigma_max = (order + 1) / (150*M_PI*dx); // where this formulation comes from?
+        printf("sigma_max: %f \n", sigma_max);
         alpha_min = 0;
         alpha_max = 4e-5;
         init();
@@ -78,10 +79,10 @@ void PML::init_PML_part(PML_Node *PML_nodes, bool reverse_i, float idx_offset)
         node.alpha_M = 0;
         float temp = node.kappa_E*eps0 + dt*(node.kappa_E*node.alpha_E + node.sigma_E);
         node.b_E = (node.kappa_E * eps0) / temp;
-        node.c_E = (dt * node.sigma_E) / node.kappa_E * temp;
+        node.c_E = (dt * node.sigma_E) / (node.kappa_E * temp);
         temp = node.kappa_M*mu0 + dt*(node.kappa_M*node.alpha_M + node.sigma_M);
         node.b_M = (node.kappa_M * mu0) / temp;
-        node.c_M = (dt * node.sigma_M) / node.kappa_M * temp;
+        node.c_M = (dt * node.sigma_M) / (node.kappa_M * temp);
 
         PML_nodes[i] = node;
 

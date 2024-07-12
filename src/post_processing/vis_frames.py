@@ -98,8 +98,9 @@ cmap = "afmhot"
 if has_material:
     im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto', vmin=-1, vmax=1, alpha=(1-material_image))
 else:
-    im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto', vmin=-1, vmax=1)            
-#plt.colorbar()
+    im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto', vmin=-1, vmax=1)
+    #im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto')            
+plt.colorbar()
 
 def animate_func(i):
     im.set_array(images_normalized[i])
