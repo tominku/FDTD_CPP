@@ -130,12 +130,12 @@ void EM_Sim_CPU::step_EM(int step_index)
                     // sigma_images[Y_DIR][k_for_ij] = kappas[Y_DIR]; 
                     b_images[X_DIR][k_for_ij] = bs[X_DIR];
                     b_images[Y_DIR][k_for_ij] = bs[Y_DIR];
-                    // c_images[X_DIR][k_for_ij] = cs[X_DIR];
-                    // c_images[Y_DIR][k_for_ij] = cs[Y_DIR];                      
+                    c_images[X_DIR][k_for_ij] = cs[X_DIR];
+                    c_images[Y_DIR][k_for_ij] = cs[Y_DIR];                      
                     for (int dir=0; dir<DIRECTIONS; ++dir)
                     {
                         value_t *Q = Q_M[dir];
-                        //cs[dir] = 0;
+                        cs[dir] = 0;
                         Q[k_for_ij] = bs[dir]*Q[k_for_ij] - cs[dir]*Ez_diff[dir] / delta_spatial[dir];
                     }
                     Hy[k_for_ij] = Hy[k_for_ij] -(-(coef_mu_dx / kappas[X_DIR]) * (Ez_diff[X_DIR]) - Q_M[X_DIR][k_for_ij]);
@@ -187,8 +187,8 @@ void EM_Sim_CPU::step_EM(int step_index)
                 sigma_images[Y_DIR][k_for_ij] = sigmas[Y_DIR];
                 // b_images[X_DIR][k_for_ij] = bs[X_DIR];
                 // b_images[Y_DIR][k_for_ij] = bs[Y_DIR];
-                c_images[X_DIR][k_for_ij] = cs[X_DIR];
-                c_images[Y_DIR][k_for_ij] = cs[Y_DIR];                
+                // c_images[X_DIR][k_for_ij] = cs[X_DIR];
+                // c_images[Y_DIR][k_for_ij] = cs[Y_DIR];                
                 for (int dir=0; dir<DIRECTIONS; ++dir)
                 {
                     value_t *Q = Q_E[dir];

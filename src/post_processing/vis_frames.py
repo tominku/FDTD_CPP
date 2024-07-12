@@ -45,6 +45,7 @@ while(True):
         break
     frame = sim_data[time_stamp]
     image_1D = np.array(frame, dtype=np.float32)
+    print(image_1D)
     if t > 1000:
         max_temp = max(image_1D)
         min_temp = min(image_1D)
@@ -65,6 +66,7 @@ images_normalized = []
 # max_values_over_images = []
 # median_values_over_images = []
 # max_value_indices_over_images = []
+print(f'min_value: {min_value}, max_value: {max_value}')
 value_range = (max_value - min_value)
 for image in images: # normalize images
     image = (image - min_value) / value_range
@@ -80,7 +82,6 @@ for image in images: # normalize images
 # print(max_values_over_images)
 # print("median_values_over_images:")
 # print(median_values_over_images)
-print(f'min_value: {min_value}, max_value: {max_value}')
 # print(max_value_indices_over_images)
 
 #fig = plt.figure( figsize=(12,12) )
