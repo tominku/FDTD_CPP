@@ -13,9 +13,7 @@ struct PML_Node
     float b_E;
     float c_E;
     float b_M;
-    float c_M;    
-    float Q_M;
-    float Q_E;
+    float c_M;        
 };
 
 class PML
@@ -81,8 +79,6 @@ void PML::init_PML_part(PML_Node *PML_nodes, bool reverse_i, float idx_offset)
         temp = node.kappa_M*mu0 + dt*(node.kappa_M*node.alpha_M + node.sigma_M);
         node.b_M = (node.kappa_M * mu0) / temp;
         node.c_M = (dt * node.sigma_M) / node.kappa_M * temp;
-        node.Q_M = 0;
-        node.Q_E = 0;
 
         PML_nodes[i] = node;
 
