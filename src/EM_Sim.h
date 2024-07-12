@@ -45,9 +45,10 @@ public:
         if (use_pml)
         {
             int n_PML = 20;
-            int kappa_max = 5.0;
-            pml_xdir = new PML(n_PML, 3.0, kappa_max);
-            pml_ydir = new PML(n_PML, 3.0, kappa_max);
+            int kappa_max = 7.0;
+            float order = 4.0;
+            pml_xdir = new PML(n_PML, order, kappa_max);
+            pml_ydir = new PML(n_PML, order, kappa_max);
         }
     }
 

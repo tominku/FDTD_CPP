@@ -71,8 +71,11 @@ void PML::init_PML_part(PML_Node *PML_nodes, bool reverse_i, float idx_offset)
         node.kappa_M = 1 + (kappa_max - 1) * p_M;
         node.sigma_E = sigma_max * p_E;
         node.sigma_M = (mu0 / eps0) * sigma_max * p_M;
-        node.alpha_E  = alpha_min + (alpha_max-alpha_min)*(1 - p_E);
-        node.alpha_M  = (mu0 / eps0) * (alpha_min + (alpha_max-alpha_min)*(1 - p_M));
+        //node.sigma_M = sigma_max * p_M;
+        // node.alpha_E  = alpha_min + (alpha_max-alpha_min)*(1 - p_E);
+        // node.alpha_M  = (mu0 / eps0) * (alpha_min + (alpha_max-alpha_min)*(1 - p_M));
+        node.alpha_E = 0;
+        node.alpha_M = 0;
         float temp = node.kappa_E*eps0 + dt*(node.kappa_E*node.alpha_E + node.sigma_E);
         node.b_E = (node.kappa_E * eps0) / temp;
         node.c_E = (dt * node.sigma_E) / node.kappa_E * temp;

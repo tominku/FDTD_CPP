@@ -162,7 +162,8 @@ void EM_Sim_CPU::step_EM(int step_index)
                     value_t *Q = Q_E[dir];
                     Q[k_for_ij] = bs[dir]*Q[k_for_ij] - cs[dir]*H_diff[dir] / delta_spatial[dir];
                 } 
-                Ez[k_for_ij] += (coef_eps_dx / kappas[X_DIR])*(H_diff[X_DIR]) + Q_E[X_DIR][k_for_ij] -
+                Ez[k_for_ij] = Ez[k_for_ij] +
+                                (coef_eps_dx / kappas[X_DIR])*(H_diff[X_DIR]) + Q_E[X_DIR][k_for_ij] -
                                 (coef_eps_dy / kappas[Y_DIR])*(H_diff[Y_DIR]) - Q_E[Y_DIR][k_for_ij];
             }
             if (PRINT)
