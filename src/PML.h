@@ -39,8 +39,8 @@ public:
         kappa_max = kappa_max_;
         sigma_max = (order + 1) / (150*M_PI*dx); // where this formulation comes from?
         printf("sigma_max: %f \n", sigma_max);
-        alpha_min = 0;
-        alpha_max = 4e-5;
+        alpha_min = 1.0;
+        alpha_max = 5;
         init();
     }    
 
@@ -66,23 +66,34 @@ void PML::init_PML_part(PML_Node *PML_nodes, bool reverse_i, float idx_offset)
     {
         PML_Node node;
         node.idx = vec_idx[i] + idx_offset;        
-        float p_E = powf((node.idx-0.25) / (float)n_PML_nodes_per_part, order);
-        float p_M = powf((node.idx+0.25) / (float)n_PML_nodes_per_part, order);
+        // float p_E = powf((node.idx-0.25) / (float)n_PML_nodes_per_part, order);
+        // float p_M = powf((node.idx+0.25) / (float)n_PML_nodes_per_part, order);
+        float p_E = powf((node.idx) / (float)n_PML_nodes_per_part, order);
+        float p_M = powf((node.idx) / (float)n_PML_nodes_per_part, order);
         node.kappa_E = 1 + (kappa_max - 1) * p_E;
         node.kappa_M = 1 + (kappa_max - 1) * p_M;
         node.sigma_E = sigma_max * p_E;
-        node.sigma_M = (mu0 / eps0) * sigma_max * p_M;
-        //node.sigma_M = sigma_max * p_M;
+        node.sigma_M = sigma_max * p_M;
         node.alpha_E  = alpha_min + (alpha_max-alpha_min)*(1 - p_E);
-        node.alpha_M  = (mu0 / eps0) * (alpha_min + (alpha_max-alpha_min)*(1 - p_M));
-        // node.alpha_E = 0;
-        // node.alpha_M = 0;
-        float temp = node.kappa_E*eps0 + dt*(node.kappa_E*node.alpha_E + node.sigma_E);
-        node.b_E = (node.kappa_E * eps0) / temp;
-        node.c_E = (dt * node.sigma_E) / (node.kappa_E * temp);
-        temp = node.kappa_M*mu0 + dt*(node.kappa_M*node.alpha_M + node.sigma_M);
-        node.b_M = (node.kappa_M * mu0) / temp;
-        node.c_M = (dt * node.sigma_M) / (node.kappa_M * temp);
+        node.alpha_M  = alpha_min + (alpha_max-alpha_min)*(1 - p_M);
+        // node.alpha_E  = 0;
+        // node.alpha_M  = 0;
+
+        node.b_E = expf(-((node.sigma_E/node.kappa_E) + node.alpha_E)*(dt/eps0));
+        node.c_E = (node.sigma_E/(node.sigma_E*node.kappa_E + powf(node.kappa_E, 2.0)*node.alpha_E))*(node.b_E - 1.0);
+        node.b_M = expf(-((node.sigma_M/node.kappa_M) + node.alpha_M)*(dt/eps0));
+        node.c_M = (node.sigma_M/(node.sigma_M*node.kappa_M + powf(node.kappa_M, 2.0)*node.alpha_M))*(node.b_M - 1.0);
+
+        // node.sigma_E = sigma_max * p_E;
+        // node.sigma_M = (mu0 / eps0) * sigma_max * p_M;
+        // node.alpha_E  = alpha_min + (alpha_max-alpha_min)*(1 - p_E);
+        // node.alpha_M  = (mu0 / eps0) * (alpha_min + (alpha_max-alpha_min)*(1 - p_M));
+        // float temp = node.kappa_E*eps0 + dt*(node.kappa_E*node.alpha_E + node.sigma_E);
+        // node.b_E = (node.kappa_E * eps0) / temp;
+        // node.c_E = (dt * node.sigma_E) / (node.kappa_E * temp);
+        // temp = node.kappa_M*mu0 + dt*(node.kappa_M*node.alpha_M + node.sigma_M);
+        // node.b_M = (node.kappa_M * mu0) / temp;
+        // node.c_M = (dt * node.sigma_M) / (node.kappa_M * temp);
 
         PML_nodes[i] = node;
 

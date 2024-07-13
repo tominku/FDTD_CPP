@@ -52,7 +52,7 @@ void EM_Sim_CPU::get_PML_info(float kappas[DIRECTIONS],
             pml->part1, pml->part2, n_PML, 
             N_along_dir[d], index_along_dir[d]);
         float kappa = 1.0;   
-        float sigma= 0;                 
+        float sigma = 0.9;                 
         float Q = 0, b = 0, c = 0;
         value_t field_diff = field_diffs[d];
         if (pml_node != NULL)
@@ -135,11 +135,17 @@ void EM_Sim_CPU::step_EM(int step_index)
                     for (int dir=0; dir<DIRECTIONS; ++dir)
                     {
                         value_t *Q = Q_M[dir];
-                        cs[dir] = 0;
-                        Q[k_for_ij] = bs[dir]*Q[k_for_ij] - cs[dir]*Ez_diff[dir] / delta_spatial[dir];
+                        //cs[dir] *= 0.0000001;
+                        //cs[dir] = 0;
+                        //assert(cs[dir] < 1.0);
+                        //bs[dir] = 0;
+                        Q[k_for_ij] = bs[dir]*Q[k_for_ij] + cs[dir]*Ez_diff[dir] / (delta_spatial[dir]);
+                        //Q[k_for_ij] = 0;
                     }
                     Hy[k_for_ij] = Hy[k_for_ij] -(-(coef_mu_dx / kappas[X_DIR]) * (Ez_diff[X_DIR]) - Q_M[X_DIR][k_for_ij]);
-                    Hx[k_for_ij] = Hx[k_for_ij] -( (coef_mu_dy / kappas[Y_DIR]) * (Ez_diff[Y_DIR]) + Q_M[Y_DIR][k_for_ij]);                     
+                    Hx[k_for_ij] = Hx[k_for_ij] -( (coef_mu_dy / kappas[Y_DIR]) * (Ez_diff[Y_DIR]) + Q_M[Y_DIR][k_for_ij]);
+                    // Hy[k_for_ij] = Hy[k_for_ij] -(-(coef_mu_dx / kappas[X_DIR]) * (Ez_diff[X_DIR]) );
+                    // Hx[k_for_ij] = Hx[k_for_ij] -( (coef_mu_dy / kappas[Y_DIR]) * (Ez_diff[Y_DIR]) );                     
                 }
             }
             if (PRINT)
@@ -193,11 +199,15 @@ void EM_Sim_CPU::step_EM(int step_index)
                 {
                     value_t *Q = Q_E[dir];
                     //cs[dir] = 0;
-                    Q[k_for_ij] = bs[dir]*Q[k_for_ij] - cs[dir]*H_diff[dir] / delta_spatial[dir];
+                    Q[k_for_ij] = bs[dir]*Q[k_for_ij] + cs[dir]*H_diff[dir] / delta_spatial[dir];
+                    //Q[k_for_ij] = 0;
                 } 
-                Ez[k_for_ij] = Ez[k_for_ij] +
-                                (coef_eps_dx / kappas[X_DIR])*(H_diff[X_DIR]) + Q_E[X_DIR][k_for_ij] -
-                                (coef_eps_dy / kappas[Y_DIR])*(H_diff[Y_DIR]) - Q_E[Y_DIR][k_for_ij];
+                Ez[k_for_ij] = Ez[k_for_ij] + 
+                                    (coef_eps_dx / kappas[X_DIR])*(H_diff[X_DIR]) + Q_E[X_DIR][k_for_ij] - 
+                                    (coef_eps_dy / kappas[Y_DIR])*(H_diff[Y_DIR]) - Q_E[Y_DIR][k_for_ij];
+                // Ez[k_for_ij] = Ez[k_for_ij] + 
+                //     (coef_eps_dx / kappas[X_DIR])*(H_diff[X_DIR]) - 
+                //     (coef_eps_dy / kappas[Y_DIR])*(H_diff[Y_DIR]);
             }
             if (PRINT)
                 printf("E-Field i = %d, j= %d, threadId = %d \n", i, j, omp_get_thread_num());
