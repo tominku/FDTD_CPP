@@ -39,7 +39,7 @@ t = 0
 images = []
 min_value = 1e6
 max_value = -1e6
-PML_thickness = 0
+PML_thickness = 10
 print(f'Nx: {Nx}, Ny: {Ny}')
 while(True):
     time_stamp = f't{t}'
@@ -59,13 +59,14 @@ while(True):
     image_2D = np.reshape(image_1D, (Nx, Ny), order='F')
     image_2D_inner = image_2D[PML_thickness:(Nx-PML_thickness), PML_thickness:(Ny-PML_thickness)]
     #print(image_2D.shape)
-    images.append(image_2D_inner)
+    #images.append(image_2D_inner)
+    images.append(image_2D)
     t += logging_period
 
 end = time.time()
 print(f'elapsed time loading sim file {end - begin} seconds')
 
-num_frames_to_show = 400
+num_frames_to_show = 100
 
 images_normalized = []
 # max_values_over_images = []
@@ -98,6 +99,7 @@ if has_material:
 
 a = images_normalized[0]
 cmap = "afmhot"
+ax = plt.subplot()
 #im = plt.imshow(a, interpolation='none', cmap='gray', aspect='auto', vmin=0, vmax=1)
 #im = plt.imshow(a, interpolation='none', cmap='gray', aspect='auto', vmin=min_value, vmax=max_value)
 #im = plt.imshow(a, interpolation='none', cmap='viridis', aspect='auto', vmin=min_value, vmax=max_value, alpha=(1-material_image))
@@ -108,10 +110,18 @@ else:
     #im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto')            
 #plt.colorbar()
 
+ax.add_image(im)
+ax.plot([PML_thickness, PML_thickness], [0, Nx-1] ,'k--')
+ax.plot([Nx-PML_thickness, Nx-PML_thickness], [0, Nx-1] ,'k--')
+ax.plot([0, Ny-1], [PML_thickness, PML_thickness] ,'k--')
+ax.plot([0, Ny-1], [Nx-PML_thickness, Nx-PML_thickness] ,'k--')
+from matplotlib.patches import Circle
+
 def animate_func(i):
-    im.set_array(images_normalized[i])
+    im.set_array(images_normalized[i]) 
     plt.title('%d / %d frame' % ((i * logging_period), 2000))
-    return [im]
+    #return [im]
+    return ax
 #plt.colorbar(im)
 
 interval_in_ms = 100
