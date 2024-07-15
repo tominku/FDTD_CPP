@@ -40,7 +40,7 @@ public:
         sigma_max = (order + 1) / (150*M_PI*dx); // where this formulation comes from?
         printf("sigma_max: %f \n", sigma_max);
         alpha_min = 0.0;
-        alpha_max = 0.01;
+        alpha_max = 1e-5;
         init();
     }    
 

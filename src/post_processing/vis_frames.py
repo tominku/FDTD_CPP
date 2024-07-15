@@ -39,6 +39,8 @@ t = 0
 images = []
 min_value = 1e6
 max_value = -1e6
+PML_thickness = 0
+print(f'Nx: {Nx}, Ny: {Ny}')
 while(True):
     time_stamp = f't{t}'
     if not time_stamp in sim_data:
@@ -47,7 +49,7 @@ while(True):
     image_1D = np.array(frame, dtype=np.float32)
     # if t < 100:
     #     print(np.sum(image_1D))
-    if t > 900:
+    if t > 800:
         max_temp = max(image_1D)
         min_temp = min(image_1D)
         if max_temp > max_value:
@@ -55,7 +57,9 @@ while(True):
         if min_temp < min_value:
             min_value = min_temp
     image_2D = np.reshape(image_1D, (Nx, Ny), order='F')
-    images.append(image_2D)
+    image_2D_inner = image_2D[PML_thickness:(Nx-PML_thickness), PML_thickness:(Ny-PML_thickness)]
+    #print(image_2D.shape)
+    images.append(image_2D_inner)
     t += logging_period
 
 end = time.time()
@@ -102,7 +106,7 @@ if has_material:
 else:
     im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto', vmin=-1, vmax=1)
     #im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto')            
-plt.colorbar()
+#plt.colorbar()
 
 def animate_func(i):
     im.set_array(images_normalized[i])

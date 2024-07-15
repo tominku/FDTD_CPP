@@ -123,30 +123,15 @@ void EM_Sim_CPU::step_EM(int step_index)
                         Ez[k_for_ip1j] - Ez[k_for_ij], 
                         Ez[k_for_ijp1] - Ez[k_for_ij] };
                     float delta_spatial[DIRECTIONS] = {dx, dy};
-                    get_PML_info(kappas, bs, cs, Ez_diff, i, j, is_for_M, sigmas);
-                    //kappa_images[X_DIR][k_for_ij] = kappas[X_DIR];
-                    //kappa_images[Y_DIR][k_for_ij] = kappas[Y_DIR];
-                    // sigma_images[X_DIR][k_for_ij] = [X_DIR];
-                    // sigma_images[Y_DIR][k_for_ij] = kappas[Y_DIR]; 
-                    b_images[X_DIR][k_for_ij] = bs[X_DIR];
-                    b_images[Y_DIR][k_for_ij] = bs[Y_DIR];
-                    c_images[X_DIR][k_for_ij] = cs[X_DIR];
-                    c_images[Y_DIR][k_for_ij] = cs[Y_DIR];                      
+                    get_PML_info(kappas, bs, cs, Ez_diff, i, j, is_for_M, sigmas);                    
                     for (int dir=0; dir<DIRECTIONS; ++dir)
                     {
                         value_t *Q = Q_M[dir];
-                        //cs[dir] *= 0.0000001;
-                        //cs[dir] = 0;
-                        //assert(cs[dir] < 1.0);
-                        //bs[dir] = 0;
                         Q[k_for_ij] = bs[dir]*Q[k_for_ij] + cs[dir]*Ez_diff[dir] / (delta_spatial[dir]);
-                        //Q[k_for_ij] = 0;
                     }
                     float dt_over_mu = dt / mu0;
                     Hy[k_for_ij] = Hy[k_for_ij] - dt_over_mu*(-(Ez_diff[X_DIR])/(kappas[X_DIR]*delta_spatial[X_DIR]) - Q_M[X_DIR][k_for_ij]);
-                    Hx[k_for_ij] = Hx[k_for_ij] - dt_over_mu*( (Ez_diff[Y_DIR])/(kappas[Y_DIR]*delta_spatial[Y_DIR]) + Q_M[Y_DIR][k_for_ij]);
-                    // Hy[k_for_ij] = Hy[k_for_ij] -(-(coef_mu_dx / kappas[X_DIR]) * (Ez_diff[X_DIR]) );
-                    // Hx[k_for_ij] = Hx[k_for_ij] -( (coef_mu_dy / kappas[Y_DIR]) * (Ez_diff[Y_DIR]) );                     
+                    Hx[k_for_ij] = Hx[k_for_ij] - dt_over_mu*( (Ez_diff[Y_DIR])/(kappas[Y_DIR]*delta_spatial[Y_DIR]) + Q_M[Y_DIR][k_for_ij]);                 
                 }
             }
             if (PRINT)
@@ -191,25 +176,16 @@ void EM_Sim_CPU::step_EM(int step_index)
                 kappa_images[X_DIR][k_for_ij] = kappas[X_DIR];
                 kappa_images[Y_DIR][k_for_ij] = kappas[Y_DIR];
                 sigma_images[X_DIR][k_for_ij] = sigmas[X_DIR];
-                sigma_images[Y_DIR][k_for_ij] = sigmas[Y_DIR];
-                // b_images[X_DIR][k_for_ij] = bs[X_DIR];
-                // b_images[Y_DIR][k_for_ij] = bs[Y_DIR];
-                // c_images[X_DIR][k_for_ij] = cs[X_DIR];
-                // c_images[Y_DIR][k_for_ij] = cs[Y_DIR];                
+                sigma_images[Y_DIR][k_for_ij] = sigmas[Y_DIR];            
                 for (int dir=0; dir<DIRECTIONS; ++dir)
                 {
                     value_t *Q = Q_E[dir];
-                    //cs[dir] = 0;
                     Q[k_for_ij] = bs[dir]*Q[k_for_ij] + cs[dir]*H_diff[dir] / delta_spatial[dir];
-                    //Q[k_for_ij] = 0;
                 } 
                 float dt_over_eps = dt / eps0;
                 Ez[k_for_ij] = Ez[k_for_ij] + (dt_over_eps)*(
                                     (H_diff[X_DIR])/(kappas[X_DIR]*delta_spatial[X_DIR]) + Q_E[X_DIR][k_for_ij] - 
                                     (H_diff[Y_DIR])/(kappas[Y_DIR]*delta_spatial[Y_DIR]) - Q_E[Y_DIR][k_for_ij] );
-                // Ez[k_for_ij] = Ez[k_for_ij] + 
-                //     (coef_eps_dx / kappas[X_DIR])*(H_diff[X_DIR]) - 
-                //     (coef_eps_dy / kappas[Y_DIR])*(H_diff[Y_DIR]);
             }
             if (PRINT)
                 printf("E-Field i = %d, j= %d, threadId = %d \n", i, j, omp_get_thread_num());
