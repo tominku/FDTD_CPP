@@ -142,8 +142,9 @@ void EM_Sim_CPU::step_EM(int step_index)
                         Q[k_for_ij] = bs[dir]*Q[k_for_ij] + cs[dir]*Ez_diff[dir] / (delta_spatial[dir]);
                         //Q[k_for_ij] = 0;
                     }
-                    Hy[k_for_ij] = Hy[k_for_ij] -(-(coef_mu_dx / kappas[X_DIR]) * (Ez_diff[X_DIR]) - Q_M[X_DIR][k_for_ij]);
-                    Hx[k_for_ij] = Hx[k_for_ij] -( (coef_mu_dy / kappas[Y_DIR]) * (Ez_diff[Y_DIR]) + Q_M[Y_DIR][k_for_ij]);
+                    float dt_over_mu = dt / mu0;
+                    Hy[k_for_ij] = Hy[k_for_ij] - dt_over_mu*(-(Ez_diff[X_DIR])/(kappas[X_DIR]*delta_spatial[X_DIR]) - Q_M[X_DIR][k_for_ij]);
+                    Hx[k_for_ij] = Hx[k_for_ij] - dt_over_mu*( (Ez_diff[Y_DIR])/(kappas[Y_DIR]*delta_spatial[Y_DIR]) + Q_M[Y_DIR][k_for_ij]);
                     // Hy[k_for_ij] = Hy[k_for_ij] -(-(coef_mu_dx / kappas[X_DIR]) * (Ez_diff[X_DIR]) );
                     // Hx[k_for_ij] = Hx[k_for_ij] -( (coef_mu_dy / kappas[Y_DIR]) * (Ez_diff[Y_DIR]) );                     
                 }
@@ -202,9 +203,10 @@ void EM_Sim_CPU::step_EM(int step_index)
                     Q[k_for_ij] = bs[dir]*Q[k_for_ij] + cs[dir]*H_diff[dir] / delta_spatial[dir];
                     //Q[k_for_ij] = 0;
                 } 
-                Ez[k_for_ij] = Ez[k_for_ij] + 
-                                    (coef_eps_dx / kappas[X_DIR])*(H_diff[X_DIR]) + Q_E[X_DIR][k_for_ij] - 
-                                    (coef_eps_dy / kappas[Y_DIR])*(H_diff[Y_DIR]) - Q_E[Y_DIR][k_for_ij];
+                float dt_over_eps = dt / eps0;
+                Ez[k_for_ij] = Ez[k_for_ij] + (dt_over_eps)*(
+                                    (H_diff[X_DIR])/(kappas[X_DIR]*delta_spatial[X_DIR]) + Q_E[X_DIR][k_for_ij] - 
+                                    (H_diff[Y_DIR])/(kappas[Y_DIR]*delta_spatial[Y_DIR]) - Q_E[Y_DIR][k_for_ij] );
                 // Ez[k_for_ij] = Ez[k_for_ij] + 
                 //     (coef_eps_dx / kappas[X_DIR])*(H_diff[X_DIR]) - 
                 //     (coef_eps_dy / kappas[Y_DIR])*(H_diff[Y_DIR]);

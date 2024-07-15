@@ -45,9 +45,9 @@ while(True):
         break
     frame = sim_data[time_stamp]
     image_1D = np.array(frame, dtype=np.float32)
-    if t < 100:
-        print(np.sum(image_1D))
-    if t > 1000:
+    # if t < 100:
+    #     print(np.sum(image_1D))
+    if t > 900:
         max_temp = max(image_1D)
         min_temp = min(image_1D)
         if max_temp > max_value:

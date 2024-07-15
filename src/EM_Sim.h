@@ -70,9 +70,9 @@ public:
         use_pml = use_pml_;
         if (use_pml)
         {
-            int n_PML = 20;
-            int kappa_max = 2.0;
-            float order = 3.6;
+            int n_PML = 10;
+            float kappa_max = 5.0;
+            float order = 3;
             pml_xdir = new PML(n_PML, order, kappa_max);
             pml_ydir = new PML(n_PML, order, kappa_max);
         }

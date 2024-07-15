@@ -148,8 +148,8 @@ int main()
             //j_sim[time_stamp] = vec_c_y_image;
             //j_sim[time_stamp] = vec_c_x_image;
             //j_sim[time_stamp] = vec_sigma_y_image;
-            //j_sim[time_stamp] = vec_Ez;
-            j_sim[time_stamp] = vec_Hx;
+            j_sim[time_stamp] = vec_Ez;
+            //j_sim[time_stamp] = vec_Hx;
             float elapsed_time = timer.end();
             time_for_data_write += elapsed_time;             
         }     

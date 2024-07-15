@@ -39,8 +39,8 @@ public:
         kappa_max = kappa_max_;
         sigma_max = (order + 1) / (150*M_PI*dx); // where this formulation comes from?
         printf("sigma_max: %f \n", sigma_max);
-        alpha_min = 1.0;
-        alpha_max = 5;
+        alpha_min = 0.0;
+        alpha_max = 0.01;
         init();
     }    
 
