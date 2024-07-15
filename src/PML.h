@@ -66,10 +66,10 @@ void PML::init_PML_part(PML_Node *PML_nodes, bool reverse_i, float idx_offset)
     {
         PML_Node node;
         node.idx = vec_idx[i] + idx_offset;        
-        // float p_E = powf((node.idx-0.25) / (float)n_PML_nodes_per_part, order);
-        // float p_M = powf((node.idx+0.25) / (float)n_PML_nodes_per_part, order);
-        float p_E = powf((node.idx) / (float)n_PML_nodes_per_part, order);
-        float p_M = powf((node.idx) / (float)n_PML_nodes_per_part, order);
+        float p_E = powf((node.idx-0.25) / (float)n_PML_nodes_per_part, order);
+        float p_M = powf((node.idx+0.25) / (float)n_PML_nodes_per_part, order);
+        // float p_E = powf((node.idx) / (float)n_PML_nodes_per_part, order);
+        // float p_M = powf((node.idx) / (float)n_PML_nodes_per_part, order);
         node.kappa_E = 1 + (kappa_max - 1) * p_E;
         node.kappa_M = 1 + (kappa_max - 1) * p_M;
         node.sigma_E = sigma_max * p_E;
