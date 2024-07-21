@@ -12,7 +12,8 @@ draw = ImageDraw.Draw(img)
 #draw.ellipse((x-r, y-r, x+r, y+r), fill=(255,0,0,0))
 #draw.
 radius = 15
-draw.circle((60, 60), radius, fill=50, width=0)
+#draw.circle((60, 60), radius, fill=50, width=0)
+draw.rectangle((30, 40, 60, 60), fill=50, width=0)
 pixel_value_to_eps = {50: 3.0, 30: 11.68}
 
 arr_img = np.array(img)
