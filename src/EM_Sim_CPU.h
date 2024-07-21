@@ -91,12 +91,12 @@ void EM_Sim_CPU::step_EM(int step_index)
             int k_for_ijp1 = ij_to_k(i, j+1);
             int k_for_ip1j = ij_to_k(i+1, j); 
             
-            int material_value = 0;
+            int material_value = 1.0;
             if(materialData.has_material)
                 material_value = materialData.scaled_data[k_for_ij];
             
             //if (material_value == 1)
-            if (material_value == 255)
+            if (material_value < 0)
             {
                 Hx[k_for_ij] = 0;    
                 Hy[k_for_ij] = 0;
@@ -149,12 +149,12 @@ void EM_Sim_CPU::step_EM(int step_index)
             int k_for_ijm1 = ij_to_k(i, j-1);
             int k_for_im1j = ij_to_k(i-1, j); 
                         
-            int material_value = 0;
+            float material_value = 1.0;
             if(materialData.has_material)
                 material_value = materialData.scaled_data[k_for_ij];            
             
             //if (material_value == 1)
-            if (material_value == 255)
+            if (material_value < 0)
             {
                 Ez[k_for_ij] = 0;    
             }

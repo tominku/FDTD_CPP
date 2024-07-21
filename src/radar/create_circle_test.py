@@ -12,15 +12,15 @@ draw = ImageDraw.Draw(img)
 #draw.ellipse((x-r, y-r, x+r, y+r), fill=(255,0,0,0))
 #draw.
 radius = 15
-draw.circle((60, 60), radius, fill=30, width=0)
-pixel_value_to_eps = {30: 11.68}
+draw.circle((60, 60), radius, fill=50, width=0)
+pixel_value_to_eps = {50: 3.0, 30: 11.68}
 
 arr_img = np.array(img)
 print(arr_img.shape)
 print(arr_img)
 arr_eps_r = np.ones(arr_img.shape) 
 print(arr_eps_r)
-key = 30
+key = 50
 arr_eps_r[arr_img == key] = pixel_value_to_eps[key]
 print(arr_eps_r)
 

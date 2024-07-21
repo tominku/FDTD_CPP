@@ -105,7 +105,10 @@ ax = plt.subplot()
 #im = plt.imshow(a, interpolation='none', cmap='viridis', aspect='auto', vmin=min_value, vmax=max_value, alpha=(1-material_image))
 if has_material:
     #im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto', vmin=-1, vmax=1, alpha=(1-material_image))
-    im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto', vmin=-1, vmax=1)
+    #im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto', vmin=-1, vmax=1)
+    alpha_image = (1.0-0.5*(material_image>1.0))
+    print(alpha_image)
+    im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto', vmin=-1, vmax=1, alpha=alpha_image)
 else:
     im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto', vmin=-1, vmax=1)
     #im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto')            
