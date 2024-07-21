@@ -184,7 +184,8 @@ void EM_Sim_CPU::step_EM(int step_index)
                     value_t *Q = Q_E[dir];
                     Q[k_for_ij] = bs[dir]*Q[k_for_ij] + cs[dir]*H_diff[dir] / delta_spatial[dir];
                 } 
-                float dt_over_eps = dt / eps0;
+                //float dt_over_eps = dt / eps0;
+                float dt_over_eps = dt / (eps0 * material_value);
                 Ez[k_for_ij] = Ez[k_for_ij] + (dt_over_eps)*(
                                     (H_diff[X_DIR])/(kappas[X_DIR]*delta_spatial[X_DIR]) + Q_E[X_DIR][k_for_ij] - 
                                     (H_diff[Y_DIR])/(kappas[Y_DIR]*delta_spatial[Y_DIR]) - Q_E[Y_DIR][k_for_ij] );
