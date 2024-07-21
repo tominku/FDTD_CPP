@@ -19,11 +19,11 @@
 struct MaterialData
 {
     bool has_material;
-    int *origin_data;
+    float *origin_data;
     int origin_height;
     int origin_width;
     int origin_num_pixels;
-    int *scaled_data;
+    float *scaled_data;
 };
 
 using namespace std;
@@ -61,7 +61,7 @@ public:
     MaterialData scaleToFit(int nx, int ny)
     {
         int N = nx * ny;
-        int *scaled_data = new int[N];
+        float *scaled_data = new float[N];
 
         #pragma omp parallel for num_threads(6) collapse(2) if(true)   
         for (int i=0; i<nx; i++)
@@ -73,7 +73,7 @@ public:
                 int origin_i = (int)round((material_data.origin_height - 1)*float_i);
                 int origin_j = (int)round((material_data.origin_width - 1)*float_j);
                 int origin_height = material_data.origin_height;
-                int pixel_value = material_data.origin_data[ij_to_k_(origin_i, origin_j, origin_height)];
+                float pixel_value = material_data.origin_data[ij_to_k_(origin_i, origin_j, origin_height)];
                 int k_for_ij = ij_to_k(i, j);
                 scaled_data[k_for_ij] = pixel_value;
             }
@@ -102,10 +102,10 @@ public:
         material_data.origin_height = material_json["height"];
         material_data.origin_num_pixels = material_data.origin_width * material_data.origin_height;        
 
-        std::vector<int> data_vector = material_json["data"].template get<std::vector<int>>();         
+        std::vector<float> data_vector = material_json["data"].template get<std::vector<float>>();         
         int data_size = data_vector.size();                     
         assert (data_size == material_data.origin_num_pixels);        
-        material_data.origin_data = new int[data_size];        
+        material_data.origin_data = new float[data_size];        
 
         std::copy(data_vector.begin(), data_vector.end(), material_data.origin_data);
 
