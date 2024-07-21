@@ -95,7 +95,8 @@ void EM_Sim_CPU::step_EM(int step_index)
             if(materialData.has_material)
                 material_value = materialData.scaled_data[k_for_ij];
             
-            if (material_value == 1)
+            //if (material_value == 1)
+            if (material_value == 255)
             {
                 Hx[k_for_ij] = 0;    
                 Hy[k_for_ij] = 0;
@@ -152,7 +153,8 @@ void EM_Sim_CPU::step_EM(int step_index)
             if(materialData.has_material)
                 material_value = materialData.scaled_data[k_for_ij];            
             
-            if (material_value == 1)
+            //if (material_value == 1)
+            if (material_value == 255)
             {
                 Ez[k_for_ij] = 0;    
             }

@@ -104,7 +104,8 @@ ax = plt.subplot()
 #im = plt.imshow(a, interpolation='none', cmap='gray', aspect='auto', vmin=min_value, vmax=max_value)
 #im = plt.imshow(a, interpolation='none', cmap='viridis', aspect='auto', vmin=min_value, vmax=max_value, alpha=(1-material_image))
 if has_material:
-    im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto', vmin=-1, vmax=1, alpha=(1-material_image))
+    #im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto', vmin=-1, vmax=1, alpha=(1-material_image))
+    im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto', vmin=-1, vmax=1)
 else:
     im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto', vmin=-1, vmax=1)
     #im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto')            
@@ -115,7 +116,6 @@ ax.plot([PML_thickness, PML_thickness], [0, Nx-1] ,'k--')
 ax.plot([Nx-PML_thickness, Nx-PML_thickness], [0, Nx-1] ,'k--')
 ax.plot([0, Ny-1], [PML_thickness, PML_thickness] ,'k--')
 ax.plot([0, Ny-1], [Nx-PML_thickness, Nx-PML_thickness] ,'k--')
-from matplotlib.patches import Circle
 
 def animate_func(i):
     im.set_array(images_normalized[i]) 

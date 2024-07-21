@@ -69,8 +69,11 @@ void initialize_zero(value_t *values, int len)
 // int source_x = (int)(Nx*0.15);
 // int source_y = (int)(Ny*0.7);
 
-int source_x = (int)(Nx*0.5);
-int source_y = (int)(Ny*0.5);
+// int source_x = (int)(Nx*0.5);
+// int source_y = (int)(Ny*0.5);
+
+int source_x = (int)(Nx*0.2);
+int source_y = (int)(Ny*0.8);
 
 /*
 [Nx,Ny] = deal(Lx*Lf,Ly*Lf);    % Points in x,y           [unitless]
