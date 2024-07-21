@@ -136,6 +136,7 @@ int main()
             //vec_Ez.assign(Ez, Ez+N);
             std::vector<value_t> vec_Ez(Ez, Ez + N);
             std::vector<value_t> vec_Hx(Hx, Hx + N);
+            std::vector<value_t> vec_Hy(Hx, Hx + N);
             //std::vector<value_t> vec_kappa_x_image(sim->kappa_x_image, sim->kappa_x_image + N);
             //std::vector<value_t> vec_kappa_y_image(sim->kappa_y_image, sim->kappa_y_image + N);
             //std::vector<value_t> vec_sigma_x_image(sim->sigma_x_image, sim->sigma_x_image + N);
@@ -150,6 +151,7 @@ int main()
             //j_sim[time_stamp] = vec_sigma_y_image;
             j_sim[time_stamp] = vec_Ez;
             //j_sim[time_stamp] = vec_Hx;
+            //j_sim[time_stamp] = vec_Hy;
             float elapsed_time = timer.end();
             time_for_data_write += elapsed_time;             
         }     
