@@ -49,7 +49,7 @@ while(True):
     image_1D = np.array(frame, dtype=np.float32)
     # if t < 100:
     #     print(np.sum(image_1D))
-    if t > 800:
+    if t > 10:
         max_temp = max(image_1D)
         min_temp = min(image_1D)
         if max_temp > max_value:
@@ -73,6 +73,8 @@ images_normalized = []
 # median_values_over_images = []
 # max_value_indices_over_images = []
 print(f'min_value: {min_value}, max_value: {max_value}')
+max_value *= 0.1
+min_value *= 0.1
 value_range = (max_value - min_value)
 for image in images: # normalize images
     image = (image - min_value) / value_range
