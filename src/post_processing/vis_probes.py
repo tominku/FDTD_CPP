@@ -35,16 +35,21 @@ with open(path, "r") as json_file:
 # i_end = 2000
 #i_begin = 1200
 #i_end = 2000
-i_begin = 1500
-i_end = 2000
+i_begin = 0
+i_end = 2000 - 1
 
 N = i_end - i_begin +1
 T = dt * (N - 1)
-signal = em_probes[2]['data'][i_begin:i_end]
-spectrum = sptr.Spectrum(signal, T)
+signal_Tx = em_probes[0]['data'][i_begin:(i_end+1)]
+signal_Rx = em_probes[1]['data'][i_begin:(i_end+1)]
+print(f'Tx signal shape: {signal_Tx.shape}')
+signal_mixed = signal_Tx * signal_Rx
+print(f'mixed signal shape: {signal_mixed.shape}')
+spectrum = sptr.Spectrum(signal_mixed, T)
 spectrum.print_info()
 freq, fft_result = spectrum.compute()
 bin_size = len(freq)
-show_bin_size = int(bin_size / 3)
+show_bin_size = int(bin_size)
 spectrum.plot_spectrum(freq[:show_bin_size], fft_result[:show_bin_size])
 #spectrum.plot_spectrum(freq[:show_bin_size], 10*np.log10(fft_result[:show_bin_size]))
+

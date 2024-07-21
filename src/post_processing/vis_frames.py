@@ -49,7 +49,7 @@ while(True):
     image_1D = np.array(frame, dtype=np.float32)
     # if t < 100:
     #     print(np.sum(image_1D))
-    if t > 10:
+    if t > 0:
         max_temp = max(image_1D)
         min_temp = min(image_1D)
         if max_temp > max_value:
@@ -141,8 +141,12 @@ anim = animation.FuncAnimation(
                                blit=False                               
                                )
 fps = int(1.0 / (interval_in_ms / 1000.0))
+#fps = 60
 video_writer = animation.FFMpegWriter(fps=fps) 
 #anim.save('anim_Nx:%d_Ny:%d_logper:%d.mp4' % (Nx, Ny, logging_period), writer=video_writer)
+#anim.save('circle.gif', writer='imagemagick', fps=30, dpi=100)
+#anim.save('circle.gif', writer='Pillow', fps=fps)
+anim.save('rect.gif', writer='Pillow', fps=fps)
 #ani = animation.FuncAnimation(fig, updatefig, interval=50, blit=True)
 plt.show()
 #plt.colorbar(ax=im)

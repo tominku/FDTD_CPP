@@ -50,6 +50,18 @@ private:
         total_steps = config.total_steps;
         int num_probes = config.probes.size();        
         
+        // Tx Probe
+        std::string tx_name = "Tx";
+        EM_Probe *tx_probe = new EM_Probe(tx_name, total_steps, 0, 0);
+        probes.push_back(tx_probe);
+
+        // Rx Probe
+        std::string rx_name = "Rx";
+        EM_Probe *rx_probe = new EM_Probe(rx_name,
+            total_steps, source_x+5, source_y+5);
+        probes.push_back(rx_probe);
+
+        // Custom Probe
         for (json &probe_json : config.probes)
         {
             std::string probe_name = probe_json["name"];            
@@ -66,22 +78,22 @@ public:
         static EM_Probe_Manager INSTANCE;
         return INSTANCE;
     }
-    void add_prob_around_source(int ix, int iy)
+
+    void probe_Tx(value_t value, int step)
     {
-        std::string name = "probe_around_source";
-        EM_Probe *probe = new EM_Probe(name, total_steps, ix, iy);
-        probes.push_back(probe);
+        EM_Probe *probe = probes[0];
+        probe->values[step] = value;
     }
 
     void probe(value_t *Ez, int step)
     {
         int num_probes = probes.size();        
-        Config &config = Config::instance();            
-        int num_threads_ = config.num_threads;
-        if (num_threads_ > num_probes)
-            num_threads_ = num_probes;
+        // Config &config = Config::instance();            
+        // int num_threads_ = config.num_threads;
+        // if (num_threads_ > num_probes)
+        //     num_threads_ = num_probes;
         //#pragma omp parallel for num_threads(num_threads_)
-        for (int p=0; p<num_probes; ++p)
+        for (int p=1; p<num_probes; ++p)
         {
             EM_Probe *probe = probes[p];
             int i = probe->ix;

@@ -12,8 +12,8 @@ draw = ImageDraw.Draw(img)
 #draw.ellipse((x-r, y-r, x+r, y+r), fill=(255,0,0,0))
 #draw.
 radius = 15
-draw.circle((60, 60), radius, fill=50, width=0)
-#draw.rectangle((30, 40, 60, 60), fill=50, width=0)
+#draw.circle((60, 60), radius, fill=50, width=0)
+draw.rectangle((30, 40, 60, 60), fill=50, width=0)
 pixel_value_to_eps = {50: 3.0, 30: 11.68}
 
 arr_img = np.array(img)
@@ -32,6 +32,7 @@ img.save("circle_image.png", "PNG")
 #print(json.dumps({'4': 5, '6': 7}, sort_keys=True, indent=4))
 output = {"width":img_width,
             "height":img_width, "data":arr_eps_r_flatten.tolist()}
-outfile_name = "data/material_circle.json"
+#outfile_name = "data/material_circle.json"
+outfile_name = "data/material_rect.json"
 with open(outfile_name, "w") as outfile:
     json.dump(output, outfile)

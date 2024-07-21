@@ -84,7 +84,7 @@ int main()
     EM_Sim_CPU sim_cpu(Hx, Hy, Ez, material_data, use_pml);
     EM_Sim *sim = (EM_Sim *)(&sim_cpu);
     EM_Probe_Manager &probeManager = EM_Probe_Manager::instance();
-    probeManager.add_prob_around_source(source_x, source_y);
+    //probeManager.add_prob_around_source(source_x + 5 , source_y + 5);
 
     //output_file << Nx << "," << Ny << "," << nt << "," << logging_period << "\n";
     float time_for_data_write = 0;
@@ -117,10 +117,12 @@ int main()
         float k = (f_end - f_begin) / T; // frequency change rate
         //Ez[source_k] += sinf(2*M_PI*f0*(dt*step));
         float t = dt*step;
+        float A = 0.1;
         if (t <= T)
         {
-            float temp = cosf(2*M_PI*(f_begin*t + (k/2.0)*powf(t, 2.0)) + M_PI/2);            
-            Ez[source_k] += temp;   
+            float temp = A*cosf(2*M_PI*(f_begin*t + (k/2.0)*powf(t, 2.0)) + M_PI/2);            
+            Ez[source_k] += temp; 
+            probeManager.probe_Tx(temp, step);  
             //printf("source mag: %f \n", temp);
         }
         
