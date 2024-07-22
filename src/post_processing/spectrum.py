@@ -38,5 +38,4 @@ class Spectrum:
         plt.xlabel('Frequency (GHz)')
         plt.ylabel('Magnitude')
         plt.title('Frequency Spectrum')
-        plt.grid(True)
-        plt.show()
+        plt.grid(True)        

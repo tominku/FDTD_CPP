@@ -37,7 +37,7 @@ int main()
     Material material(config.material_file_path);    
     MaterialData material_data = material.parse();             
     
-    printf("c0: %f, Nx: %d, Ny:%d, L0: %f, dx: %f, dt: %.12f, space_x: %f,space_y: %f, source_i: %d, source_j: %d\n", c0, Nx, Ny, lam, dx, dt, space_size_x, space_size_y, source_x, source_y);
+    printf("c0: %f, Nx: %d, Ny:%d, L0: %f, dx: %f, dt: %.20f, space_x: %f,space_y: %f, source_i: %d, source_j: %d\n", c0, Nx, Ny, lam, dx, dt, space_size_x, space_size_y, source_x, source_y);
     
     int N = Nx * Ny;
     value_t *Ez = new value_t[N];
