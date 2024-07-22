@@ -12,12 +12,12 @@ img = Image.new("L", (img_width, img_width), 0)
 draw = ImageDraw.Draw(img)
 #draw.ellipse((x-r, y-r, x+r, y+r), fill=(255,0,0,0))
 #draw.
-radius = 3
-draw.circle((10, 80), radius, fill=50, width=0)
+radius = 1
+draw.circle((60, 70), radius, fill=50, width=0)
 #draw.rectangle((30, 40, 60, 60), fill=50, width=0)
-pixel_value_to_eps = {50: 3.0, 30: 11.68}
+pixel_value_to_eps = {50: 100, 30: 11.68}
 
-vec = np.array([0.2, 0.8]) - np.array([0.8, 0.1])
+vec = np.array([0.2, 0.8]) - np.array([0.7, 0.6])
 print(f'distance: {LA.norm(vec)} m')
 
 arr_img = np.array(img)

@@ -33,7 +33,7 @@ with open(path, "r") as json_file:
 
 
 def get_peak_frequencies(freq, mags):
-    detection_window_size = 3
+    detection_window_size = 5
     freq_len = freq.size
     last_index = freq_len - 1
     detected_frequencies = []
@@ -42,7 +42,7 @@ def get_peak_frequencies(freq, mags):
             mag_window = mags[(i - detection_window_size):(i + detection_window_size)]
             mag_i = mags[i]
             local_max = np.max(mag_window)
-            if mag_i >= local_max and local_max > 1.1*np.median(mag_window):         
+            if mag_i >= local_max and local_max > 1.3*np.median(mag_window):         
                 f = freq[i]       
                 if f > chirp_end_freq:
                     continue

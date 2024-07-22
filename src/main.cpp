@@ -121,7 +121,8 @@ int main()
         if (t <= T)
         {
             float temp = A*cosf(2*M_PI*(f_begin*t + (k/2.0)*powf(t, 2.0)) + M_PI/2);            
-            Ez[source_k] += temp; 
+            //Ez[source_k] += temp;
+            Ez[source_k] = temp; 
             probeManager.probe_Tx(temp, step);  
             //printf("source mag: %f \n", temp);
         }

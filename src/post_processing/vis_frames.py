@@ -73,7 +73,7 @@ images_normalized = []
 # median_values_over_images = []
 # max_value_indices_over_images = []
 print(f'min_value: {min_value}, max_value: {max_value}')
-factor = 0.1
+factor = 1.0
 max_value *= factor
 min_value *= factor
 value_range = (max_value - min_value)
