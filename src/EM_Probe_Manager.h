@@ -58,7 +58,7 @@ private:
         // Rx Probe
         std::string rx_name = "Rx";
         EM_Probe *rx_probe = new EM_Probe(rx_name,
-            total_steps, source_x+5, source_y+5);
+            total_steps, source_x+2, source_y+2);
         probes.push_back(rx_probe);
 
         // Custom Probe

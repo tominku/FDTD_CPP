@@ -33,7 +33,7 @@ with open(path, "r") as json_file:
 
 
 def get_peak_frequencies(freq, mags):
-    detection_window_size = 5
+    detection_window_size = 3
     freq_len = freq.size
     last_index = freq_len - 1
     detected_frequencies = []
