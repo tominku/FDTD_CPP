@@ -15,7 +15,7 @@ draw = ImageDraw.Draw(img)
 radius = 4
 draw.circle((70, 80), radius, fill=50, width=0)
 #draw.rectangle((30, 40, 60, 60), fill=50, width=0)
-pixel_value_to_eps = {50: 100, 30: 11.68}
+pixel_value_to_eps = {50: 11.68, 30: 11.68}
 
 vec = np.array([0.2, 0.8]) - np.array([0.8, 0.7])
 print(f'distance: {LA.norm(vec)} m')

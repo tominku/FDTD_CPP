@@ -126,7 +126,7 @@ ax.plot([0, Ny-1], [Nx-PML_thickness, Nx-PML_thickness] ,'k--')
 
 def animate_func(i):
     im.set_array(images_normalized[i]) 
-    im.set_alpha(alpha_image)
+    #im.set_alpha(alpha_image)
     plt.title('%d / %d frame' % ((i * logging_period), 2000))
     #return [im]
     return ax

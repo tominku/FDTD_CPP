@@ -43,7 +43,7 @@ def get_peak_frequencies(freq, mags):
             mag_window = mags[(i - detection_window_size):(i + detection_window_size)]
             mag_i = mags[i]
             local_max = np.max(mag_window)
-            if mag_i >= local_max and local_max > 1.3*np.median(mag_window):         
+            if mag_i >= local_max and local_max > 1.4*np.median(mag_window):         
                 f = freq[i]       
                 if f > chirp_end_freq:
                     continue
