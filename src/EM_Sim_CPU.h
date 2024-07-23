@@ -81,6 +81,8 @@ void EM_Sim_CPU::get_PML_info(float kappas[DIRECTIONS],
 
 void EM_Sim_CPU::step_EM(int step_index)
 {       
+    EM_Probe_Manager &probeManager = EM_Probe_Manager::instance();
+    Config &config = Config::instance();    
     // Magnetic Field Update
     #pragma omp parallel for num_threads(num_threads) collapse(2) if(do_parallel)   
     for (int i=x_fi; i<x_li; i++)
@@ -185,16 +187,34 @@ void EM_Sim_CPU::step_EM(int step_index)
                     Q[k_for_ij] = bs[dir]*Q[k_for_ij] + cs[dir]*H_diff[dir] / delta_spatial[dir];
                 } 
                 //float dt_over_eps = dt / eps0;
+                
+                float J = 0;
+                if (i == source_x && j == source_y)
+                {
+                    float f_begin = 0.6*f0; // chirp initial frequency
+                    float f_end = 1.0*f0; // chirp end frequency
+                    int chirp_duration_as_steps = config.total_steps; // chirp duration as steps
+                    float T = chirp_duration_as_steps * dt;
+                    float k = (f_end - f_begin) / T; // frequency change rate
+                    //Ez[source_k] += sinf(2*M_PI*f0*(dt*step));
+                    float t = dt*step_index;
+                    float A = 0.1;
+                    if (t <= T)
+                    {
+                        J = A*cosf(2*M_PI*(f_begin*t + (k/2.0)*powf(t, 2.0)) + M_PI/2);                                                            
+                        probeManager.probe_Tx(J, step_index);                          
+                    }
+                }
+
                 float dt_over_eps = dt / (eps0 * material_value);
                 Ez[k_for_ij] = Ez[k_for_ij] + (dt_over_eps)*(
                                     (H_diff[X_DIR])/(kappas[X_DIR]*delta_spatial[X_DIR]) + Q_E[X_DIR][k_for_ij] - 
-                                    (H_diff[Y_DIR])/(kappas[Y_DIR]*delta_spatial[Y_DIR]) - Q_E[Y_DIR][k_for_ij] );
+                                    (H_diff[Y_DIR])/(kappas[Y_DIR]*delta_spatial[Y_DIR]) - Q_E[Y_DIR][k_for_ij] - J );
             }
             if (PRINT)
                 printf("E-Field i = %d, j= %d, threadId = %d \n", i, j, omp_get_thread_num());
         }
     }
-
-    EM_Probe_Manager &probeManager = EM_Probe_Manager::instance();
+    
     probeManager.probe(Ez, step_index);
 }

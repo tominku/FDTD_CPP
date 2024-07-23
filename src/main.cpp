@@ -91,42 +91,7 @@ int main()
     int computation_time = 0; 
     int total_steps = config.total_steps;
     for (int step=0; step < total_steps; step++)
-    {        
-        //Point Source        
-        int source_k = ij_to_k(source_x, source_y);
-        //Ez[source_k] += sinf(2*M_PI*f0*(dt*step)) * expf(-0.5*powf((step-20)/8.0, 2));
-        /*
-        chirp_duration_as_steps = 1000 # chirp duration as steps
-        dt = 0.01
-        T = chirp_duration_as_steps * dt
-        f0 = 1 # initial frequency
-        f1 = 10 # end frequency
-        k = (f1 - f0) / T # frequency change rate
-        N = 1000 + 1
-        ts = np.arange(chirp_duration_as_steps) # time points
-        ts = T * (ts / chirp_duration_as_steps)
-        print(ts)
-
-        #signal = np.cos(2*np.pi*(f0*ts))
-        signal = np.cos(2*np.pi*(f0*ts + (k/2)*np.power(ts, 2.0)) + np.pi/2)
-        */
-        float f_begin = 0.6*f0; // chirp initial frequency
-        float f_end = 1.0*f0; // chirp end frequency
-        int chirp_duration_as_steps = total_steps; // chirp duration as steps
-        float T = chirp_duration_as_steps * dt;
-        float k = (f_end - f_begin) / T; // frequency change rate
-        //Ez[source_k] += sinf(2*M_PI*f0*(dt*step));
-        float t = dt*step;
-        float A = 0.1;
-        if (t <= T)
-        {
-            float temp = A*cosf(2*M_PI*(f_begin*t + (k/2.0)*powf(t, 2.0)) + M_PI/2);            
-            Ez[source_k] += temp;
-            //Ez[source_k] = temp; 
-            probeManager.probe_Tx(temp, step);  
-            //printf("source mag: %f \n", temp);
-        }
-        
+    {                
         timer.begin();       
         sim->step_EM(step);        
         float elapsed_time_micro = timer.end(false);                         
