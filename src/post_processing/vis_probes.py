@@ -10,6 +10,7 @@ import spectrum as sptr
 chirp_begin_freq = 6*1e9
 chirp_end_freq = 10*1e9
 dt = 0.00000000000707106769
+fs = 1 / dt
 total_steps = 2000
 c = 299795648
 T = total_steps * dt
