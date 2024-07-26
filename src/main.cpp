@@ -37,7 +37,9 @@ int main()
     Material material(config.material_file_path);    
     MaterialData material_data = material.parse();             
     
-    printf("c0: %f, Nx: %d, Ny:%d, L0: %f, dx: %f, dt: %.20f, space_x: %f,space_y: %f, source_i: %d, source_j: %d\n", c0, Nx, Ny, lam, dx, dt, space_size_x, space_size_y, source_x, source_y);
+    std::string msg = fmt::format("c0: {}, Nx: {}, Ny: {}, L0: {}, dx: {}, dt: {}, space_x: {}, space_y: {}, source_i: {}, source_j: {}\n", c0, Nx, Ny, lam, dx, dt, space_size_x, space_size_y, source_x, source_y);
+    cout << msg;
+    // printf("c0: %f, Nx: %d, Ny:%d, L0: %f, dx: %f, dt: %.20f, space_x: %f,space_y: %f, source_i: %d, source_j: %d\n", c0, Nx, Ny, lam, dx, dt, space_size_x, space_size_y, source_x, source_y);
     
     int N = Nx * Ny;
     value_t *Ez = new value_t[N];
