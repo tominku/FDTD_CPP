@@ -193,13 +193,14 @@ void EM_Sim_CPU::step_EM(int step_index)
                 {
                     float f_begin = 0.6*f0; // chirp initial frequency
                     float f_end = 1.0*f0; // chirp end frequency
+                    //int chirp_duration_as_steps = config.total_steps * 10; // chirp duration as steps
                     int chirp_duration_as_steps = config.total_steps; // chirp duration as steps
-                    float T = chirp_duration_as_steps * dt;
-                    float k = (f_end - f_begin) / T; // frequency change rate
+                    //float T = chirp_duration_as_steps * dt;
+                    float k = (f_end - f_begin) / (chirp_duration_as_steps * dt); // frequency change rate
                     //Ez[source_k] += sinf(2*M_PI*f0*(dt*step));
                     float t = dt*step_index;
                     float A = 0.1;
-                    if (t <= T)
+                    if (t <= chirp_duration_as_steps)
                     {
                         J = A*cosf(2*M_PI*(f_begin*t + (k/2.0)*powf(t, 2.0)) + M_PI/2);                                                            
                         probeManager.probe_Tx(J, step_index);                          

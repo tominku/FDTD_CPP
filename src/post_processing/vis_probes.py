@@ -14,7 +14,8 @@ fs = 1 / dt
 total_steps = 2000
 c = 299795648
 T = total_steps * dt
-S = (chirp_end_freq - chirp_begin_freq) / T
+#S = (chirp_end_freq - chirp_begin_freq) / (total_steps * dt * 10)
+S = (chirp_end_freq - chirp_begin_freq) / (total_steps * dt)
 
 begin = time.time()
 path = "/home/minku/.data/EM_probe.json"
