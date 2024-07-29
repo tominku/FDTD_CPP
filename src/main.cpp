@@ -34,9 +34,8 @@ int main()
     Config &config = Config::instance();
     config.load("config_total.json");    
     
-    //Material material("data/car_interior_2D_image_data.json");    
-    Material material(config.material_file_path);    
-    MaterialData material_data = material.parse();             
+    Material &material = Material::instance();        
+    MaterialData material_data = material.getMaterialData();
     
     float bw = 4*1e9; // 4 GHz; 
     float T = dt * 2000;
@@ -55,26 +54,10 @@ int main()
     initialize_zero(Hx, N);
     initialize_zero(Hy, N);
     initialize_zero(Ez, N);    
-
-    // write scaled material data
-    Timer timer;
-    json j;
-    j["has_material"] = material_data.has_material;
-    if (material_data.has_material)
-    {    
-        std::vector<int> material_values(material_data.scaled_data, material_data.scaled_data+N);
-        int vec_size = material_values.size();
-        assert (vec_size == N);        
-        j["material_data_size"] = vec_size;
-        j["material_data"] = material_values;
-    }
-    j["Nx"] = Nx;
-    j["Ny"] = Ny;
     
-    std::string path = fileManager.into_data_dir("material.json");
-    fileManager.save_json(j, path);    
-    timer.end();
-    timer.print_elapsed_time("<material.json> save elapsed time");    
+    Timer timer;
+    // timer.end();
+    // timer.print_elapsed_time("<material.json> save elapsed time");    
 
     int logging_period = 5;
     int test = 0;
@@ -133,8 +116,8 @@ int main()
     }
     computation_time /= 1000.0; // to ms    
     
-    path = fileManager.into_data_dir("output_cpu.json");
-    fileManager.save_json(j_sim, path);    
+    // path = fileManager.into_data_dir("output_cpu.json");
+    // fileManager.save_json(j_sim, path);    
 
     config.save_sim_frames(j_sim, "frames.json");
 

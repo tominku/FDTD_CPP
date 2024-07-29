@@ -75,13 +75,22 @@ public:
         fileManager.create_output_dir(name);
    }
 
-   void save_sim_frames(json j, std::string file_name)
+   void save_json_to_output_dir(json j, std::string file_name)
    {
-        FileManager &fileManager = FileManager::instance();
-        //fileManager.
+        FileManager &fileManager = FileManager::instance();        
         auto output_dir_path = fileManager.get_output_dir_path();        
         auto output_file_path = output_dir_path / file_name;
         fileManager.save_json(j, output_file_path);   
+   }
+
+   void save_sim_frames(json j, std::string file_name)
+   {        
+        save_json_to_output_dir(j, file_name);
+   }
+
+   void save_material(json j, std::string file_name)
+   {
+        save_json_to_output_dir(j, file_name);
    }
 
    static Config& instance()

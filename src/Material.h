@@ -44,18 +44,58 @@ protected:
     }
 
 public:
-    Material(string file_)
+
+    // Material(string file_)
+    // {
+    //     has_material = false;
+    //     FileManager &fileManager = FileManager::instance();
+    //     auto current_dir_path = fileManager.get_current_dir_path();
+    //     file_path = fileManager.convert_to_path(current_dir_path, file_);        
+    //     material_data.origin_data = NULL;
+    // }
+
+    Material()
     {
         has_material = false;
-        FileManager &fileManager = FileManager::instance();
-        auto current_dir_path = fileManager.get_current_dir_path();
-        file_path = fileManager.convert_to_path(current_dir_path, file_);        
+        Config &config = Config::instance();
+        file_path = config.material_file_path;   
         material_data.origin_data = NULL;
+        int N = Nx * Ny;
+
+        MaterialData material_data = parse();       
+
+        json j;
+        j["has_material"] = material_data.has_material;
+        if (material_data.has_material)
+        {    
+            std::vector<int> material_values(material_data.scaled_data, material_data.scaled_data+N);
+            int vec_size = material_values.size();
+            assert (vec_size == N);        
+            j["material_data_size"] = vec_size;
+            j["material_data"] = material_values;
+        }
+        j["Nx"] = Nx;
+        j["Ny"] = Ny;
+        
+        config.save_material(j, "material.json");
+        // std::string path = fileManager.into_data_dir("material.json");
+        // fileManager.save_json(j, path);                    
     }
+
+   static Material& instance()
+   {
+      static Material INSTANCE;
+      return INSTANCE;
+   }    
 
     bool hasMaterial()
     {
         return has_material;
+    }
+
+    MaterialData getMaterialData()
+    {
+        return material_data;
     }
 
     MaterialData scaleToFit(int nx, int ny)

@@ -7,7 +7,7 @@ import ujson as json
 import time
 
 begin = time.time()
-path = "/home/minku/.data/material.json"
+path = "/home/minku/.data/total/material.json"
 with open(path, "r") as json_file:
     material = json.load(json_file)
     has_material = material["has_material"]
@@ -27,7 +27,7 @@ print(f'elapsed time loading material file {end - begin} seconds')
 
 
 begin = time.time()
-path = "/home/minku/.data/output_cpu.json"
+path = "/home/minku/.data/total/frames.json"
 with open(path, "r") as json_file:
     sim_data = json.load(json_file)    
     Nx = sim_data["Nx"]
