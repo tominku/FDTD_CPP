@@ -110,8 +110,9 @@ ax = plt.subplot()
 if has_material:
     #im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto', vmin=-1, vmax=1, alpha=(1-material_image))
     #im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto', vmin=-1, vmax=1)
-    alpha_image = (1.0-0.6*(material_image>1.0))
-    print(alpha_image)
+    #alpha_image = (1.0-0.6*(material_image>1.0))
+    alpha_image = (1.0-0.6*(material_image<0.0))
+    #print(alpha_image)
     im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto', vmin=-1, vmax=1)
 else:
     im = plt.imshow(a, interpolation='none', cmap=cmap, aspect='auto', vmin=-1, vmax=1)
@@ -126,7 +127,7 @@ ax.plot([0, Ny-1], [Nx-PML_thickness, Nx-PML_thickness] ,'k--')
 
 def animate_func(i):
     im.set_array(images_normalized[i]) 
-    #im.set_alpha(alpha_image)
+    im.set_alpha(alpha_image)
     plt.title('%d / %d frame' % ((i * logging_period), 2000))
     #return [im]
     return ax

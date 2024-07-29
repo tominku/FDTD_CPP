@@ -22,6 +22,7 @@ using namespace std::chrono;
 
 //int f0 = 60*1e9; // Nominal Frequency [Hertz]
 //long f0 = 5*1e9; // Nominal Frequency [Hertz]
+//value_t f0 = 1*1e9;
 value_t f0 = 10*1e9; // Nominal Frequency [Hertz]
 //value_t f0 = 3*1e9; // Nominal Frequency [Hertz]
 value_t t0  = 1.0/f0;  // Source Period  [second]
