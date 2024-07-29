@@ -32,6 +32,7 @@ int main()
 {            
     FileManager &fileManager = FileManager::instance();    
     Config &config = Config::instance();
+    config.load("config_total.json");    
     
     //Material material("data/car_interior_2D_image_data.json");    
     Material material(config.material_file_path);    
@@ -130,9 +131,12 @@ int main()
             time_for_data_write += elapsed_time;             
         }     
     }
-    computation_time /= 1000.0; // to ms
+    computation_time /= 1000.0; // to ms    
+    
     path = fileManager.into_data_dir("output_cpu.json");
     fileManager.save_json(j_sim, path);    
+
+    config.save_sim_frames(j_sim, "frames.json");
 
     probeManager.save();
         

@@ -20,7 +20,9 @@ using json = nlohmann::json;
 class FileManager : Base
 {
 private:    
-    fs::path data_dir_path;        
+    fs::path data_dir_path;   
+    fs::path output_dir_path;     
+
     void init()
     {                
         const std::string str_home_path = getenv("HOME");     
@@ -37,7 +39,7 @@ private:
 protected:
     std::string toName()
     {
-        return "FileUtil";
+        return "FileManager";
     }
 
 public:        
@@ -57,10 +59,26 @@ public:
         return data_dir_path.c_str();
     }        
 
+    fs::path get_output_dir_path()
+    {
+        return output_dir_path;
+    }
+
     fs::path get_current_dir_path()
     {
         auto cur_path = fs::current_path();
         return cur_path.c_str();
+    }
+
+    void create_output_dir(std::string output_name)
+    {        
+        output_dir_path = data_dir_path / output_name;
+        bool success = fs::create_directory(output_dir_path);
+        if (!success)
+        {
+            std::string msg = fmt::format("The path <{}> already exist.", output_dir_path.c_str());
+            print(msg);                            
+        }                        
     }
 
     std::string into_data_dir(std::string file_name)
