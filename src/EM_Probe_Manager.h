@@ -105,9 +105,10 @@ public:
     }
 
     void save()
-    {
-        FileManager &fileManager = FileManager::instance();    
-        std::string path = fileManager.into_data_dir("EM_probe.json");        
+    {        
+        //FileManager &fileManager = FileManager::instance();    
+        //std::string path = fileManager.into_data_dir("EM_probe.json");   
+        
         json j_parent;
         //Config &config = Config::instance();
         //config.  
@@ -128,7 +129,9 @@ public:
         // j["name"] = name;
         // std::vector<value_t> vec_values(values, values+total_steps);
         // j["values"] = vec_values;
-        fileManager.save_json(j_parent, path);            
+        //fileManager.save_json(j_parent, path);            
+        Config &config = Config::instance();            
+        config.save_json_to_output_dir(j_parent, "EM_probe.json");        
     }
 
     ~EM_Probe_Manager()
